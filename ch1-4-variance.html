@@ -23,13 +23,6 @@
     <header class="header">
         <div class="header-inner container">
             <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
-            <nav class="nav">
-                <ul>
-                    <li><a href="index.html">コース概要</a></li>
-                    <li><a href="ch1-1-data.html">第1章 記述統計</a></li>
-                    <li><a href="ch1-quiz.html">確認テスト</a></li>
-                </ul>
-            </nav>
         </div>
     </header>
     <main class="container">
@@ -45,99 +38,316 @@
             <div id="lesson-tabs" class="unit-tabs"></div>
 
             <div class="goal">
-      <span class="box-label">このページでできるようになること</span>
-      <ul><li>分散・標準偏差の計算の意味を説明できる</li><li>n−1 で割る理由（不偏分散）を説明できる</li><li>68-95-99.7 ルールの使える条件を理解している</li></ul>
+      <span class="box-label">このUnitでできるようになること</span>
+      <ul>
+        <li>「平均からのズレ」を使って散らばりを測る考え方を説明できる</li>
+        <li>分散・標準偏差をステップ計算できる</li>
+        <li>「n−1で割る理由」をなんとなくではなく説明できる</li>
+      </ul>
     </div>
 
     <div class="lesson-flow">
         <div class="lesson-step">
             <span class="lesson-step-meta">Step 01</span>
-            <h4>1.5 どのくらい散らばっている？その2: 分散と標準偏差</h4>
-                <p>四分位数は「並べたときの位置」で散らばりを測りました。一方の標準偏差は「<strong>平均から平均的にどれだけ離れているか</strong>」で散らばりを測ります。機械学習でも「特徴量のスケール」の話で必ず登場するので、計算の意味まで理解しておきましょう。</p>
+            <h4>平均8分の2軒の店、どちらが「待ち時間が読める」？</h4>
+            <p>あなたはカフェ巡りが趣味。2軒のカフェに「待ち時間」を5回ずつ測ってもらいました。どちらも平均8分です。</p>
+            <div class="figure">
+              <div class="panel-row">
+                <div class="panel">
+                  <div class="panel-title">カフェA（繁華街） <span class="avg">平均8分</span></div>
+                  <div class="dc-plot" style="height:120px;">
+                    <div class="dc-axis"></div>
+                    <div class="dc-mark mid" style="left:25.8%"></div>
+                    <div class="dc-dot" style="left:4.1%"></div>
+                    <div class="dc-dot" style="left:7.2%"></div>
+                    <div class="dc-dot" style="left:10.3%"></div>
+                    <div class="dc-dot" style="left:13.4%"></div>
+                    <div class="dc-dot out" style="left:94%"></div>
+                    <div class="dc-lbl avg" style="left:23%; bottom:84px;">平均8分</div>
+                    <div class="dc-lbl out" style="right:0%; bottom:84px;">30分待ち</div>
+                  </div>
+                  <div style="position:relative; height:13px; margin-top:2px;">
+                    <span style="position:absolute;left:1%;transform:translateX(-50%);font-family:var(--font-mono);font-size:9px;color:var(--color-ink-soft);">0分</span>
+                    <span style="position:absolute;left:32%;transform:translateX(-50%);font-family:var(--font-mono);font-size:9px;color:var(--color-ink-soft);">10分</span>
+                    <span style="position:absolute;left:63%;transform:translateX(-50%);font-family:var(--font-mono);font-size:9px;color:var(--color-ink-soft);">20分</span>
+                    <span style="position:absolute;left:94%;transform:translateX(-50%);font-family:var(--font-mono);font-size:9px;color:var(--color-ink-soft);">30分</span>
+                  </div>
+                </div>
+                <div class="panel">
+                  <div class="panel-title">カフェB（住宅街） <span class="avg">平均8分</span></div>
+                  <div class="dc-plot" style="height:120px;">
+                    <div class="dc-axis"></div>
+                    <div class="dc-dot" style="left:22.7%"></div>
+                    <div class="dc-dot" style="left:25.8%"></div>
+                    <div class="dc-dot" style="left:25.8%"></div>
+                    <div class="dc-dot" style="left:25.8%"></div>
+                    <div class="dc-dot" style="left:28.9%"></div>
+                    <div class="dc-lbl avg" style="left:23%; bottom:84px;">平均8分</div>
+                  </div>
+                  <div style="position:relative; height:13px; margin-top:2px;">
+                    <span style="position:absolute;left:1%;transform:translateX(-50%);font-family:var(--font-mono);font-size:9px;color:var(--color-ink-soft);">0分</span>
+                    <span style="position:absolute;left:32%;transform:translateX(-50%);font-family:var(--font-mono);font-size:9px;color:var(--color-ink-soft);">10分</span>
+                    <span style="position:absolute;left:63%;transform:translateX(-50%);font-family:var(--font-mono);font-size:9px;color:var(--color-ink-soft);">20分</span>
+                    <span style="position:absolute;left:94%;transform:translateX(-50%);font-family:var(--font-mono);font-size:9px;color:var(--color-ink-soft);">30分</span>
+                  </div>
+                </div>
+              </div>
+              <p class="figure-caption">図1: 平均はどちらも8分（破線）。でもAは30分待ちが飛び出し、Bは8分のまわりに集中している</p>
+            </div>
+            <p>カフェAは、空いているとき（1〜4分）と大行列のとき（30分）で待ち時間が読めません。カフェBはいつ行っても8分前後。でも「平均8分」とだけ聞くと、この差は伝わりません。</p>
+            <p>このUnitでは、この「散らばり」を<strong>1つの数字</strong>で表す方法を学びます。それが<strong>分散</strong>と<strong>標準偏差</strong>です。</p>
 
-    <h3>1.5.1 具体例: 平均8分でも、お店の性質はまるで違う</h3>
-    <p>2軒のカフェの「待ち時間（分）」を1日5回観測したデータです。</p>
-    <div class="table-wrap">
-      <table>
-        <tbody>
-          <tr><th>お店</th><th>待ち時間の記録（分）</th><th>平均</th><th>読み取り</th></tr>
-          <tr><td>カフェA（繁華街）</td><td>1, 2, 3, 4, 30</td><td>8分</td><td>空いているときも激混みのときもあり、待ち時間が読めない</td></tr>
-          <tr><td>カフェB（住宅街）</td><td>7, 8, 8, 8, 9</td><td>8分</td><td>いつ行っても安定して8分前後</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p>平均はどちらも8分。でも「いつ行っても安心」なのは明らかにBです。Aは30分待ちという外れ値（たまたま昼休みの行列にぶつかった記録）が含まれています。標準偏差はこの差を数字で表してくれます（後ほど計算すると A ≈ 12.3分、B ≈ 0.7分）。</p>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — なぜ散らばりを測る？</p>
+              <p class="qq">「いつ行っても待ち時間が読める（安定している）」のはどちらのカフェでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>カフェA（1,2,3,4,30分）</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>カフェB（7,8,8,8,9分）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>平均が同じだから同じ</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">カフェBは7〜9分に固まっているので、待ち時間を予想しやすい。平均が同じでも「散らばり」で性質の差がわかります。</div></details>
+            </div>
+        </div>
 
-    <h3>1.5.2 身長データ（例B）で分散をステップ計算する</h3>
-    <p>数字がきれいな例B（5人の身長: <code>160, 165, 170, 175, 180 cm</code>）で、地道に1ステップずつ計算します。</p>
-    <p><strong>STEP1: 平均を出す</strong></p>
-    <div class="math-block">\[ \bar{x} = \frac{160+165+170+175+180}{5} = \frac{850}{5} = 170 \ \text{cm} \]</div>
-    <p><strong>STEP2: 各データの「平均からのズレ（偏差）」とその2乗を計算する</strong></p>
-    <div class="table-wrap">
-      <table>
-        <tbody>
-          <tr><th>身長 \(x_i\)</th><th>平均</th><th>偏差 \(x_i - \bar{x}\)</th><th>偏差の2乗 \((x_i-\bar{x})^2\)</th></tr>
-          <tr><td>160</td><td>170</td><td>−10</td><td>100</td></tr>
-          <tr><td>165</td><td>170</td><td>−5</td><td>25</td></tr>
-          <tr><td>170</td><td>170</td><td>0</td><td>0</td></tr>
-          <tr><td>175</td><td>170</td><td>+5</td><td>25</td></tr>
-          <tr><td>180</td><td>170</td><td>+10</td><td>100</td></tr>
-          <tr><th colspan="3">2乗の合計</th><th>250</th></tr>
-        </tbody>
-      </table>
-    </div>
-    <p><strong>STEP3: 2乗の平均を取る（これが分散）</strong></p>
-    <div class="math-block">\[ s^2 = \frac{100+25+0+25+100}{5-1} = \frac{250}{4} = 62.5 \ \text{cm}^2 \]</div>
-    <p><strong>STEP4: 平方根を取る（これが標準偏差）</strong></p>
-    <div class="math-block">\[ s = \sqrt{62.5} \approx 7.9 \ \text{cm} \]</div>
-    <p>つまり「この5人の身長は、平均170cmからだいたい ±7.9cm のあたりに散らばっている」と読めます。</p>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>散らばり = 「平均からどれだけ離れているか」</h4>
+            <p>散らばりを測る自然な方法は、<strong>「各データが平均からどれだけ離れているか」</strong>を足し合わせることです。この「離れ具合」を<strong>偏差</strong>と呼びます。</p>
+            <p>計算しやすい身長データ（160, 165, 170, 175, 180cm・平均170cm）で試してみましょう。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>身長</th><th>平均</th><th>偏差（身長−平均）</th></tr>
+                  <tr><td>160</td><td>170</td><td>−10</td></tr>
+                  <tr><td>165</td><td>170</td><td>−5</td></tr>
+                  <tr><td>170</td><td>170</td><td>0</td></tr>
+                  <tr><td>175</td><td>170</td><td>＋5</td></tr>
+                  <tr><td>180</td><td>170</td><td>＋10</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>この偏差を全部足してみると… −10 + (−5) + 0 + 5 + 10 = <strong>0</strong>。いつも0になってしまい、役に立ちません。プラスとマイナスが打ち消し合うからです。</p>
+            <p>そこで登場するのが<strong>「2乗」</strong>です。2乗すれば全部プラスになり、打ち消し合いません。</p>
+            <div class="math-block">(−10)² + (−5)² + 0² + 5² + 10² = 100 + 25 + 0 + 25 + 100 = <strong>250</strong></div>
 
-    <div class="warn">
-      <span class="box-label">なぜ STEP2 で「2乗」するのか？</span>
-      もし2乗せずに偏差をそのまま足すと、<strong>−10 +(−5) + 0 + 5 + 10 = 0</strong> になり、常にゼロで役に立ちません。2乗して正の値にすることで「平均からの距離」として足し合わせられるのです。
-      そして2乗したぶん単位が cm² に変わってしまうので、最後に平方根を取って単位を cm に戻したものが標準偏差です。
-    </div>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 偏差の性質</p>
+              <p class="qq">偏差（データ − 平均）を全部足すと、いつもどうなるでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>0になる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>平均と同じ値になる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>いつも大きくなる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>いつも1になる</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">プラスの偏差とマイナスの偏差が必ず打ち消し合うので、合計はいつも0。だから2乗して全部プラスにしてから足し合わせます。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 03</span>
+            <h4>分散 = 「偏差の2乗の平均」</h4>
+            <p>「2乗した偏差（100, 25, 0, 25, 100）を平均する」のが<strong>分散</strong>です。平均を取るときに、なぜ「n−1」で割るかはStep 05で説明します。いったん数字で見てください。</p>
+            <div class="math-block">分散 = (100 + 25 + 0 + 25 + 100) ÷ (5 − 1) = 250 ÷ 4 = <strong>62.5</strong></div>
+            <p>「ふつうの平均なら250÷5=50じゃない？」と思うかもしれませんが、<strong>データ分析ではn−1で割るのが標準</strong>です（理由はこのUnitの最後で）。</p>
 
-    <h3>1.5.3 標準偏差の「だいたい」の解釈</h3>
-    <p>データが「山型で左右対称に近い分布」のとき、経験則として次のことが成り立ちます（この性質は第2章の正規分布で再登場します）。</p>
-    <ul>
-      <li>平均 ± 標準偏差 の範囲に、だいたい <strong>全体の約68%</strong> が入る</li>
-      <li>平均 ± 2×標準偏差 の範囲に、だいたい <strong>全体の約95%</strong> が入る</li>
-      <li>平均 ± 3×標準偏差 の範囲に、だいたい <strong>全体の約99.7%</strong> が入る</li>
-    </ul>
-    <div class="dangerbox">
-      <span class="box-label">「平均±2σ = 全体の95%」が使える条件</span>
-      これは<strong>分布が左右対称の山型（正規分布に近い）場合の経験則</strong>です。年収のような右に裾の長いデータには当てはまりません。データの形を確認せずに「95%」を使うのは誤解のもと。形の確認方法は次の1.6で扱います。
-    </div>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 分散の計算</p>
+              <p class="qq">身長データの「偏差の2乗の合計」はいくらでしたか？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>50</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>62.5</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>250</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>0</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">(−10)² + (−5)² + 0² + 5² + 10² = 100+25+0+25+100 = 250。これを n−1 = 4 で割ると分散 62.5 です。</div></details>
+            </div>
+        </div>
 
-    <h3>1.5.4 なぜ「n−1」で割るのか？（第3章の先取り）</h3>
-    <p>上の計算は <strong>n−1 = 4</strong> で割りました。データそのものの散らばりを知りたいだけなら n=5 で割ればいいのですが、データ分析の実務では「手元のサンプルから母集団全体の分散を推定する」のが目的です。サンプルから推定する場合、n で割ると<strong>平均して過小評価</strong>してしまうことが知られており、n−1 で割ることで偏りがなくなる（不偏になる）ため、n−1 が標準になっています。</p>
-    <ul>
-      <li>NumPy: <code>np.var(x, ddof=1)</code>, <code>np.std(x, ddof=1)</code></li>
-      <li>pandas: <code>df.var()</code>, <code>df.std()</code> はデフォルトで n−1 方式</li>
-      <li>「母分散が既知の完全データ」を扱うときだけ n で割る（統計検定などの問題ではこちらも出る）</li>
-    </ul>
-    <pre><code><span class="kw">import</span> numpy <span class="kw">as</span> np
-heights = np.array([<span class="num">160</span>, <span class="num">165</span>, <span class="num">170</span>, <span class="num">175</span>, <span class="num">180</span>])
-<span class="fn">print</span>(np.var(heights, ddof=<span class="num">1</span>))   <span class="comment"># 不偏分散: 62.5</span>
-<span class="fn">print</span>(np.std(heights, ddof=<span class="num">1</span>))   <span class="comment"># 標準偏差: 7.905...</span>
-<span class="comment"># 例A（EC注文金額）だと外れ値8900円の影響で標準偏差は約2508円にもなる</span>
-orders = np.array([<span class="num">640</span>, <span class="num">760</span>, <span class="num">850</span>, <span class="num">980</span>, <span class="num">1200</span>, <span class="num">1200</span>,
-                   <span class="num">1500</span>, <span class="num">2100</span>, <span class="num">3400</span>, <span class="num">8900</span>])
-<span class="fn">print</span>(np.std(orders, ddof=<span class="num">1</span>))   <span class="comment"># 2508.34（標準偏差も外れ値に敏感）</span></code></pre>
-    <div class="tip">
-      <span class="box-label">まとめ: ばらつき指標の使い分け</span>
-      <table>
-        <tbody>
-          <tr><th>指標</th><th>外れ値の影響</th><th>おすすめ場面</th></tr>
-          <tr><td>範囲（レンジ）</td><td>非常に敏感</td><td>概要をぱっと見るだけ</td></tr>
-          <tr><td>IQR（四分位範囲）</td><td>ほぼ受けない</td><td>中央値とセットで頑健な要約をしたいとき</td></tr>
-          <tr><td>標準偏差</td><td>敏感（2乗するため）</td><td>平均とセットで使うとき。機械学習の特徴量スケーリングでも標準</td></tr>
-        </tbody>
-      </table>
-    </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 04</span>
+            <h4>標準偏差 = √分散。「平均からだいたい±何cm」</h4>
+            <p>分散62.5の単位は「cm²」。2乗したぶん、単位が変わってしまってイメージしにくいです。そこで平方根を取ったのが<strong>標準偏差</strong>です。</p>
+            <div class="math-block">標準偏差 = √62.5 ≒ <strong>7.9cm</strong></div>
+            <p>これで「この5人は、平均170cmからだいたい±7.9cmのあたりに散らばっている」と読めます。</p>
+            <div class="figure">
+              <div class="dc-plot" style="height:130px;">
+                <div class="dc-axis"></div>
+                <div class="dc-mark mid" style="left:76.4%"></div>
+                <div class="dc-mark mid" style="left:83.7%"></div>
+                <div class="dc-dot" style="left:75.4%"></div>
+                <div class="dc-dot" style="left:77.7%"></div>
+                <div class="dc-dot" style="left:80%"></div>
+                <div class="dc-dot" style="left:82.3%"></div>
+                <div class="dc-dot" style="left:84.6%"></div>
+                <div class="dc-lbl avg" style="left:80%; bottom:60px; color:var(--color-ink);">平均 170cm</div>
+              </div>
+              <p class="figure-caption">図2: 5人の身長（160〜180cm）。平均170cmのまわりに、だいたい±7.9cmで収まっている</p>
+            </div>
 
-  
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 標準偏差の計算</p>
+              <p class="qq">分散 62.5 の平方根（標準偏差）はおよそいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>7.07cm</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>7.9cm</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>62.5cm</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>250cm</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">√62.5 ≒ 7.9。√（平方根）を取ることで、単位がcm²からcmに戻り、「平均からだいたい±7.9cm」と読めるようになります。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 05</span>
+            <h4>2軒のカフェを標準偏差で比べる</h4>
+            <p>標準偏差の計算方法がわかったので、最初のカフェの話に戻りましょう。標準偏差（n−1方式）を計算すると、次のようになります。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>カフェ</th><th>待ち時間</th><th>平均</th><th>標準偏差</th></tr>
+                  <tr><td>A（繁華街）</td><td>1, 2, 3, 4, 30分</td><td>8分</td><td>約 <strong>12.3分</strong>（30分の行列に引っ張られる）</td></tr>
+                  <tr><td>B（住宅街）</td><td>7, 8, 8, 8, 9分</td><td>8分</td><td>約 <strong>0.7分</strong>（ほぼ毎回8分前後）</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>「平均は8分」だけでは同じに見えた2軒が、「標準偏差は12.3分と0.7分」と聞けば、待ち時間の当てやすさがまったく違うと伝わります。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 標準偏差の読み方</p>
+              <p class="qq">「いつ行っても待ち時間が安定している」のは、標準偏差がどちらのカフェでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>A（標準偏差 約12.3分）</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>B（標準偏差 約0.7分）</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">標準偏差が小さい＝平均のまわりに集まっている＝予想しやすい。Bは約0.7分。Aは30分の外れ値のせいで約12.3分まで大きくなっています。</div></details>
+            </div>
+
+            <p><strong>もう1つ、実務でよくある具体例</strong>を見ましょう。ネジ工場で「長さ5.00mmの部品」を作っています。お客様との約束（公差）は <strong>4.95〜5.05mm</strong>。これを外したら不良品です。</p>
+            <div class="figure">
+              <div class="qc-row">
+                <span class="qc-lbl">工程A σ=0.02</span>
+                <div class="qc-track">
+                  <div class="qc-band"></div>
+                  <div class="qc-dot" style="left:34.7%"></div>
+                  <div class="qc-dot" style="left:47%"></div>
+                  <div class="qc-dot" style="left:59.3%"></div>
+                </div>
+              </div>
+              <div class="qc-row">
+                <span class="qc-lbl">工程B σ=0.08</span>
+                <div class="qc-track">
+                  <div class="qc-band"></div>
+                  <div class="qc-dot ng" style="left:10.2%"></div>
+                  <div class="qc-dot ng" style="left:28.6%"></div>
+                  <div class="qc-dot" style="left:47%"></div>
+                  <div class="qc-dot ng" style="left:65.4%"></div>
+                  <div class="qc-dot ng" style="left:83.8%"></div>
+                </div>
+              </div>
+              <p class="figure-caption">図4: 平均はどちらも5.00mm。でもσの大きい工程Bは公差（帯の内側）から外れて不良になる（赤い点）</p>
+            </div>
+            <p>平均が同じ5.00mmでも、<strong>標準偏差が小さい工程Aなら不良が起きにくく、大きい工程Bでは不良が出てしまう</strong>。工場では「平均を合わせる」だけでなく「ばらつき（σ）を小さくする」ことが品質の命です。標準偏差は品質管理でも当たり前に使われています。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 実務での使い方</p>
+              <p class="qq">公差 4.95〜5.05mm の部品を安定して作るためには、どの工程を採用するのがよいでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>工程B（σ=0.08・ばらつき大）</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>工程A（σ=0.02・ばらつき小）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>平均が同じだからどちらでも同じ</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">平均が同じでもσが大きいと公差の外に出る（不良になる）データが生まれます。ばらつきを小さく保つことが品質管理の基本です。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 06</span>
+            <h4>便利な目安: 68-95-99.7ルール</h4>
+            <p>データが「左右対称の山型」の場合、平均と標準偏差から「データがどの範囲に何%入るか」の目安がわかります。</p>
+            <div class="figure">
+              <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="正規分布のカーブ。平均±1σに約68%のデータが入る">
+                <line x1="80" y1="150" x2="560" y2="150" stroke="#1C2B39" stroke-width="2" />
+                <line x1="240" y1="150" x2="240" y2="86.3" stroke="#A9782F" stroke-width="1" stroke-dasharray="3 4" />
+                <line x1="400" y1="150" x2="400" y2="86.3" stroke="#A9782F" stroke-width="1" stroke-dasharray="3 4" />
+                <line x1="160" y1="150" x2="160" y2="135.8" stroke="#A9782F" stroke-width="1" stroke-dasharray="2 4" />
+                <line x1="480" y1="150" x2="480" y2="135.8" stroke="#A9782F" stroke-width="1" stroke-dasharray="2 4" />
+                <polygon points="80.0,148.8 96.0,147.9 112.0,146.4 128.0,144.1 144.0,140.7 160.0,135.8 176.0,129.2 192.0,120.8 208.0,110.6 224.0,98.9 240.0,86.3 256.0,73.8 272.0,62.3 288.0,53.1 304.0,47.1 320.0,45.0 336.0,47.1 352.0,53.1 368.0,62.3 384.0,73.8 400.0,86.3 416.0,98.9 432.0,110.6 448.0,120.8 464.0,129.2 480.0,135.8 496.0,140.7 512.0,144.1 528.0,146.4 544.0,147.9 560.0,148.8 560.0,150 80.0,150" fill="rgba(169,120,47,0.08)" />
+                <polygon points="160.0,135.8 176.0,129.2 192.0,120.8 208.0,110.6 224.0,98.9 240.0,86.3 256.0,73.8 272.0,62.3 288.0,53.1 304.0,47.1 320.0,45.0 336.0,47.1 352.0,53.1 368.0,62.3 384.0,73.8 400.0,86.3 416.0,98.9 432.0,110.6 448.0,120.8 464.0,129.2 480.0,135.8 480.0,150 160.0,150" fill="rgba(169,120,47,0.15)" />
+                <polygon points="240.0,86.3 256.0,73.8 272.0,62.3 288.0,53.1 304.0,47.1 320.0,45.0 336.0,47.1 352.0,53.1 368.0,62.3 384.0,73.8 400.0,86.3 400.0,150 240.0,150" fill="rgba(169,120,47,0.30)" />
+                <polyline points="80.0,148.8 96.0,147.9 112.0,146.4 128.0,144.1 144.0,140.7 160.0,135.8 176.0,129.2 192.0,120.8 208.0,110.6 224.0,98.9 240.0,86.3 256.0,73.8 272.0,62.3 288.0,53.1 304.0,47.1 320.0,45.0 336.0,47.1 352.0,53.1 368.0,62.3 384.0,73.8 400.0,86.3 416.0,98.9 432.0,110.6 448.0,120.8 464.0,129.2 480.0,135.8 496.0,140.7 512.0,144.1 528.0,146.4 544.0,147.9 560.0,148.8" fill="none" stroke="#A9782F" stroke-width="2.5" stroke-linejoin="round" />
+                <line x1="160" y1="150" x2="160" y2="157" stroke="#3E5063" stroke-width="2" />
+                <line x1="240" y1="150" x2="240" y2="157" stroke="#A9782F" stroke-width="2" />
+                <line x1="320" y1="150" x2="320" y2="157" stroke="#1C2B39" stroke-width="2" />
+                <line x1="400" y1="150" x2="400" y2="157" stroke="#A9782F" stroke-width="2" />
+                <line x1="480" y1="150" x2="480" y2="157" stroke="#3E5063" stroke-width="2" />
+                <line x1="80" y1="150" x2="80" y2="155" stroke="#3E5063" stroke-width="1.5" />
+                <line x1="560" y1="150" x2="560" y2="155" stroke="#3E5063" stroke-width="1.5" />
+              </svg>
+              <p class="figure-caption">図3: 山型（正規分布）のカーブ。平均±1σに約68%（濃い帯）、±2σに約95%、±3σに約99.7%（薄い帯）</p>
+            </div>
+            <div class="warn">
+              <span class="box-label">注意: 使えるのは「左右対称の山型」のときだけ</span>
+              <p>年収のように右に裾の長いデータでは、この目安は当てはまりません。形を確認せずに「±2σ=95%」と使うのは危険です。データの「形」の見方は次のUnit（ユニット⑤）で学びます。</p>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 68-95-99.7ルール</p>
+              <p class="qq">左右対称の山型データでは、平均±標準偏差（±1σ）の範囲に、およそ何%のデータが入るでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>約50%</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>約68%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約95%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約99.7%</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">±1σ＝約68%、±2σ＝約95%、±3σ＝約99.7%。ただし左右対称の山型のときだけ。この目安は第2章の「正規分布」で再登場します。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 07</span>
+            <h4>おまけ: なぜ「n−1」で割るの？</h4>
+            <p>データ分析の目的は、たいてい「手元のサンプルから、全体（母集団）のことを知る」ことです。サンプルの散らばりは全体より少し小さくなりがちなので、nで割ると母集団の分散を<strong>過小評価</strong>してしまいます。n−1で割ると、ちょうどよい補正になるのです。</p>
+            <p>実務のツールも、この「n−1方式」が標準です。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>ツール</th><th>書き方</th></tr>
+                  <tr><td>NumPy</td><td>np.var(x, ddof=1) / np.std(x, ddof=1)</td></tr>
+                  <tr><td>pandas</td><td>df.var() / df.std() は最初からn−1方式</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <details class="kansetsu">
+              <summary>Pythonで確かめたい人向け（任意）</summary>
+              <div class="ex-body">
+                <pre><code>import numpy as np
+heights = np.array([160, 165, 170, 175, 180])
+print(np.var(heights, ddof=1))  # 62.5（n−1方式・データ分析の標準）
+print(np.std(heights, ddof=1))  # 約7.9
+print(np.var(heights))          # 50.0（n方式＝そのデータ自体の散らばり）</code></pre>
+              </div>
+            </details>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — n−1の理由</p>
+              <p class="qq">サンプルの分散を n で割るとどうなりがちでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>母集団の分散より大きくなる</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>母集団の分散を過小評価する</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>いつもぴったり当たる</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">サンプルは全体より偏りがちで、散らばりが小さく出やすい。n−1で割って補正しないと、母集団の分散を過小評価してしまいます。</div></details>
+            </div>
+
+            <div class="tip">
+              <span class="box-label">実務のコツ（1行）</span>
+              <p>「平均と標準偏差」はセットで報告します。平均だけ見て判断すると、カフェA/Bの例のように「実はバラバラ」なデータを見落とします。</p>
+            </div>
         </div>
     </div>
 
