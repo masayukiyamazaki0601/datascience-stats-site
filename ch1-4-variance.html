@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1章(4) 分散と標準偏差 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+</head>
+
+<body data-file="ch1-4-variance.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html">コース概要</a></li>
+                    <li><a href="ch1-1-data.html">第1章 記述統計</a></li>
+                    <li><a href="ch1-quiz.html">確認テスト</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt;
+            <a href="index.html">第1章 記述統計</a> &gt; 分散と標準偏差
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 01 / Unit 04 — 記述統計学の基礎</span>
+                <h2 class="lesson-title">分散と標準偏差</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このページでできるようになること</span>
+      <ul><li>分散・標準偏差の計算の意味を説明できる</li><li>n−1 で割る理由（不偏分散）を説明できる</li><li>68-95-99.7 ルールの使える条件を理解している</li></ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>1.5 どのくらい散らばっている？その2: 分散と標準偏差</h4>
+                <p>四分位数は「並べたときの位置」で散らばりを測りました。一方の標準偏差は「<strong>平均から平均的にどれだけ離れているか</strong>」で散らばりを測ります。機械学習でも「特徴量のスケール」の話で必ず登場するので、計算の意味まで理解しておきましょう。</p>
+
+    <h3>1.5.1 具体例: 平均8分でも、お店の性質はまるで違う</h3>
+    <p>2軒のカフェの「待ち時間（分）」を1日5回観測したデータです。</p>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><th>お店</th><th>待ち時間の記録（分）</th><th>平均</th><th>読み取り</th></tr>
+          <tr><td>カフェA（繁華街）</td><td>1, 2, 3, 4, 30</td><td>8分</td><td>空いているときも激混みのときもあり、待ち時間が読めない</td></tr>
+          <tr><td>カフェB（住宅街）</td><td>7, 8, 8, 8, 9</td><td>8分</td><td>いつ行っても安定して8分前後</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>平均はどちらも8分。でも「いつ行っても安心」なのは明らかにBです。Aは30分待ちという外れ値（たまたま昼休みの行列にぶつかった記録）が含まれています。標準偏差はこの差を数字で表してくれます（後ほど計算すると A ≈ 12.3分、B ≈ 0.7分）。</p>
+
+    <h3>1.5.2 身長データ（例B）で分散をステップ計算する</h3>
+    <p>数字がきれいな例B（5人の身長: <code>160, 165, 170, 175, 180 cm</code>）で、地道に1ステップずつ計算します。</p>
+    <p><strong>STEP1: 平均を出す</strong></p>
+    <div class="math-block">\[ \bar{x} = \frac{160+165+170+175+180}{5} = \frac{850}{5} = 170 \ \text{cm} \]</div>
+    <p><strong>STEP2: 各データの「平均からのズレ（偏差）」とその2乗を計算する</strong></p>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><th>身長 \(x_i\)</th><th>平均</th><th>偏差 \(x_i - \bar{x}\)</th><th>偏差の2乗 \((x_i-\bar{x})^2\)</th></tr>
+          <tr><td>160</td><td>170</td><td>−10</td><td>100</td></tr>
+          <tr><td>165</td><td>170</td><td>−5</td><td>25</td></tr>
+          <tr><td>170</td><td>170</td><td>0</td><td>0</td></tr>
+          <tr><td>175</td><td>170</td><td>+5</td><td>25</td></tr>
+          <tr><td>180</td><td>170</td><td>+10</td><td>100</td></tr>
+          <tr><th colspan="3">2乗の合計</th><th>250</th></tr>
+        </tbody>
+      </table>
+    </div>
+    <p><strong>STEP3: 2乗の平均を取る（これが分散）</strong></p>
+    <div class="math-block">\[ s^2 = \frac{100+25+0+25+100}{5-1} = \frac{250}{4} = 62.5 \ \text{cm}^2 \]</div>
+    <p><strong>STEP4: 平方根を取る（これが標準偏差）</strong></p>
+    <div class="math-block">\[ s = \sqrt{62.5} \approx 7.9 \ \text{cm} \]</div>
+    <p>つまり「この5人の身長は、平均170cmからだいたい ±7.9cm のあたりに散らばっている」と読めます。</p>
+
+    <div class="warn">
+      <span class="box-label">なぜ STEP2 で「2乗」するのか？</span>
+      もし2乗せずに偏差をそのまま足すと、<strong>−10 +(−5) + 0 + 5 + 10 = 0</strong> になり、常にゼロで役に立ちません。2乗して正の値にすることで「平均からの距離」として足し合わせられるのです。
+      そして2乗したぶん単位が cm² に変わってしまうので、最後に平方根を取って単位を cm に戻したものが標準偏差です。
+    </div>
+
+    <h3>1.5.3 標準偏差の「だいたい」の解釈</h3>
+    <p>データが「山型で左右対称に近い分布」のとき、経験則として次のことが成り立ちます（この性質は第2章の正規分布で再登場します）。</p>
+    <ul>
+      <li>平均 ± 標準偏差 の範囲に、だいたい <strong>全体の約68%</strong> が入る</li>
+      <li>平均 ± 2×標準偏差 の範囲に、だいたい <strong>全体の約95%</strong> が入る</li>
+      <li>平均 ± 3×標準偏差 の範囲に、だいたい <strong>全体の約99.7%</strong> が入る</li>
+    </ul>
+    <div class="dangerbox">
+      <span class="box-label">「平均±2σ = 全体の95%」が使える条件</span>
+      これは<strong>分布が左右対称の山型（正規分布に近い）場合の経験則</strong>です。年収のような右に裾の長いデータには当てはまりません。データの形を確認せずに「95%」を使うのは誤解のもと。形の確認方法は次の1.6で扱います。
+    </div>
+
+    <h3>1.5.4 なぜ「n−1」で割るのか？（第3章の先取り）</h3>
+    <p>上の計算は <strong>n−1 = 4</strong> で割りました。データそのものの散らばりを知りたいだけなら n=5 で割ればいいのですが、データ分析の実務では「手元のサンプルから母集団全体の分散を推定する」のが目的です。サンプルから推定する場合、n で割ると<strong>平均して過小評価</strong>してしまうことが知られており、n−1 で割ることで偏りがなくなる（不偏になる）ため、n−1 が標準になっています。</p>
+    <ul>
+      <li>NumPy: <code>np.var(x, ddof=1)</code>, <code>np.std(x, ddof=1)</code></li>
+      <li>pandas: <code>df.var()</code>, <code>df.std()</code> はデフォルトで n−1 方式</li>
+      <li>「母分散が既知の完全データ」を扱うときだけ n で割る（統計検定などの問題ではこちらも出る）</li>
+    </ul>
+    <pre><code><span class="kw">import</span> numpy <span class="kw">as</span> np
+heights = np.array([<span class="num">160</span>, <span class="num">165</span>, <span class="num">170</span>, <span class="num">175</span>, <span class="num">180</span>])
+<span class="fn">print</span>(np.var(heights, ddof=<span class="num">1</span>))   <span class="comment"># 不偏分散: 62.5</span>
+<span class="fn">print</span>(np.std(heights, ddof=<span class="num">1</span>))   <span class="comment"># 標準偏差: 7.905...</span>
+<span class="comment"># 例A（EC注文金額）だと外れ値8900円の影響で標準偏差は約2508円にもなる</span>
+orders = np.array([<span class="num">640</span>, <span class="num">760</span>, <span class="num">850</span>, <span class="num">980</span>, <span class="num">1200</span>, <span class="num">1200</span>,
+                   <span class="num">1500</span>, <span class="num">2100</span>, <span class="num">3400</span>, <span class="num">8900</span>])
+<span class="fn">print</span>(np.std(orders, ddof=<span class="num">1</span>))   <span class="comment"># 2508.34（標準偏差も外れ値に敏感）</span></code></pre>
+    <div class="tip">
+      <span class="box-label">まとめ: ばらつき指標の使い分け</span>
+      <table>
+        <tbody>
+          <tr><th>指標</th><th>外れ値の影響</th><th>おすすめ場面</th></tr>
+          <tr><td>範囲（レンジ）</td><td>非常に敏感</td><td>概要をぱっと見るだけ</td></tr>
+          <tr><td>IQR（四分位範囲）</td><td>ほぼ受けない</td><td>中央値とセットで頑健な要約をしたいとき</td></tr>
+          <tr><td>標準偏差</td><td>敏感（2乗するため）</td><td>平均とセットで使うとき。機械学習の特徴量スケーリングでも標準</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  
+        </div>
+    </div>
+
+<section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 クイズ: 分散と標準偏差</h2>
+      <div class="quiz-status">正解 <b>0</b> / 4問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. 身長データ 160, 165, 170, 175, 180（cm）の「標準偏差」（n−1で割る方式）はおよそいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>5.0cm</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>7.1cm</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>7.9cm</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>12.5cm</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">平均170cm。偏差の2乗の合計は 100+25+0+25+100=250。不偏分散 = 250÷(5−1) = 62.5、標準偏差 = √62.5 ≒ 7.9cm です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. 上のデータの「分散 = 62.5」の単位は何でしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>cm</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>cm²</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>単位なし（無次元）</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>℃</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">偏差（cm）を2乗して足したので単位は cm² になります。そのため最後に平方根を取って標準偏差（cm）に戻して使うのが一般的です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. 不偏分散では n で割らず「n−1」で割ります。その理由として正しいのはどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>計算が簡単になるから</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>平均が必ず0になるようにするため</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>n で割ると母分散を過小評価してしまうから</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>サンプルサイズを大きく見せるため</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">サンプルのばらつきは母集団のばらつきより小さくなりがちで、n で割ると母分散を平均的に過小評価します。n−1 で割ることで偏りなく推定できます。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q4. データ [8, 8, 8, 8] の標準偏差はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>0</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>1</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>8</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>64</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">すべての値が平均(8)と同じなので、偏差は全部0。標準偏差は0になります。全データが同じ値のときだけ標準偏差は0です。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+  </section>
+            
+<nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

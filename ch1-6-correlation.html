@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1章(6) 2変数の関係: 相関と因果 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+</head>
+
+<body data-file="ch1-6-correlation.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html">コース概要</a></li>
+                    <li><a href="ch1-1-data.html">第1章 記述統計</a></li>
+                    <li><a href="ch1-quiz.html">確認テスト</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt;
+            <a href="index.html">第1章 記述統計</a> &gt; 2変数の関係: 相関と因果
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 01 / Unit 06 — 記述統計学の基礎</span>
+                <h2 class="lesson-title">2変数の関係: 相関と因果</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このページでできるようになること</span>
+      <ul><li>共分散と相関係数の違いを説明できる</li><li>相関係数の値（−1〜+1）を解釈できる</li><li>相関と因果の違いを具体例で説明できる</li></ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>1.9 2つの変数の関係を読む: 散布図・共分散・相関係数</h4>
+                <p>ここまでは1つの変数だけを見てきました。次に「<strong>2つの変数が一緒に動くか</strong>」を測ります。たとえば「広告費を増やしたら売上は伸びるのか？」という問いです。</p>
+
+    <h3>1.9.1 まず散布図を描く</h3>
+    <p>数値（相関係数）を計算する前に、必ず<strong>散布図</strong>を描きます。直線的か、曲線的か、外れ値はあるかを目で確かめるのが先です。</p>
+
+    <h3>1.9.2 具体例: 最高気温とアイスクリーム売上（7日分）</h3>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><th>日</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr>
+          <tr><th>最高気温 \(x\)（℃）</th><td>18</td><td>20</td><td>22</td><td>24</td><td>26</td><td>28</td><td>30</td></tr>
+          <tr><th>売上 \(y\)（千円）</th><td>200</td><td>240</td><td>280</td><td>320</td><td>400</td><td>470</td><td>550</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>散布図を描くと、点が右上がりに一直線に近く並びます。「気温が高い日ほどアイスが売れる」という直線的な関係がありそうです。これを数値で表すのが次の共分散と相関係数です。</p>
+
+    <h3>1.9.3 共分散: 方向はわかるが「大きさの解釈」が難しい</h3>
+    <div class="math-block">\[ s_{xy} = \frac{1}{n-1}\sum_{i=1}^{n}(x_i - \bar{x})(y_i - \bar{y}) \]</div>
+    <p>考え方は「xが平均より大きいとき、yも平均より大きい傾向があるか」を偏差の積で測るものです。</p>
+    <ul>
+      <li>積が正になりやすい → <strong>正の共分散</strong>（xが増えるとyも増える傾向）</li>
+      <li>積が負になりやすい → <strong>負の共分散</strong>（xが増えるとyは減る傾向）</li>
+    </ul>
+    <p>ただし共分散の値は「身長(cm)と体重(kg)」なら cm×kg、といった具合に単位が混ざるため、<strong>値の大小を「相関が強い/弱い」と直感的に読めません</strong>。そこで各変数を標準偏差で割って −1〜+1 に正規化したのが相関係数です。</p>
+
+    <h3>1.9.4 相関係数 r: −1〜+1 に正規化した共分散</h3>
+    <div class="math-block">\[ r = \frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}{\sqrt{\sum_{i=1}^{n}(x_i-\bar{x})^2}\ \sqrt{\sum_{i=1}^{n}(y_i-\bar{y})^2}} = \frac{\text{共分散の分子}}{(n-1) \cdot s_x \cdot s_y} \]</div>
+    <p>気温とアイス売上のデータで計算すると（Python実行結果）<strong>r ≈ 0.99</strong> と、ほぼ1に近い強い正の相関になります。</p>
+    <pre><code><span class="kw">import</span> numpy <span class="kw">as</span> np
+temp = np.array([<span class="num">18</span>, <span class="num">20</span>, <span class="num">22</span>, <span class="num">24</span>, <span class="num">26</span>, <span class="num">28</span>, <span class="num">30</span>])
+sales = np.array([<span class="num">200</span>, <span class="num">240</span>, <span class="num">280</span>, <span class="num">320</span>, <span class="num">400</span>, <span class="num">470</span>, <span class="num">550</span>])
+<span class="fn">print</span>(np.corrcoef(temp, sales)[<span class="num">0</span>, <span class="num">1</span>])   <span class="comment"># 0.9876... → ほぼ1</span>
+<span class="comment"># 散布図（plt は上で import 済みとします。単体で実行する場合は下記も追加）</span>
+<span class="comment"># import matplotlib.pyplot as plt</span>
+plt.scatter(temp, sales)
+plt.xlabel(<span class="str">"最高気温 (℃)"</span>); plt.ylabel(<span class="str">"アイス売上 (千円)"</span>); plt.show()</code></pre>
+
+    <h3>1.9.5 相関係数の「強さ」の目安</h3>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><th>|r| の値</th><th>目安</th></tr>
+          <tr><td>0.7 〜 1.0</td><td>強い相関</td></tr>
+          <tr><td>0.4 〜 0.7</td><td>中程度の相関</td></tr>
+          <tr><td>0.2 〜 0.4</td><td>弱い相関</td></tr>
+          <tr><td>0 〜 0.2</td><td>ほとんど相関なし</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="dangerbox">
+      <span class="box-label">相関係数が見ているのは「直線的な関係」だけ</span>
+      r=0 でも「曲線的な関係」は存在しえます。たとえば練習量と成績の関係が「やりすぎると疲れて下がる」ような山型なら、直線の当てはまりは悪く r ≈ 0 になる可能性があります。<strong>必ず散布図とセットで確認</strong>してください。
+    </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>1.10 相関関係と因果関係は違う（最重要）</h4>
+                <p>実は、冒頭の1.9.2で使った「気温とアイス売上」のデータは、次の有名な例の布石でした。</p>
+    <div class="dangerbox">
+      <span class="box-label">具体例: アイスクリーム売上と水難事故</span>
+      「アイスクリームの売上」と「水難事故の発生件数」には<strong>強い正の相関</strong>があります。ではアイスを売るのをやめれば水難事故は減るのでしょうか？ もちろん違います。両方の背後に<strong>「気温」という共通の原因</strong>があるだけです。
+      このように相関しているだけで因果関係のない組み合わせを<strong>擬似相関</strong>と呼びます。
+    </div>
+    <p>相関係数が教えてくれるのは「<strong>2つの変数が一緒に動く傾向</strong>」だけです。「なぜ一緒に動くのか」は教えてくれません。因果関係を確認するには次のような方法が必要です。</p>
+    <ul>
+      <li><strong>介入実験（ランダム化比較試験）:</strong> 対象をランダムに「施策あり/なし」に分けて比較する（第4章で詳しく）</li>
+      <li><strong>時間的な順序の確認:</strong> 原因は結果より先に起きるはず</li>
+      <li><strong>専門的なメカニズムの説明:</strong> 「なぜつながるのか」の仮説を立てる</li>
+    </ul>
+    <p>「広告費を増やした月は売上が高い」という相関を見て「広告が売上を生んだ」と即断するのは危険です。たまたま景気が良かっただけかもしれません。<strong>データサイエンティストの仕事の多くは「相関を因果と取り違えない」ための工夫</strong>だと言っても過言ではありません。</p>
+
+    
+
+  
+        </div>
+    </div>
+
+<section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 クイズ: 相関と因果</h2>
+      <div class="quiz-status">正解 <b>0</b> / 5問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. 最高気温とアイスクリーム売上の相関係数が r ≈ 0.99 でした。この結果から正しく言えることはどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>気温が高いことが売上を伸ばす原因だと証明された</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>気温と売上に強い正の相関がある</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>気温を上げれば必ず売上が2倍になる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>2つの変数に関係はない</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">r ≈ 0.99 は『強い正の相関＝気温が高い日ほど売上も多い傾向』を示します。ただし『気温が原因で売上が伸びた』という因果までは、この数値だけでは言えません。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. 「相関係数 r = 0 だった。2つの変数にはまったく関係がない」という解釈はどこが危険でしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>r=0はあり得ないから</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>直線以外の（曲線的な）関係を見逃している可能性があるから</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>負の相関しか意味しないから</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>危険ではない。r=0なら完全に無関係</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">r は直線的な関係の強さしか見ていません。放物線のような曲線的な関係では r ≈ 0 になることがあるため、必ず散布図とセットで確認します。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. 相関係数 r = −0.9 の2つの変数は、どのような関係にあるでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>強い正の相関</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>強い負の相関</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>ほとんど無相関</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>完全に独立</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">|r|=0.9 は強い相関。符号がマイナスなので負の相関＝片方が増えるともう片方は減る傾向です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q4. 「アイスクリームの売上」と「水難事故の発生件数」に強い正の相関が見られます。この関係の正しい説明はどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>アイスを食べると水難事故が増える</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>水難事故が多いとアイスを食べたくなる</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>気温という共通の原因が両方に影響している（擬似相関）</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>アイス売上と水難事故は無関係なので相関は誤り</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">これは擬似相関の代表例です。両方の背後に共通原因の『気温』があるだけで、アイスを売るのをやめても水難事故は減りません。相関と因果は別物です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. 「広告費を増やした月は売上が高い」という相関だけから、因果関係（広告が売上を伸ばした）を確かめるにはどうすればよいでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>相関係数を小数点以下まで詳しく計算する</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>散布図を何度も描き直す</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>ランダムに分けたグループで施策の有無を比較する実験を行う</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>外れ値を全部消す</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">因果を確認するには、対象をランダムに『施策あり／なし』に分けて比較する介入実験（ランダム化比較試験）が有力です。相関の数値を増やしたり散布図を描くだけでは因果は証明できません。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+  </section>
+            
+<nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

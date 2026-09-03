@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1章(2) 中心傾向 平均・中央値・最頻値 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+</head>
+
+<body data-file="ch1-2-center.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html">コース概要</a></li>
+                    <li><a href="ch1-1-data.html">第1章 記述統計</a></li>
+                    <li><a href="ch1-quiz.html">確認テスト</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt;
+            <a href="index.html">第1章 記述統計</a> &gt; 中心傾向: 平均・中央値・最頻値
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 01 / Unit 02 — 記述統計学の基礎</span>
+                <h2 class="lesson-title">中心傾向: 平均・中央値・最頻値</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このUnitでできるようになること</span>
+      <ul>
+        <li>「平均・中央値・最頻値」をそれぞれ計算できる</li>
+        <li>外れ値があるデータでは「平均」が危険なことを説明できる</li>
+        <li>データの形に合わせて代表値を使い分けられる</li>
+      </ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>使うデータは、前のUnitと同じ1つだけ</h4>
+            <p>ここでも、ネットショップ「サンプルストア」の<strong>注文10件</strong>を使います。1件だけ「8900円」という大きな注文が混ざっているのを忘れないでください。</p>
+            <div class="note">
+              <span class="box-label">今回使うデータ（第1章ユニット①の例A）</span>
+              ある日の注文金額10件（円）:
+              <code>640, 760, 850, 980, 1200, 1200, 1500, 2100, 3400, 8900</code>
+            </div>
+            <p>この10件を「1つの数字」で表すとしたら、みなさんはどうしますか？ たとえば上司に「昨日の売上はどんな感じ？」と聞かれたら、何と答えますか？</p>
+            <p>このUnitでは、その「1つの数字」の作り方として、<strong>平均・中央値・最頻値</strong>の3つを順番に学びます。</p>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>平均 = 「全部足して、人数で割る」</h4>
+            <p>まずは平均です。平均の意味は、ずばり<strong>「バラバラな数字を、平らにならした値」</strong>です。</p>
+            <p>小さな例で見てみましょう。5人のテストの点数が <strong>50・60・70・80・90点</strong> だったとします。</p>
+            <div class="figure">
+              <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="テストの点数を平均にならす図">
+                <line x1="70" y1="60" x2="560" y2="60" stroke="#1C2B39" stroke-width="2" stroke-dasharray="6 4" />
+                <text x="568" y="64" font-family="'JetBrains Mono',monospace" font-size="12" fill="#A9782F">平均 70点</text>
+                <rect x="90"  y="80"  width="70" height="50" fill="#A9782F" />
+                <rect x="200" y="70"  width="70" height="60" fill="#A9782F" />
+                <rect x="310" y="60"  width="70" height="70" fill="#A9782F" />
+                <rect x="420" y="50"  width="70" height="80" fill="#A9782F" />
+                <rect x="530" y="40"  width="70" height="90" fill="#A9782F" />
+                <line x1="70" y1="130" x2="610" y2="130" stroke="#1C2B39" stroke-width="2" />
+                <text x="125" y="148" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063" text-anchor="middle">50点</text>
+                <text x="235" y="148" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063" text-anchor="middle">60点</text>
+                <text x="345" y="148" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063" text-anchor="middle">70点</text>
+                <text x="455" y="148" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063" text-anchor="middle">80点</text>
+                <text x="565" y="148" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063" text-anchor="middle">90点</text>
+              </svg>
+              <p class="figure-caption">図1: 凸凹した5人分を「平らにならす」と70点になる</p>
+            </div>
+            <p>計算は2ステップだけです。</p>
+            <ol>
+              <li>まず全部足す: 50 + 60 + 70 + 80 + 90 = <strong>350</strong></li>
+              <li>人数（5人）で割る: 350 ÷ 5 = <strong>70点</strong></li>
+            </ol>
+            <p>これを数式で書いたのが「平均 = 合計 ÷ 個数」です。では、これを注文10件でやってみましょう。</p>
+            <div class="math-block">640 + 760 + 850 + 980 + 1200 + 1200 + 1500 + 2100 + 3400 + 8900 = <strong>21530</strong></div>
+            <div class="math-block">平均 = 21530 ÷ 10 = <strong>2153円</strong></div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 平均の計算</p>
+              <p class="qq">合計21530円を10件で割った「平均」はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>890円</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>2153円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>8900円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>21530円</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">合計 21530 ÷ 件数 10 = 2153円 です。でも平均は8900円という1件の大きな注文に引っ張られている点に注意。次の確認で見ていきます。</div></details>
+            </div>
+
+            <p>…と計算できました。でも、ここで大事なことに気づいてください。<strong>このデータには8900円という大きな注文が1件あります。</strong>それを全部ひっくるめて「1件あたり平均2153円」と言ってしまって、本当にいいのでしょうか？</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — ちょっと確認（平均）</p>
+              <p class="qq">外れ値（ほかと比べて極端に大きい値）が1件入っていると、平均はどうなるでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>大きい方に引っ張られる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>変わらない</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>いつも小さくなる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>必ず0になる</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">平均は「全部足して割る」ので、極端に大きい値があると全体が大きい方へ引っ張られます。このデータでは8900円のせいで平均が2153円まで上がっています。この弱点を解決するのが、次の中央値です。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 03</span>
+            <h4>中央値 = 「背の順に並べて、ちょうど真ん中」</h4>
+            <p>平均は外れ値に引っ張られるのが弱点でした。そこで登場するのが<strong>中央値</strong>です。イメージは体育の授業の「背の順」。<strong>小さい順に並べて、ちょうど真ん中にいる人の値</strong>を取ります。</p>
+            <p>注文10件を小さい順に並べると、こうなります。</p>
+            <div class="math-block">640, 760, 850, 980, 1200, <strong>1200</strong>, 1500, 2100, 3400, 8900</div>
+            <p>10件は偶数なので、真ん中の2つ（5番目と6番目）の平均を取ります。どちらも1200なので、中央値は <strong>1200円</strong> です。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 中央値の計算</p>
+              <p class="qq">10件（偶数）のとき、真ん中は「5番目と6番目」。このデータで5番目と6番目にある値はどれとどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>850円と980円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>980円と1200円</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>1200円と1200円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>1500円と2100円</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">小さい順: 640,760,850,980,[1200,1200],1500,2100,3400,8900。5番目も6番目も1200円です。この2つの平均が中央値になります。</div></details>
+            </div>
+
+            <div class="figure">
+              <div class="dc-plot">
+                <div class="dc-axis"></div>
+                <div class="dc-mark mid" style="left:13.5%"></div>
+                <div class="dc-mark avg" style="left:22.9%"></div>
+                <div class="dc-dot" style="left:7.7%"></div>
+                <div class="dc-dot" style="left:8.9%"></div>
+                <div class="dc-dot" style="left:9.9%"></div>
+                <div class="dc-dot" style="left:11.2%"></div>
+                <div class="dc-dot two" style="left:13.5%"></div>
+                <div class="dc-dot" style="left:16.7%"></div>
+                <div class="dc-dot" style="left:22.9%"></div>
+                <div class="dc-dot" style="left:36.5%"></div>
+                <div class="dc-dot out" style="left:93.9%"></div>
+                <div class="dc-lbl mid" style="left:13.5%">中央値1200</div>
+                <div class="dc-lbl avg" style="left:22.9%">平均2153</div>
+                <div class="dc-lbl out" style="right:2%; bottom:64px;">8900</div>
+              </div>
+              <p class="figure-caption">図2: 平均は右の外れ値（赤い点）に引っ張られる。中央値は「真ん中」なので動かない（数値はドット下の小さなラベル）</p>
+            </div>
+            <p>つまり中央値は「<strong>データのど真ん中にいる人</strong>」の値なので、はるか右にいる8900円の注文の影響をまったく受けません。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — ちょっと確認（中央値）</p>
+              <p class="qq">注文10件（640,760,850,980,1200,1200,1500,2100,3400,8900）の中央値はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>850円</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>1200円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>1500円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>2153円</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">10件（偶数）なので、小さい順に並べて5番目と6番目（1200と1200）の平均を取ります。中央値 = 1200円。8900円があっても真ん中は動きません。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 04</span>
+            <h4>最頻値 = 「いちばん多く出てくる値」</h4>
+            <p>最後は<strong>最頻値</strong>です。名前のとおり、<strong>データの中でいちばん多く登場する値</strong>のことです。</p>
+            <p>注文データでは、<strong>1200円が2件</strong>あって、ほかは1件ずつ。だから最頻値は1200円です。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 最頻値の計算</p>
+              <p class="qq">注文10件のデータで「いちばん多く出てくる金額」はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>640円</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>1200円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>2153円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>8900円</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">1200円が2件あって、ほかの金額は1件ずつ。いちばん多く登場する「1200円」が最頻値です。</div></details>
+            </div>
+
+            <p>最頻値には、ほかの2つにない特徴があります。<strong>分類（カテゴリ）のデータにも使える</strong>ことです。たとえば100人への調査で「利用デバイス＝スマホ46人・PC34人・タブレット20人」だったら、「いちばん多いのはスマホ」と言えますよね。これが最頻値です。平均や中央値は「足し算」や「並べ替え」が必要なので、カテゴリには使えません。</p>
+            <div class="figure">
+              <div class="panel-row">
+                <div class="panel">
+                  <div class="panel-title">100人への調査: ふだん使うデバイス <span class="avg">最頻値 = スマホ</span></div>
+                  <div class="star-row">
+                    <div class="star-col"><div class="star-track"><div class="tall" style="height:138px"></div></div><div class="star-label">スマホ <b>46人</b></div></div>
+                    <div class="star-col"><div class="star-track"><div style="height:102px"></div></div><div class="star-label">PC <b>34人</b></div></div>
+                    <div class="star-col"><div class="star-track"><div style="height:60px"></div></div><div class="star-label">タブレット <b>20人</b></div></div>
+                  </div>
+                </div>
+              </div>
+              <p class="figure-caption">図3: いちばん多い「スマホ（46人）」が最頻値。分類データでも数えられる</p>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — ちょっと確認（最頻値）</p>
+              <p class="qq">「血液型」のような分類（カテゴリ）のデータにも使える代表値はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>平均</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>中央値</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>最頻値</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">最頻値は「いちばん多いもの」を見るだけなので、血液型や都道府県のような分類データでも使えます。平均・中央値は足し算や並べ替えが必要なため使えません。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 05</span>
+            <h4>まとめ: どの代表値を使えばいい？</h4>
+            <p>それでは「いつ・どれを使うか」を整理しましょう。カギは1つ。<strong>「外れ値や偏りがあるかどうか」</strong>です。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>データのようす</th><th>おすすめ</th><th>理由</th></tr>
+                  <tr><td>外れ値が少なく、左右対称に近い（例: 身長）</td><td><strong>平均</strong></td><td>全データをバランスよく使える</td></tr>
+                  <tr><td>外れ値や偏りがある（例: 年収・注文金額）</td><td><strong>中央値</strong></td><td>極端な値に引きずられない</td></tr>
+                  <tr><td>分類（カテゴリ）データ（例: 血液型）</td><td><strong>最頻値</strong></td><td>平均・中央値は計算できない</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="figure">
+              <div style="display:flex; flex-direction:column; gap:10px; margin: 10px 0 4px;">
+                <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
+                  <div style="background:#fff; border:1.5px solid var(--color-ink); border-radius:6px; padding:10px 18px; font-size:14px; text-align:center;">まず質問: <strong>分類データ？</strong></div>
+                  <span style="font-family:var(--font-mono); color:var(--color-brass);">はい</span>
+                  <div style="background:var(--color-ink); color:var(--color-paper); border-radius:6px; padding:10px 18px; font-size:14px; text-align:center;"><strong>最頻値</strong></div>
+                </div>
+                <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
+                  <div style="background:#fff; border:1.5px solid var(--color-ink); border-radius:6px; padding:10px 18px; font-size:14px; text-align:center;">いいえ → 次: <strong>外れ値や偏りはある？</strong></div>
+                  <span style="font-family:var(--font-mono); color:var(--color-red);">はい</span>
+                  <div style="background:var(--color-brass); color:#fff; border-radius:6px; padding:10px 18px; font-size:14px; text-align:center;"><strong>中央値</strong></div>
+                </div>
+                <div style="display:flex; align-items:center; justify-content:center; gap:12px; flex-wrap:wrap;">
+                  <div style="background:#fff; border:1.5px solid var(--color-ink); border-radius:6px; padding:10px 18px; font-size:14px; text-align:center;">外れ値もなくバランスがよい</div>
+                  <span style="font-family:var(--font-mono); color:var(--color-ink);">→</span>
+                  <div style="background:#fff; border:2px solid var(--color-ink); border-radius:6px; padding:10px 18px; font-size:14px; text-align:center;"><strong>平均</strong></div>
+                </div>
+              </div>
+              <p class="figure-caption">図4: 代表値の使い分け。まず「分類か？」→ 次に「外れ値は？」と聞くだけ</p>
+            </div>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 使い分けの練習</p>
+              <p class="qq">外れ値が少なく、左右対称に近いデータ（例: 部員の身長160〜180cm）の「だいたいの中心」を表すなら、どの代表値が適切でしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>平均</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>中央値</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>最頻値</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">外れ値がなくバランスのよいデータなら、全員の値を平均して「平均」を使えます。逆に外れ値や偏りがあるなら中央値が安心です。</div></details>
+            </div>
+
+            <p>実際に確かめてみましょう。ある会社の5人の年収が <strong>300・350・400・450・2500万円</strong> だったとします。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>代表値</th><th>計算</th><th>結果</th></tr>
+                  <tr><td>平均</td><td>(300+350+400+450+2500) ÷ 5</td><td>800万円（役員1人の影響で高く見える）</td></tr>
+                  <tr><td>中央値</td><td>小さい順に3番目</td><td>400万円（「ふつうの社員」の感覚に近い）</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>「うちの部署の平均年収は800万円」と言われても、実際に働く人の感覚（300〜450万円）と大きくずれますよね。こういうデータでは<strong>中央値を報告するのが親切</strong>です。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 最後の確認</p>
+              <p class="qq">社員5人の年収データ（300・350・400・450・2500万円）を「社員の典型的な年収」として報告するなら、どちらがよいでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>平均（800万円）</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>中央値（400万円）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>最大値（2500万円）</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">2500万円という外れ値が平均(800万円)を引っ張っています。大多数の社員の感覚に近いのは中央値の400万円です。「迷ったら両方出す」のも手です。</div></details>
+            </div>
+
+            <div class="tip">
+              <span class="box-label">実務のコツ（1行）</span>
+              <p>報告に迷ったら<strong>「平均」と「中央値」を両方載せる</strong>のがいちばん安全。2つが大きくずれるときは「外れ値か、右に裾の長いデータ」のサインです（この続きはユニット③で）。</p>
+            </div>
+        </div>
+    </div>
+
+<section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 クイズ: 平均・中央値・最頻値</h2>
+      <div class="quiz-status">正解 <b>0</b> / 5問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. 例Aの注文金額データ 640, 760, 850, 980, 1200, 1200, 1500, 2100, 3400, 8900（円）の「平均」はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>1200円</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>2153円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>2230円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>2508円</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">合計は 640+760+850+980+1200+1200+1500+2100+3400+8900 = 21530。10件で割って平均 = 2153円 です。8900円という高額注文に引っ張られて、中央値(1200円)よりかなり大きくなっています。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. 同じデータの「中央値」はいくらでしょう？（10件＝偶数なので、真ん中の2つの平均を取ります）</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>850円</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>1200円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>1500円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>2153円</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">小さい順に並べて5番目と6番目は 1200 と 1200。中央値 = (1200+1200)÷2 = 1200円 です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. このデータでは平均(2153円) &gt; 中央値(1200円) でした。このことから、データの分布について何が読み取れるでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>左右対称の分布である</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>左の裾が長い分布である</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>右の裾が長い（右に歪んだ）分布である</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>二峰性の分布である</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">平均が中央値より大きいのは、高い側（8900円）に外れ値があり右の裾が長い（右に歪んだ）分布の特徴です。年収データと同じパターンですね。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q4. 給与データのように外れ値（高額報酬の1人）が含まれる場合、代表値としてより適切なのはどちらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>平均</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>中央値</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>最大値</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>最頻値は質的データ専用なので使えない</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">中央値は外れ値の影響を受けにくいため、「典型的な人の年収」を表すのに適しています。平均は外れ値に引きずられて実際の感覚とずれることがあります。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. 「最も多く出現した利用デバイスはスマホ」のように、質的データの中心を表すのに使える代表値はどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>平均</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>中央値</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>最頻値</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>標準偏差</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">最頻値は『一番よく出てくる値』なので、質的データ（カテゴリ）にも使える唯一の中心代表値です。平均や中央値は並べ替えや足し算が必要なので質的データには使えません。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+  </section>
+            
+<nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

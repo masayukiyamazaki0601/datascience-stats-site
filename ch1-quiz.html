@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1章 確認テスト | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+</head>
+
+<body data-file="ch1-quiz.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html">コース概要</a></li>
+                    <li><a href="ch1-1-data.html">第1章 記述統計</a></li>
+                    <li><a href="ch1-quiz.html">確認テスト</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt;
+            <a href="index.html">第1章 記述統計</a> &gt; 第1章 確認テスト
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 01 / CHECK TEST — 記述統計学</span>
+                <h2 class="lesson-title">第1章 確認テスト</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="tip">
+      <span class="box-label">テストの受け方</span>
+      <ul>
+        <li>全部で <strong>10問</strong>。選択肢をクリックすると、その場で ⭕️ / ❌ と効果音で判定されます（効果音は画面右下のボタンでOFFにもできます）。</li>
+        <li>間違えても大丈夫。「解説を見る」で理由を確認し、<strong>もう一度解いて全問正解</strong>を目指しましょう。</li>
+        <li>全問回答すると、スコアとランクメッセージが表示されます。</li>
+      </ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>1.11 第1章まとめ: いつ・どの指標を使うか</h4>
+                <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><th>知りたいこと</th><th>使う道具</th><th>補足</th></tr>
+          <tr><td>データの大まかな中心</td><td>平均</td><td>外れ値が少ない・対称分布のとき</td></tr>
+          <tr><td>外れ値に強い中心</td><td>中央値</td><td>年収・注文金額など右に歪むデータ</td></tr>
+          <tr><td>質的データの代表</td><td>最頻値</td><td>「最も多いカテゴリ」</td></tr>
+          <tr><td>中心からの散らばり</td><td>標準偏差（n−1）</td><td>平均とセットで。機械学習の標準化にも使用</td></tr>
+          <tr><td>外れ値に強い散らばり</td><td>IQR / 四分位数</td><td>箱ひげ図で可視化</td></tr>
+          <tr><td>分布の形の確認</td><td>ヒストグラム / 箱ひげ図</td><td>数値の前に必ず描く</td></tr>
+          <tr><td>単位の違う値の比較</td><td>zスコア（標準化）</td><td>平均0・標準偏差1へ変換</td></tr>
+          <tr><td>2変数の直線的関係</td><td>相関係数 r</td><td>散布図とセット。因果と混同しない</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    
+
+  
+        </div>
+    </div>
+
+<section class="quiz-block" data-test="1">
+    <div class="quiz-head">
+      <h2>📝 第1章 確認テスト（全10問）</h2>
+      <div class="quiz-status">正解 <b>0</b> / 10問</div>
+    </div>
+    <div class="bar-track"><div class="bar-fill"></div></div>
+
+    <div class="quiz-q">
+      <p class="qq">第1問. 「血液型（A型・B型・O型・AB型）」のデータはどの尺度でしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>名義尺度</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>順序尺度</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>間隔尺度</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>比例尺度</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">血液型は分類だけで順序もないため名義尺度です。平均・中央値は出せず、最頻値や割合なら出せます。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">第2問. 次のデータのうち「平均」を計算して意味がある（比例尺度）のはどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>郵便番号</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>レビューの★（1〜5）</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>サイトの滞在時間（分）</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>利用都道府県</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">滞在時間は0分が『滞在なし』を意味する比例尺度。郵便番号・都道府県は名義尺度、レビュー★は順序尺度です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">第3問. 注文金額 640, 760, 850, 980, 1200, 1200, 1500, 2100, 3400, 8900（円）の平均はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>1200円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>1500円</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>2153円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>8900円</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">合計 21530円 ÷ 10件 = 2153円。8900円の外れ値が平均を大きく引き上げています。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">第4問. データ [5, 10, 15, 20, 100] の中央値はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>10</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>15</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>20</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>30</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">小さい順に並べて真ん中の3番目 = 15 が中央値です。外れ値の100に影響されません（平均は30と大きくなります）。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">第5問. 年収データのように「右の裾が長い（右に歪んだ）」分布では、平均と中央値はどのような関係になりますか？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>平均 = 中央値</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>平均 &gt; 中央値</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>平均 &lt; 中央値</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>比較できない</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">外れ値（高額報酬）に引っ張られるため平均は中央値より大きくなります。分布の形を確認せずに平均だけを報告するのは危険です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">第6問. データ [2, 4, 6] の「不偏分散」（n−1で割る）はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>2</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>4</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>8</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>16</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">平均は4。偏差は −2, 0, +2、2乗の合計は 4+0+4=8。8 ÷ (3−1) = 4 です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">第7問. 外れ値を見つけたとき、最初にやるべきことは何でしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>すぐに削除して平均を出し直す</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>中央値に置き換える</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>原因（記録ミスか本物か等）を調査する</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>箱ひげ図を消す</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">まず「なぜ出たのか」を調査します。記録ミスなら修正・削除、本物なら消さずに扱いを工夫、別グループなら層別します。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">第8問. 得点80点・平均70点・標準偏差5点のとき、zスコア（標準化後の値）はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>0.5</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>1.0</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>2.0</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>10.0</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">z = (80 − 70) ÷ 5 = 2.0。平均より標準偏差2個分上にいる、という意味です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">第9問. 2つの変数の相関係数が r = −0.85 でした。どう解釈しますか？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>強い正の相関がある</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>強い負の相関がある</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>ほとんど相関がない</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>因果関係が証明された</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">|r| = 0.85 は強い相関。符号がマイナスなので『片方が増えるともう片方は減る』強い負の相関です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">第10問. 「広告を出したユーザーほど購入率が高い」という相関だけでは因果は証明できません。因果を確かめる有力な方法はどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>相関係数を何度も計算する</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>外れ値を除外する</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>ランダムに分けたグループで比較する実験をする</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>散布図を3Dにする</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">対象をランダムに『広告あり／なし』に分けて比較する介入実験（ランダム化比較試験）が因果を確かめる方法です。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+    <div class="quiz-result">
+      <div class="score-big">0 / 10</div>
+      <div class="rank-msg"></div>
+    </div>
+  </section>
+
+<div class="goal">
+      <span class="box-label">次章への橋渡し</span>
+      第1章では「手元にあるデータ」を要約しました。第2章では「ランダムに値が決まる現象（コイン投げ、サイコロ、来店人数…）」を数式で扱う<strong>確率と確率分布</strong>を学びます。ここで出た「平均・分散・標準偏差」の考え方が、確率変数の「期待値・分散」としてそのまま再利用されるので、第2章に進む前に、この章の用語を一度まとめ直しておくとスムーズです。
+    </div>
+            
+<nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

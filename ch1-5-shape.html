@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1章(5) 分布の形・外れ値・標準化 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+</head>
+
+<body data-file="ch1-5-shape.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html">コース概要</a></li>
+                    <li><a href="ch1-1-data.html">第1章 記述統計</a></li>
+                    <li><a href="ch1-quiz.html">確認テスト</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt;
+            <a href="index.html">第1章 記述統計</a> &gt; 分布の形・外れ値・標準化
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 01 / Unit 05 — 記述統計学の基礎</span>
+                <h2 class="lesson-title">分布の形・外れ値・標準化</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このページでできるようになること</span>
+      <ul><li>ヒストグラムの形からデータの特徴を読み取れる</li><li>外れ値への正しい対応（まず原因調査）を説明できる</li><li>zスコアを計算し、単位の違うデータを比べられる</li></ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>1.6 分布の「形」を読む: ヒストグラムと歪み</h4>
+                <p>数値の要約（平均・標準偏差）の前に、まず<strong>データの形</strong>を見る習慣が大切です。「数値だけに頼らず、まず描け」がデータ分析の鉄則です。量的データの形を見る定番は<strong>ヒストグラム</strong>です。</p>
+
+    <h3>1.6.1 例Aの注文金額をヒストグラムにすると</h3>
+    <pre><code><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">import</span> matplotlib.pyplot <span class="kw">as</span> plt
+orders = np.array([<span class="num">640</span>, <span class="num">760</span>, <span class="num">850</span>, <span class="num">980</span>, <span class="num">1200</span>, <span class="num">1200</span>,
+                   <span class="num">1500</span>, <span class="num">2100</span>, <span class="num">3400</span>, <span class="num">8900</span>])  <span class="comment"># 例Aと同じデータ</span>
+plt.hist(orders, bins=[<span class="num">0</span>, <span class="num">1000</span>, <span class="num">2000</span>, <span class="num">3000</span>, <span class="num">4000</span>, <span class="num">5000</span>, <span class="num">9000</span>],
+         edgecolor=<span class="str">"white"</span>)
+plt.xlabel(<span class="str">"注文金額 (円)"</span>); plt.ylabel(<span class="str">"件数"</span>); plt.show()</code></pre>
+    <p>描いてみると、1000円前後に注文が集中し、右側（高い金額）にだらりと裾が伸びる形になります。この形を<strong>「右の裾が長い（右に歪んだ）分布」</strong>と呼びます。年収データやサイトの滞在時間など「下限はあるが上限がない」データでよく見られる形です。</p>
+
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><th>分布の形</th><th>特徴</th><th>代表値の関係</th><th>実例</th></tr>
+          <tr><td>左右対称（山型）</td><td>平均を中心に左右バランス</td><td>平均 ≈ 中央値 ≈ 最頻値</td><td>身長、測定誤差、製造工程の寸法</td></tr>
+          <tr><td>右の裾が長い（正に歪む）</td><td>高い側に外れ値が伸びる</td><td>平均 &gt; 中央値</td><td>年収、注文金額、SNSフォロワー数</td></tr>
+          <tr><td>左の裾が長い（負に歪む）</td><td>低い側に外れ値が伸びる</td><td>平均 &lt; 中央値</td><td>簡単すぎるテストの点数（高得点に集中）</td></tr>
+          <tr><td>二峰（山が2つ）</td><td>性質の違う集団が混ざっている可能性</td><td>—</td><td>男女混合の身長データ（⇒ 層別の必要性を示唆）</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tip">
+      <span class="box-label">実務での使いどころ: 「層別」の発想</span>
+      ヒストグラムが二峰になったら、データの中に<strong>性質の違うグループが混ざっていないか</strong>疑います。たとえば「全社員の年収」が二峰なら、それは「正社員とアルバイト」の違いかもしれません。全体を1つにまとめる前に、グループ（層）に分けて見ることを<strong>層別</strong>と呼び、データ分析の基本動作です。
+    </div>
+
+    
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>1.7 外れ値にどう向き合うか</h4>
+                <p>例Aの8900円のように、他のデータから極端に離れた値を<strong>外れ値（異常値）</strong>と呼びます。外れ値が見つかったら、<strong>まず「なぜ出たのか」を考える</strong>のが鉄則です。</p>
+
+    <h3>1.7.1 外れ値の「見つけ方」</h3>
+    <ul>
+      <li><strong>IQR法:</strong> Q1 − 1.5×IQR 〜 Q3 + 1.5×IQR の範囲外（1.4で計算した方法。例Aでは8900円が該当）</li>
+      <li><strong>zスコア法:</strong> 平均から標準偏差の3倍以上離れているか（次節1.8で説明）</li>
+      <li><strong>可視化:</strong> 箱ひげ図・散布図で目視する</li>
+    </ul>
+
+    <h3>1.7.2 外れ値の「原因」と「対応」</h3>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><th>原因</th><th>例</th><th>対応の考え方</th></tr>
+          <tr><td>① 記録ミス・入力ミス</td><td>年齢が「-3」、金額が1桁間違い</td><td>削除 or 正しい値に修正</td></tr>
+          <tr><td>② 測定機器の故障・不正</td><td>センサーの一時的な異常値</td><td>削除（ただし根拠を記録しておく）</td></tr>
+          <tr><td>③ 本物の「珍しいけど正しい」値</td><td>例Aの8900円（記念品のまとめ買い）</td><td><strong>むやみに消さない。</strong>影響を和らげたいなら対数変換や中央値ベースの指標へ</td></tr>
+          <tr><td>④ 別のグループの混入</td><td>法人注文が個人向け分析に混ざった</td><td>層別して分けて分析する</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="dangerbox">
+      <span class="box-label">外れ値を勝手に消すのはNG</span>
+      「外れ値があるから削除」は<strong>最後の手段</strong>です。本物の外れ値には「重要な意味」があることが多く、たとえばクレジットカードの不正検知では「ほかの人と違う使い方」こそが検知の手がかりになります。「外れ値 = ゴミ」ではなく、「外れ値 = 調査対象」という姿勢を持ちましょう。削除する場合は、いつ・なぜ削除したかを必ず記録します。
+    </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 03</span>
+            <h4>1.8 単位の違うデータを比べる: 標準化（zスコア）</h4>
+                <p>
+      「数学65点」と「英語75点」、どちらの成績が良いでしょうか？「75点のほうが高いから英語」と即断するのは危険です。
+      クラスによって平均点やばらつきが違うからです。<strong>データを平均0・標準偏差1に変換して比べる</strong>のが標準化（zスコア）です。
+    </p>
+    <div class="math-block">\[ z = \frac{x - \bar{x}}{s} \]</div>
+    <p>zスコアは「<strong>平均から標準偏差いくつ分、離れているか</strong>」を表します。z=1なら「平均より標準偏差1個ぶん上」。単位（点・円・cm）が消えるので、どんなデータでも同じ物差しで比べられます。</p>
+
+    <h3>1.8.1 具体例: 太郎くんの試験結果</h3>
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><th>科目</th><th>太郎の得点 \(x\)</th><th>クラス平均 \(\bar{x}\)</th><th>標準偏差 \(s\)</th><th>zスコア</th></tr>
+          <tr><td>数学</td><td>65点</td><td>50点</td><td>15点</td><td>(65−50)/15 = <strong>1.0</strong></td></tr>
+          <tr><td>英語</td><td>75点</td><td>70点</td><td>10点</td><td>(75−70)/10 = <strong>0.5</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>絶対点数の「75点」だけ見ると英語が上ですが、<strong>クラス内での相対的な位置は数学（z=1.0）のほうが上</strong>です。面接などで「偏差値」という言葉を聞いたことがあると思いますが、偏差値はこのzスコアを <strong>偏差値 = 50 + 10×z</strong> で変換したものです（z=1.0 は偏差値60）。</p>
+
+    <h3>1.8.2 実務での使いどころ</h3>
+    <ul>
+      <li><strong>機械学習の特徴量スケーリング:</strong> 「身長cm（単位は100前後）」と「年齢（単位は数十）」のように単位の違う特徴量をそのまま機械学習に入れると、値の大きな特徴量がモデルを支配してしまいます。StandardScaler などで標準化するのは、この1.8の考え方です。</li>
+      <li><strong>外れ値の目安:</strong> |z| &gt; 3（平均から標準偏差3個分以上）を外れ値候補とする方法（1.7で紹介したzスコア法）</li>
+      <li><strong>異なる指標の比較:</strong> 売上（円）と来店数（人）のように単位の違うKPIの動きを並べて見るとき</li>
+    </ul>
+    <pre><code><span class="kw">import</span> numpy <span class="kw">as</span> np
+math_scores = np.array([<span class="num">20</span>,<span class="num">35</span>,<span class="num">40</span>,<span class="num">50</span>,<span class="num">55</span>,<span class="num">60</span>,<span class="num">65</span>,<span class="num">75</span>])
+z = (math_scores - math_scores.mean()) / math_scores.std(ddof=<span class="num">1</span>)
+<span class="fn">print</span>(z.round(<span class="num">2</span>))  <span class="comment"># 平均が0, 標準偏差が1 に変換される</span></code></pre>
+
+    
+
+  
+        </div>
+    </div>
+
+<section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 クイズ: 分布の形・外れ値・標準化</h2>
+      <div class="quiz-status">正解 <b>0</b> / 6問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. 年収データのヒストグラムは「右の裾が長い（右に歪んだ）」形になることが多いです。このとき平均と中央値の関係はどうなりますか？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>平均 = 中央値</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>平均 &gt; 中央値</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>平均 &lt; 中央値</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>どちらも最頻値と等しい</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">高い側の外れ値に引っ張られる平均は中央値より大きくなります（平均 &gt; 中央値）。所得の平均値が実感とずれる理由がここにあります。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. ヒストグラムが「二峰（山が2つ）」になったとき、最初に疑うべきことは何でしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>データが少なすぎる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>平均と中央値の計算ミス</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>性質の違うグループが混ざっている</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>外れ値を削除したから</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">性質の違うグループ（例: 男女、正社員とアルバイト）が混ざっている可能性があります。全体を1つにまとめる前に、グループ（層）に分けて分析するのが基本です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. 外れ値（例: 注文データの8900円）が見つかったとき、最初にやるべきことは何でしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>すぐに削除する</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>平均値に置き換える</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>原因（記録ミスか本物か等）を調査する</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>データ全体を捨てる</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">「なぜこの値が出たのか」を調査します。入力ミスなのか、本物の珍しい値なのか、別グループの混入なのかで対応が変わります。むやみに削除してはいけません。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q4. 太郎くんは数学65点（クラス平均50・標準偏差15）、英語75点（クラス平均70・標準偏差10）でした。クラス内での相対的な成績が良いのはどちらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>数学</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>英語</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>同じ</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>点数の高い英語とは限らず、標準偏差が小さい英語</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">zスコアで比べます。数学 (65−50)÷15 = 1.0、英語 (75−70)÷10 = 0.5。平均からより離れて上位にいる数学のほうが相対的に優秀です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. データを標準化（zスコア変換）すると、変換後の平均と標準偏差はどうなりますか？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>平均1・標準偏差0</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>平均0・標準偏差1</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>平均も標準偏差も変わらない</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>平均と標準偏差がどちらも100になる</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">各値から平均を引いて標準偏差で割るため、変換後は「平均0・標準偏差1」になります。単位の違うデータ同士を同じ物差しで比べられるようになります。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q6. 外れ値の目安として「|z| &gt; 3」を使う方法があります。これはどんな意味でしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>平均より3点以上高い</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>中央値の3倍より大きい</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>平均から標準偏差の3倍以上離れている</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>データ数が3個以下</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">zスコアは『平均から標準偏差いくつ分離れているか』。|z| &gt; 3 は平均から標準偏差3個分以上離れた値で、左右対称な山型分布ではほぼ出ないため外れ値候補とみなします。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+  </section>
+            
+<nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

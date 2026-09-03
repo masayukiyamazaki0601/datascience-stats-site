@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第1章(3) 四分位数と箱ひげ図 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\(','\)']], displayMath: [['$$','$$'], ['\[','\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+</head>
+
+<body data-file="ch1-3-quartile.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html">コース概要</a></li>
+                    <li><a href="ch1-1-data.html">第1章 記述統計</a></li>
+                    <li><a href="ch1-quiz.html">確認テスト</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt;
+            <a href="index.html">第1章 記述統計</a> &gt; 四分位数と箱ひげ図
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 01 / Unit 03 — 記述統計学の基礎</span>
+                <h2 class="lesson-title">四分位数と箱ひげ図</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このUnitでできるようになること</span>
+      <ul>
+        <li>「だいたいの中心」だけでなく「散らばり」も見る大切さを知る</li>
+        <li>四分位数（Q1・Q3）と四分位範囲（IQR）を計算できる</li>
+        <li>箱ひげ図を読み、外れ値の目安（1.5×IQR）を説明できる</li>
+      </ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>平均が同じでも、中身はぜんぜん違うことがある</h4>
+            <p>ユニット②で「平均」を学びました。でも平均だけではわからないことがあります。たとえば、2つのクラスのテストの平均がどちらも70点だったとしましょう。中身は次の2とおり考えられます。</p>
+            <div class="figure">
+              <div class="panel-row">
+                <div class="panel">
+                  <div class="panel-title">クラスA <span class="avg">平均70点</span></div>
+                  <div class="dc-plot" style="height:110px;">
+                    <div class="dc-axis"></div>
+                    <div class="dc-dot" style="left:64.1%"></div>
+                    <div class="dc-dot" style="left:65%"></div>
+                    <div class="dc-dot" style="left:65%"></div>
+                    <div class="dc-dot" style="left:65%"></div>
+                    <div class="dc-dot" style="left:65.9%"></div>
+                    <div class="dc-lbl avg" style="left:65%; bottom:-2px;">69〜71点に集中</div>
+                  </div>
+                </div>
+                <div class="panel">
+                  <div class="panel-title">クラスB <span class="avg">平均70点</span></div>
+                  <div class="dc-plot" style="height:110px;">
+                    <div class="dc-axis"></div>
+                    <div class="dc-dot out" style="left:2%"></div>
+                    <div class="dc-dot" style="left:51.5%"></div>
+                    <div class="dc-dot" style="left:65%"></div>
+                    <div class="dc-dot out" style="left:92%"></div>
+                    <div class="dc-dot out" style="left:92%"></div>
+                    <div class="dc-lbl avg" style="left:60%; bottom:-2px;">0点と100点が混在</div>
+                  </div>
+                </div>
+              </div>
+              <p class="figure-caption">図1: 平均はどちらも70点。でも「散らばり」がまったくちがう</p>
+            </div>
+            <p>クラスAはみんな70点前後で「実力がそろっている」。クラスBは0点と100点が混ざっていて「できる人とできない人がいる」。平均だけでは、このちがいを伝えられません。このUnitからは、データの<strong>「散らばり」</strong>を見る方法を学びます。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — なぜ散らばりを見る？</p>
+              <p class="qq">平均が同じ70点でも、クラスAとクラスBでは何がちがうでしょうか？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>生徒の人数</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>平均の計算方法</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>点数の「散らばり」</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>テストの科目</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">クラスAは69〜71点に集中、クラスBは0点と100点が混在。平均が同じでも、データが「どのくらい散らばっているか」は別の情報です。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>いちばん単純な散らばり: 「レンジ（範囲）」</h4>
+            <p>散らばりを表すいちばん単純な方法は、<strong>「最大 − 最小」</strong>、つまりレンジです。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>クラス</th><th>点数</th><th>レンジ（最大−最小）</th></tr>
+                  <tr><td>クラスA</td><td>69, 70, 70, 70, 71</td><td>71 − 69 = <strong>2点</strong></td></tr>
+                  <tr><td>クラスB</td><td>0, 55, 70, 100, 100</td><td>100 − 0 = <strong>100点</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>「クラスAは2点ぶんしか散らばっていない、クラスBは100点ぶん散らばっている」と、ひと目で差がわかります。</p>
+            <div class="figure">
+              <div style="position:relative; height:120px; margin:16px 0 4px;">
+                <div style="position:absolute; top:8px;  left:0; width:100%; height:26px; background:#F6F3EA; border:1px solid #D9D2BE; border-radius:4px;"></div>
+                <div style="position:absolute; top:16px; left:69%; width:2%; height:10px; background:var(--color-brass); border-radius:2px;" title="クラスA: 69〜71点"></div>
+                <div style="position:absolute; top:56px; left:0; width:100%; height:26px; background:#F6F3EA; border:1px solid #D9D2BE; border-radius:4px;"></div>
+                <div style="position:absolute; top:64px; left:0; width:100%; height:10px; background:var(--color-red); border-radius:2px;" title="クラスB: 0〜100点"></div>
+                <span style="position:absolute; top:38px; left:69%; transform:translateX(-50%); font-family:var(--font-mono); font-size:11px; color:var(--color-brass);">Aの範囲（2点ぶん）</span>
+                <span style="position:absolute; top:88px; left:2%; font-family:var(--font-mono); font-size:11px; color:var(--color-red);">Bの範囲（100点ぶん）</span>
+              </div>
+              <p class="figure-caption">図2: レンジ＝帯の長さ。Aはほそ〜い帯、Bは画面いっぱいの帯</p>
+            </div>
+            <p>ただ、レンジには弱点があります。<strong>極端な値（外れ値）が1つあるだけで、がらっと変わってしまう</strong>ことです。たとえば注文データ（例A）のレンジは「8900 − 640 = 8260円」。たった1件の大きな注文で決まってしまっています。もっと「どっしりした」散らばりの測り方が欲しい…そこで次に登場するのが<strong>四分位数</strong>です。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — レンジの計算</p>
+              <p class="qq">クラスBの点数（0, 55, 70, 100, 100）のレンジはいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>30点</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>55点</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>70点</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">エ</span>100点</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">レンジ = 最大(100) − 最小(0) = 100点。最大値と最小値だけで決まるので、たった1人の0点で帯がめいっぱい伸びてしまうのが弱点です。</div></details>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — レンジの弱点</p>
+              <p class="qq">レンジ（最大−最小）の弱点はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>計算がむずかしい</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>外れ値1件で大きく変わる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>いつも0になる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>マイナスにしかならない</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">レンジは最大値と最小値だけで決まるので、外れ値1件に大きく影響されます（例Aでは8900円がレンジを決めてしまう）。そこで外れ値に強い四分位数を使います。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 03</span>
+            <h4>四分位数: データを4つのかたまりに分ける</h4>
+            <p>四分位数は、データを小さい順に並べて<strong>「4つの等しいかたまり」に分ける境目</strong>のことです。イメージは、10人を背の順に並べて「4人ずつの組分け線」を引く感じです。</p>
+            <p>まず注文10件を小さい順に並べます。分け方は「半分に分けて、それぞれの中央値を見る」です。</p>
+            <div class="figure">
+              <div class="rank-row">
+                <div class="rank-cell">640</div>
+                <div class="rank-cell">760</div>
+                <div class="rank-cell q">850</div>
+                <div class="rank-cell">980</div>
+                <div class="rank-cell mid2">1200</div>
+                <div class="rank-cell mid2">1200</div>
+                <div class="rank-cell">1500</div>
+                <div class="rank-cell q">2100</div>
+                <div class="rank-cell">3400</div>
+                <div class="rank-cell out">8900</div>
+              </div>
+              <div class="rank-marks">
+                <span class="mk-q" style="left:25%">Q1 = 850</span>
+                <span class="mk-med" style="left:50%">中央値 = 1200</span>
+                <span class="mk-q" style="left:75%">Q3 = 2100</span>
+              </div>
+              <p class="figure-caption">図3: 下位5件の中央値がQ1、上位5件の中央値がQ3。オレンジ=四分位数の境目</p>
+            </div>
+            <p>これで次の3つの「目印」が手に入りました。</p>
+            <ul>
+              <li><strong>Q1（第1四分位数）= 850円</strong> … 下から25%のあたり</li>
+              <li><strong>中央値 = 1200円</strong> … ちょうど真ん中</li>
+              <li><strong>Q3（第3四分位数）= 2100円</strong> … 下から75%のあたり</li>
+            </ul>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — Q1の計算</p>
+              <p class="qq">下位5件（640, 760, 850, 980, 1200）の真ん中（3番目）の値 Q1 はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>640円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>760円</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>850円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>1200円</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">下位5件（640, 760, 850, 980, 1200）を並べたときの真ん中（3番目）は 850円。これがQ1です。</div></details>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 四分位数の計算</p>
+              <p class="qq">10件を下位5件・上位5件に分けたとき、上位5件は 1200, 1500, 2100, 3400, 8900 です。その真ん中（3番目）の値 Q3 はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>1200円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>1500円</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>2100円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>3400円</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">上位5件（1200, 1500, 2100, 3400, 8900）を並べたときの真ん中（3番目）は 2100円。これがQ3です。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 04</span>
+            <h4>IQR = 「真ん中50%のデータの幅」</h4>
+            <p>Q1とQ3がわかれば、散らばりの指標が1つ作れます。それが<strong>四分位範囲（IQR）</strong>です。</p>
+            <div class="math-block">IQR = Q3 − Q1 = 2100 − 850 = <strong>1250円</strong></div>
+            <p>意味は「<strong>真ん中に集まっている50%のデータが、どのくらいの幅に収まっているか</strong>」です。Q1からQ3のあいだに、ちょうど半分のデータが入っています。</p>
+            <p>IQRのいいところは、<strong>外れ値（8900円）の影響をほとんど受けない</strong>こと。8900円をどんなに大きな値に変えても、Q1やQ3は変わりません。レンジ（8260円）が外れ値に振り回されたのと大ちがいですね。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — IQRの意味</p>
+              <p class="qq">Q1からQ3のあいだ（箱の中）には、データ全体のおよそ何%が入っているでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>25%</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>50%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>75%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>100%</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">Q1（下から25%）とQ3（下から75%）のあいだには、ちょうどデータの半分（50%）が入ります。だから「真ん中50%の幅」と呼びます。</div></details>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — IQRの計算</p>
+              <p class="qq">Q3 = 2100円、Q1 = 850円のとき、四分位範囲（IQR）はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>350円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>850円</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>1250円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>2100円</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">IQR = Q3 − Q1 = 2100 − 850 = 1250円。真ん中50%のデータは、だいたい1250円ぶんの幅に収まっています。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 05</span>
+            <h4>箱ひげ図: 四分位数を絵にする</h4>
+            <p>ここまでに出てきた「最小・Q1・中央値・Q3・最大」を1つの絵にしたのが<strong>箱ひげ図</strong>です。注文データで描くと、こうなります。</p>
+            <div class="figure">
+              <div class="bp">
+                <div class="bp-axis"></div>
+                <div class="bp-wline" style="left:7.7%; width:2.2%"></div>
+                <div class="bp-cap" style="left:7.7%"></div>
+                <div class="bp-box" style="left:9.9%; width:13%"></div>
+                <div class="bp-med" style="left:13.5%"></div>
+                <div class="bp-wline" style="left:22.9%; width:13.6%"></div>
+                <div class="bp-cap" style="left:36.5%"></div>
+                <div class="bp-dot" style="left:93.9%"></div>
+                <div class="bp-lbl top" style="left:10.2%; color:var(--color-brass);">Q1=850</div>
+                <div class="bp-lbl top" style="left:13.5%; color:var(--color-ink);">中央値1200</div>
+                <div class="bp-lbl top" style="left:24%; color:var(--color-brass);">Q3=2100</div>
+                <div class="bp-lbl under" style="left:7.7%; color:var(--color-ink-soft);">最小640</div>
+                <div class="bp-lbl under" style="left:36.5%; color:var(--color-ink-soft);">最大3400</div>
+                <div class="bp-lbl under" style="left:90%; color:var(--color-red);">外れ値 8900</div>
+              </div>
+              <p class="figure-caption">図4: 箱=真ん中50%（850〜2100円）。ひげ=外れ値を除いた範囲。右の赤い点=外れ値</p>
+            </div>
+            <p>箱の左端がQ1、右端がQ3、箱の中の線が中央値です。箱の外に伸びる「ひげ」は、外れ値の目安の線まで。そして線を飛び出した点（8900円）が<strong>外れ値</strong>です。</p>
+            <p>外れ値の目安は次のとおり。この範囲から外れたら「外れ値の候補」として点で描きます。</p>
+            <div class="math-block">Q1 − 1.5 × IQR 〜 Q3 + 1.5 × IQR</div>
+            <div class="math-block">850 − 1.5×1250 = <strong>−1025</strong> ／ 2100 + 1.5×1250 = <strong>3975</strong></div>
+            <p>つまり3975円を超えるのは8900円だけ。だから8900円が点で描かれ、ひげは次に大きい3400円まで伸びています。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 外れ値の判定</p>
+              <p class="qq">外れ値の目安は「3975円より大きい」。注文データで外れ値になるのはどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>3400円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>3975円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>640円</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">エ</span>8900円</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">3975円を「超える」のは8900円だけ。3400円は目安の内側なので、ひげ（外れ値でない最大値）まで伸びます。</div></details>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 箱ひげ図の読み方</p>
+              <p class="qq">例Aの箱ひげ図で、赤い点（8900円）は何を表しているでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>中央値</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>Q3</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>外れ値（Q3+1.5×IQRを超えた値）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>ひげの長さ</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">外れ値の目安 3975円を超えるのは8900円だけ。箱ひげ図では、これを「ひげの外の点」として描きます。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 06</span>
+            <h4>まとめ: 四分位数・箱ひげ図で何がわかる？</h4>
+            <p>四分位数と箱ひげ図を使うと、次の3つがひと目でわかります。</p>
+            <ul>
+              <li><strong>真ん中の50%がどこにあるか</strong>（箱の位置と長さ）</li>
+              <li><strong>データが右か左に偏っているか</strong>（中央値が箱のどちら寄りか）</li>
+              <li><strong>外れ値がどこにあるか</strong>（点の有無と位置）</li>
+            </ul>
+            <p>たとえば、営業部と開発部の年収を並べて箱ひげ図にすると、「真ん中50%がどちらが高いか」「どちらが散らばっているか」「飛び抜けた人がいるか」を、いちいち数字を読まずに比較できます。レポートの1枚目に使うと便利です。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 最後のひと休み — 使い方の確認</p>
+              <p class="qq">複数のグループ（例: 営業部・開発部）の年収を比べたいとき、いちばん向いている図はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>1つの平均を表に書くだけ</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>グループごとに箱ひげ図を並べる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>最大値だけを見る</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">箱ひげ図を横に並べると「中央値」「真ん中50%の幅」「外れ値」を一度に比較できます。平均だけだと外れ値に引っ張られ、最大値だけだと全体が見えません。</div></details>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 最後のひと休み — まとめの確認</p>
+              <p class="qq">「外れ値に強い」散らばりの指標はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>レンジ（最大−最小）</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>四分位範囲（IQR）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>平均</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">IQRは真ん中50%の幅（Q3−Q1）を見るので、極端な値が1件あってもほとんど変わりません。レンジは最大・最小だけで決まるので外れ値に弱いです。</div></details>
+            </div>
+        </div>
+    </div>
+
+<section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 クイズ: 四分位数と箱ひげ図</h2>
+      <div class="quiz-status">正解 <b>0</b> / 4問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. 例Aの注文金額データ（小さい順: 640,760,850,980,1200,1200,1500,2100,3400,8900）の第1四分位数 Q1 はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>760円</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>850円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>1200円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>2100円</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">データを半分（下位5件と上位5件）に分け、下位5件 640,760,850,980,1200 の中央値を取ると 850円 です。Q1 = 850円、Q3 = 2100円 になります。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. 第3四分位数 Q3 = 2100円 のとき、四分位範囲 IQR はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>350円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>850円</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>1250円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>2100円</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">IQR = Q3 − Q1 = 2100 − 850 = 1250円 です。中央の50%のデータがこの幅に収まる、という意味です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. 箱ひげ図で外れ値の目安は Q3 + 1.5×IQR = 2100 + 1.5×1250 = 3975円 です。このデータで外れ値として点で描かれるのはどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>2100円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>3400円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>3975円</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">エ</span>8900円</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">3975円を超えるのは 8900円 の1件だけです。ヒゲは外れ値を除いた最大値 3400円 まで伸びます。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q4. 「外れ値に強い」ばらつきの指標はどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>レンジ（最大−最小）</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>標準偏差</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>IQR（四分位範囲）</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>平均</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">IQR（四分位範囲）は中央50%の幅を見るため、外れ値があっても Q1・Q3 がほとんど変わりません。レンジや標準偏差は外れ値の影響を強く受けます。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+  </section>
+            
+<nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>統計学入門 for Data Science | コース概要</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .section-title { font-size: 34px; line-height: 1.4; margin-bottom: 20px; }
+        .section-lead { color: var(--color-ink-soft); font-size: 16px; margin-bottom: 40px; }
+        .mono-kicker {
+            font-family: var(--font-mono); font-size: 13px; letter-spacing: 3px;
+            text-transform: uppercase; color: var(--color-brass);
+            display: block; margin-bottom: 18px;
+        }
+        .feature-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; margin-top: 40px; }
+        .feature-item { font-size: 14px; color: var(--color-ink-soft); line-height: 1.85; }
+        .feature-item .f-num {
+            font-family: var(--font-mono); color: var(--color-brass);
+            font-weight: 700; display: block; margin-bottom: 6px;
+        }
+        @media (max-width: 820px) { .feature-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+            <nav class="nav">
+                <ul>
+                    <li><a href="index.html">コース概要</a></li>
+                    <li><a href="ch1-1-data.html">第1章 記述統計</a></li>
+                    <li><a href="ch1-quiz.html">確認テスト</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero grid-bg">
+            <div class="container hero-container">
+                <div class="hero-content">
+                    <span class="mono-kicker">Data Science &times; Statistics / Intro Course</span>
+                    <h2 class="hero-title">データサイエンスに必要な<br>統計学を、解きながら学ぶ。</h2>
+                    <p class="hero-lead">
+                        記述統計から確率分布・推定・検定・回帰分析まで。数式の意味・Python実装・
+                        <strong>「なぜ」の解釈</strong>を、全38問の音つきクイズで定着させながら積み上げます。
+                    </p>
+                    <div class="hero-actions">
+                        <a href="ch1-1-data.html" class="btn btn-primary">第1章から学び始める &rarr;</a>
+                        <a href="#course-map" class="btn-secondary">カリキュラムを見る</a>
+                    </div>
+                </div>
+                <div class="ruler-motif">
+                    <div class="ruler-tick major"><span>01</span></div>
+                    <div class="ruler-tick minor"></div>
+                    <div class="ruler-tick minor"></div>
+                    <div class="ruler-tick major"><span>02</span></div>
+                    <div class="ruler-tick minor"></div>
+                    <div class="ruler-tick minor"></div>
+                    <div class="ruler-tick major"><span>03</span></div>
+                    <div class="ruler-tick minor"></div>
+                    <div class="ruler-tick major"><span>04</span></div>
+                    <div class="ruler-tick minor"></div>
+                    <div class="ruler-tick major"><span>05</span></div>
+                    <div class="ruler-tick minor"></div>
+                    <div class="ruler-tick major"><span>06</span></div>
+                    <div class="ruler-tick minor"></div>
+                    <div class="ruler-tick minor"></div>
+                </div>
+            </div>
+        </section>
+        <section class="stats-strip">
+            <div class="container">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">レッスン（第1章）</span>
+                        <span class="stat-value">6<span class="stat-unit"> + 確認テスト</span></span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">選択式クイズ</span>
+                        <span class="stat-value">38<span class="stat-unit"> questions</span></span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">フィードバック</span>
+                        <span class="stat-value">⭕️/❌<span class="stat-unit"> + 効果音</span></span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">前提知識</span>
+                        <span class="stat-value">None</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="sample-section">
+            <div class="container">
+                <div class="sample-grid">
+                    <div class="sample-left">
+                        <div class="card grid-bg sample-card">
+                            <span class="sample-chapter">Unit 01-02 / 具体例で学ぶ</span>
+                            <h3 class="sample-title">外れ値が1件あるだけで「平均」はここまで変わる</h3>
+                            <div class="sample-body">
+                                <p>ネットショップの注文10件 <code>640, 760, 850, 980, 1200, 1200, 1500, 2100, 3400, 8900</code> 円。
+                                最後の「8900円」という大きな注文1件が平均を引き上げます。</p>
+                                <div class="math-formula">平均 = 21530 &divide; 10 = <strong>2153円</strong>&nbsp;&nbsp;vs&nbsp;&nbsp;中央値 = <strong>1200円</strong></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sample-right">
+                        <h2 class="section-title">暗記ではなく、<br>「1つのデータ」を追いかける。</h2>
+                        <p>このコースでは、章を通して同じ具体例（EC注文データ・身長データ・気温とアイス売上など）を、実際に手で計算しながら進めます。</p>
+                        <p>各レッスンの最後には練習クイズ。選択肢をクリックすると即座に正解/不正解がわかり、効果音（Web Audio生成・OFF切替可）でも知らせます。間違えた問題は「解説を見る」で理由まで復習できます。</p>
+                        <a href="ch1-2-center.html" class="btn-secondary">ユニット②「平均・中央値・最頻値」を見る &rarr;</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Course Map -->
+        <section id="course-map" class="chapter-list-section">
+            <div class="container">
+                <h2 class="section-title text-center">カリキュラム（全6章）</h2>
+                <p class="section-lead text-center" style="max-width: 620px; margin-left: auto; margin-right: auto;">
+                    「統計の理論（第1〜5章）」＋「データ分析の実践（第6章）」の2段構えです。第1章は公開中、第2章以降は制作予定。前のユニットが次のユニットの土台になるので、順番どおりがおすすめです。
+                </p>
+<div class="curriculum-toc">
+        <div class="toc-chapter">
+            <h3 class="toc-chapter-title">
+                <span class="chapter-num">Chapter 01</span> データを読み解く（記述統計学） <span class="unit-count">(7 units)</span>
+            </h3>
+            <div class="urow"><div class="u-no">01</div><div>
+                <div class="u-t"><a href="ch1-1-data.html">データの種類と尺度</a><span class="u-tag">公開中</span></div>
+                <div class="u-topics">平均してよいデータとは？ ・ 数（量的）と分類（質的） ・ 名義／順序／間隔／比例 ・ 0の意味</div>
+            </div></div>
+            <div class="urow"><div class="u-no">02</div><div>
+                <div class="u-t"><a href="ch1-2-center.html">中心傾向：平均・中央値・最頻値</a><span class="u-tag">公開中</span></div>
+                <div class="u-topics">平均の計算 ・ 中央値（偶数個のとき） ・ 最頻値 ・ 外れ値での使い分け</div>
+            </div></div>
+            <div class="urow"><div class="u-no">03</div><div>
+                <div class="u-t"><a href="ch1-3-quartile.html">四分位数と箱ひげ図</a><span class="u-tag">公開中</span></div>
+                <div class="u-topics">Q1・Q3 ・ 四分位範囲（IQR） ・ 箱ひげ図の読み方 ・ 外れ値の目安</div>
+            </div></div>
+            <div class="urow"><div class="u-no">04</div><div>
+                <div class="u-t"><a href="ch1-4-variance.html">分散と標準偏差</a><span class="u-tag">公開中</span></div>
+                <div class="u-topics">偏差と2乗 ・ 分散のステップ計算 ・ n−1の理由 ・ 68-95-99.7ルール</div>
+            </div></div>
+            <div class="urow"><div class="u-no">05</div><div>
+                <div class="u-t"><a href="ch1-5-shape.html">分布の形・外れ値・標準化</a><span class="u-tag">公開中</span></div>
+                <div class="u-topics">ヒストグラム ・ 右裾の長い分布 ・ 層別 ・ 外れ値の対応 ・ zスコア</div>
+            </div></div>
+            <div class="urow"><div class="u-no">06</div><div>
+                <div class="u-t"><a href="ch1-6-correlation.html">2変数の関係：相関と因果</a><span class="u-tag">公開中</span></div>
+                <div class="u-topics">散布図 ・ 共分散 ・ 相関係数 ・ 相関≠因果（擬似相関）</div>
+            </div></div>
+            <div class="urow"><div class="u-no">T</div><div>
+                <div class="u-t"><a href="ch1-quiz.html">章末テスト（全10問）</a><span class="u-tag">公開中</span></div>
+                <div class="u-topics">第1章の総まとめ ・ スコアとランクメッセージつき</div>
+            </div></div>
+        </div>
+
+        <div class="toc-chapter">
+            <h3 class="toc-chapter-title">
+                <span class="chapter-num">Chapter 02</span> 確率と確率分布 <span class="unit-count">(9 units)</span>
+            </h3>
+            <div class="urow"><div class="u-no">01</div><div>
+                <div class="u-t">確率の基本と条件付き確率<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">場合の数と確率 ・ サイコロ・コインの例 ・ 条件付き確率「〜のとき」 ・ 独立と排反</div>
+            </div></div>
+            <div class="urow"><div class="u-no">02</div><div>
+                <div class="u-t">ベイズの定理（新規）<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">原因と結果の確率 ・ 迷惑メール判定の例 ・ 検査の陽性と実際の病気</div>
+            </div></div>
+            <div class="urow"><div class="u-no">03</div><div>
+                <div class="u-t">確率変数と期待値・分散<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">確率変数とは ・ 期待値（平均の親戚） ・ 分散の計算法則</div>
+            </div></div>
+            <div class="urow"><div class="u-no">04</div><div>
+                <div class="u-t">ベルヌーイ分布と二項分布<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">成功か失敗か ・ コイン10回で表がk回 ・ 二項分布の平均と分散</div>
+            </div></div>
+            <div class="urow"><div class="u-no">05</div><div>
+                <div class="u-t">ポアソン分布（まれな出来事）<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">1時間に電話が何件 ・ 事故件数・アクセス数のモデル</div>
+            </div></div>
+            <div class="urow"><div class="u-no">06</div><div>
+                <div class="u-t">正規分布と68-95-99.7ルール<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">つりがね型の分布 ・ 平均±σ ・ データが従うときの読み方</div>
+            </div></div>
+            <div class="urow"><div class="u-no">07</div><div>
+                <div class="u-t">標準化と確率の計算（z表）<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">z変換の復習 ・ 正規分布表の使い方 ・ パーセンタイル</div>
+            </div></div>
+            <div class="urow"><div class="u-no">08</div><div>
+                <div class="u-t">中心極限定理と標本平均の分布<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">どんな分布でも標本平均は正規分布に近づく ・ 標準誤差</div>
+            </div></div>
+            <div class="urow"><div class="u-no">09</div><div>
+                <div class="u-t">指数分布と発生間隔（発展）<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">次に起こるまでの時間 ・ ポアソンとの関係</div>
+            </div></div>
+        </div>
+
+        <div class="toc-chapter">
+            <h3 class="toc-chapter-title">
+                <span class="chapter-num">Chapter 03</span> 母集団を推し量る（推定） <span class="unit-count">(7 units)</span>
+            </h3>
+            <div class="urow"><div class="u-no">01</div><div>
+                <div class="u-t">母集団と標本（サンプリング）<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">全体（母集団）と一部（標本） ・ 無作為抽出 ・ アンケート調査のしくみ</div>
+            </div></div>
+            <div class="urow"><div class="u-no">02</div><div>
+                <div class="u-t">点推定と不偏推定量<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">標本平均で母平均を当てる ・ n−1の謎の解決 ・ 推定量の良い性質</div>
+            </div></div>
+            <div class="urow"><div class="u-no">03</div><div>
+                <div class="u-t">標本平均の分布と標準誤差<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">中心極限定理の復習 ・ 標準誤差 = σ/√n ・ 標本サイズの効果</div>
+            </div></div>
+            <div class="urow"><div class="u-no">04</div><div>
+                <div class="u-t">区間推定と信頼区間の考え方<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">95%信頼区間の正しい解釈 ・ 点推定とのちがい</div>
+            </div></div>
+            <div class="urow"><div class="u-no">05</div><div>
+                <div class="u-t">母平均の区間推定（σ既知）<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">zを使った信頼区間の計算 ・ 具体例で計算してみる</div>
+            </div></div>
+            <div class="urow"><div class="u-no">06</div><div>
+                <div class="u-t">母平均の区間推定（t分布）<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">σがわからない現実 ・ t分布とは ・ 自由度</div>
+            </div></div>
+            <div class="urow"><div class="u-no">07</div><div>
+                <div class="u-t">サンプルサイズの決め方<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">何人に聞けばいい？ ・ 許容誤差と信頼区間のバランス</div>
+            </div></div>
+        </div>
+
+        <div class="toc-chapter">
+            <h3 class="toc-chapter-title">
+                <span class="chapter-num">Chapter 04</span> 統計的仮説検定 <span class="unit-count">(8 units)</span>
+            </h3>
+            <div class="urow"><div class="u-no">01</div><div>
+                <div class="u-t">帰無仮説と対立仮説<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">「差はない」を仮説に立てる ・ 背理法のような考え方</div>
+            </div></div>
+            <div class="urow"><div class="u-no">02</div><div>
+                <div class="u-t">有意水準とp値の正しい解釈<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">p値とは何か ・ よくある誤解 ・ 「有意」の意味</div>
+            </div></div>
+            <div class="urow"><div class="u-no">03</div><div>
+                <div class="u-t">第1種・第2種の過誤と検出力<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">差がないのに「差あり」？ ・ 見逃すリスク ・ 検出力のバランス</div>
+            </div></div>
+            <div class="urow"><div class="u-no">04</div><div>
+                <div class="u-t">1標本t検定（平均の検定）<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">平均は70点のはずを確かめる ・ 検定統計量の計算</div>
+            </div></div>
+            <div class="urow"><div class="u-no">05</div><div>
+                <div class="u-t">2標本t検定とA/Bテスト<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">2つのグループの差 ・ 施策の効果検証 ・ 実務の進め方</div>
+            </div></div>
+            <div class="urow"><div class="u-no">06</div><div>
+                <div class="u-t">対応のあるt検定<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">同じ人を測る前後比較 ・ 個人差をキャンセルする</div>
+            </div></div>
+            <div class="urow"><div class="u-no">07</div><div>
+                <div class="u-t">カイ二乗検定（独立性の検定）<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">クロス集計表 ・ 性別×好みは関係ある？ ・ 期待度数</div>
+            </div></div>
+            <div class="urow"><div class="u-no">08</div><div>
+                <div class="u-t">多重比較と検定の落とし穴<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">何度も検定すると偽陽性が増える ・ p-hackingに注意</div>
+            </div></div>
+        </div>
+
+        <div class="toc-chapter">
+            <h3 class="toc-chapter-title">
+                <span class="chapter-num">Chapter 05</span> 回帰分析（統計モデル） <span class="unit-count">(7 units)</span>
+            </h3>
+            <div class="urow"><div class="u-no">01</div><div>
+                <div class="u-t">相関と回帰のちがい<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">「関係がある」と「予測できる」は別 ・ 回帰直線の考え方</div>
+            </div></div>
+            <div class="urow"><div class="u-no">02</div><div>
+                <div class="u-t">単回帰と最小二乗法<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">y = a + bx ・ 誤差の2乗を最小にする ・ 傾きと切片の計算</div>
+            </div></div>
+            <div class="urow"><div class="u-no">03</div><div>
+                <div class="u-t">決定係数 R² と残差<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">モデルはどのくらい説明できたか ・ 残差プロットの見方</div>
+            </div></div>
+            <div class="urow"><div class="u-no">04</div><div>
+                <div class="u-t">回帰係数の信頼区間と検定<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">傾きが0とちがうと言える？ ・ 係数のp値</div>
+            </div></div>
+            <div class="urow"><div class="u-no">05</div><div>
+                <div class="u-t">重回帰分析とダミー変数<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">説明変数を増やす ・ 質的データを0/1に ・ 交絡の調整</div>
+            </div></div>
+            <div class="urow"><div class="u-no">06</div><div>
+                <div class="u-t">多重共線性（VIF）<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">似た説明変数を入れると係数が不安定 ・ 見つけ方と対処</div>
+            </div></div>
+            <div class="urow"><div class="u-no">07</div><div>
+                <div class="u-t">ロジスティック回帰（分類を予測）<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">「買う／買わない」の確率 ・ オッズとロジット ・ 評価へつなぐ</div>
+            </div></div>
+        </div>
+
+        <div class="toc-chapter">
+            <h3 class="toc-chapter-title">
+                <span class="chapter-num">Chapter 06</span> データ分析の実践（前処理と評価） <span class="unit-count">(10 units)</span>
+            </h3>
+            <div class="urow"><div class="u-no">01</div><div>
+                <div class="u-t">データクリーニング<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">欠損値（NaN）の扱い ・ 重複の除去 ・ 型のチェック</div>
+            </div></div>
+            <div class="urow"><div class="u-no">02</div><div>
+                <div class="u-t">EDA: まずグラフで「見る」<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">ヒストグラム・散布図の使い分け ・ pandas/matplotlib実践</div>
+            </div></div>
+            <div class="urow"><div class="u-no">03</div><div>
+                <div class="u-t">特徴量エンジニアリング<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">標準化と正規化 ・ 対数変換 ・ ダミー変数・欠損の補完</div>
+            </div></div>
+            <div class="urow"><div class="u-no">04</div><div>
+                <div class="u-t">モデル評価①: 混同行列とF1<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">適合率・再現率・F1 ・ 精度の罠（不均衡データ）</div>
+            </div></div>
+            <div class="urow"><div class="u-no">05</div><div>
+                <div class="u-t">モデル評価②: ROC曲線とAUC<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">しきい値を変えるとどうなる ・ 分類器の総合評価</div>
+            </div></div>
+            <div class="urow"><div class="u-no">06</div><div>
+                <div class="u-t">過学習・バイアス/バリアンス<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">訓練だけ上手くなるモデル ・ 偏りと散らばりのトレードオフ</div>
+            </div></div>
+            <div class="urow"><div class="u-no">07</div><div>
+                <div class="u-t">交差検証とモデル選択<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">訓練/検証/テストの分割 ・ k分割交差検証 ・ チューニング</div>
+            </div></div>
+            <div class="urow"><div class="u-no">08</div><div>
+                <div class="u-t">正則化（リッジ・ラッソ）<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">係数を縮めて過学習を防ぐ ・ L1/L2のちがい ・ 特徴量選択</div>
+            </div></div>
+            <div class="urow"><div class="u-no">09</div><div>
+                <div class="u-t">時系列データ入門<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">トレンド・季節性 ・ 移動平均 ・ 自己相関の考え方</div>
+            </div></div>
+            <div class="urow"><div class="u-no">10</div><div>
+                <div class="u-t">因果推論の基礎<span class="u-tag plan">予定</span></div>
+                <div class="u-topics">相関と因果の復習 ・ 交絡因子 ・ 観察データの落とし穴</div>
+            </div></div>
+        </div>
+</div>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <span class="f-num">STEP 01 — 読む</span>
+                        導入 → 具体例の手計算 → Python実装の順で、各レッスンは15〜20分で読める分量に分割されています。
+                    </div>
+                    <div class="feature-item">
+                        <span class="f-num">STEP 02 — 解く</span>
+                        各レッスン末に選択式クイズ。⭕️/❌と効果音で即フィードバック。解説つきなので「なぜ間違いか」までわかります。
+                    </div>
+                    <div class="feature-item">
+                        <span class="f-num">STEP 03 — 確かめる</span>
+                        第1章の最後の確認テストで全範囲を復習。スコアに応じたランクメッセージが表示されます。
+                    </div>
+                </div>
+
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+
