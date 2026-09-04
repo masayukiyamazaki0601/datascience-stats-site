@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>【ドラフトD: クイズ番組】データの種類と尺度 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* ---- 比較ドラフト専用スタイル ---- */
+        .draft-note {
+            background: #FFFDF5; border: 1px dashed var(--color-brass); border-left: 4px solid var(--color-brass);
+            padding: 14px 18px; font-size: 14px; line-height: 1.7; color: var(--color-ink-soft); margin: 26px 0 0;
+        }
+        .draft-note a { text-decoration: underline; }
+        .stage {
+            background: #FFFFFF; border: 1px solid var(--color-paper-line); border-radius: 12px;
+            padding: 14px 20px; margin: 16px 0;
+        }
+        .stage .st-title {
+            font-family: var(--font-heading); font-weight: 700; font-size: 17px;
+            border-bottom: 2px solid var(--color-ink); padding-bottom: 4px; margin-bottom: 8px;
+        }
+        .stage .line { font-size: 15px; margin: 7px 0; }
+        .stage .mc { color: var(--color-brass); font-weight: 700; }
+        .stage .doc { color: var(--color-ink-soft); font-weight: 700; }
+        .stage .haya { color: var(--color-red); font-weight: 700; }
+        .stage .se { font-family: var(--font-mono); font-size: 12.5px; color: var(--color-ink-soft); }
+        .answer-box {
+            border: 1px dashed var(--color-brass); background: #FFFDF5; border-radius: 8px;
+            padding: 6px 12px; margin: 10px 0; font-size: 15px;
+        }
+    </style>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+</head>
+<body data-file="ch1-1-D-quizshow.html">
+
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="draft-note">
+            📐 <strong>比較ドラフトD／クイズ番組調</strong> — 第1章ユニット①の書き換え候補です(検討用の複製)。元のページ「<a href="ch1-1-data.html">ch1-1-data.html</a>」と見比べてください。学ぶ内容・クイズは元と同等です。
+        </div>
+
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 01 / Unit 01 — 比較ドラフト D／クイズ番組調</span>
+                <h2 class="lesson-title">今夜こそ決着! データの尺度スペシャル</h2>
+            </header>
+
+            <div class="goal">
+                <span class="box-label">このUnitでできるようになること</span>
+                <ul>
+                    <li>4つの尺度(名義・順序・間隔・比例)を「判定チャート」で当てられる</li>
+                    <li>「平均してよいデータ」を即答できる(最終問題で回答者に勝てる)</li>
+                </ul>
+            </div>
+
+            <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Round 01 — 番組スタート</span>
+            <h4>今夜は「データの尺度スペシャル」</h4>
+            <div class="stage">
+                <div class="st-title">🎬 深夜のクイズ番組「今夜こそ決着!」——データの尺度スペシャル</div>
+                <p class="se">(テーマ曲・拍手)</p>
+                <p class="line"><span class="mc">ゴトウ(司会):</span> こんばんは! 今夜のテーマは<strong>「データの種類と尺度」</strong>。日頃なにげなく見ている数字に、実は<strong>レベル</strong>があるんです。それが見分けられると、ウソ報告にだまされなくなります。</p>
+                <p class="line"><span class="doc">ミナセ博士(解説):</span> まず大前提。統計には<strong>2つの役割</strong>しかありません。「<strong>まとめる</strong>」(記述統計)と「<strong>当てる</strong>」(推測統計)。手元のデータ全部を集計したら前者、一部から全体を推定したら後者です。</p>
+                <p class="line"><span class="haya">ハヤテ(回答者):</span> むずかしいこと言わなくていいっすよ、博士! 数字は計算機に任せときゃいいんです!</p>
+                <p class="line"><span class="doc">ミナセ博士:</span> ……その「任せときゃいい」が、今夜の落とし穴です。計算機は<strong>「意味のない計算」も平気でやります</strong>からね。さあゴトウさん、第1問からいきましょう。</p>
+            </div>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ あなたへの出題 — 統計の2つの役割</p>
+              <p class="qq">「先週の注文1,000件すべて」をまとめて「平均単価3,200円」と報告するのは、統計のどの役割でしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>記述統計（まとめる）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>推測統計（当てる）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>どちらでもない</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>因果関係を調べる</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">手元にある1,000件すべてをまとめただけなので「記述統計」です。「一部の500人から全体20万人を当てる」ように、まだ見ていない対象を推定するのが推測統計でした。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Round 02 — 第1問</span>
+            <h4>「都道府県の平均って、出せますか？」</h4>
+            <div class="stage">
+                <div class="st-title">🔔 第1問（3秒で答えてください）</div>
+                <p class="line"><span class="mc">ゴトウ:</span> 「東京都」「大阪府」「北海道」…全国47都道府県のデータ。さあ、このデータに<strong>「平均」</strong>は出せるでしょうか?</p>
+                <p class="line"><span class="haya">ハヤテ:</span> 出せるっしょ! 都道府県に1〜47って番号を振れば、平均は……24! パチパチパチ!</p>
+                <p class="se">(ブブーという不正解ブザー)</p>
+                <p class="line"><span class="doc">ミナセ博士:</span> ざんねん。「都道府県コードの平均＝24」と言っても、それって何の意味もありません。血液型の「平均」と同じで、<strong>分類のデータに平均は存在しない</strong>んです。</p>
+                <p class="line"><span class="haya">ハヤテ:</span> え、じゃあ何なら出せるんすか?</p>
+                <p class="line"><span class="doc">ミナセ博士:</span> <strong>「いちばん多いもの」(最頻値)</strong>と<strong>「それぞれの割合」</strong>だけです。「東京都在住が12%」「O型が35%で最多」——これが分類データの正しい報告です。</p>
+            </div>
+            <p>この問題のカギは<strong>名義尺度</strong>。順番すらなく、ただ分類するだけのデータです。ちなみに、ここに落とし穴があります。<strong>数字に見えても名義のデータ</strong>——会員ID・郵便番号・電話番号・性別のコード(1=男性,2=女性)——は、パソコンで平均を出すと<strong>計算はできてしまいます</strong>。できてしまうからこそ要注意です。</p>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ あなたへの出題 — 落とし穴チェック</p>
+              <p class="qq">データに「会員ID（101、102、103…）」という列があります。このデータのレベルはどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>名義</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>順序</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>間隔</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>比例</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">会員IDは数字に見えますが、順番に意味はなく「ただの番号」。分類（名義）なので、平均を出しても意味がありません。判断の基準は「数値型かどうか」ではなく「その列が何を表すか」です。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Round 03 — 第2問</span>
+            <h4>「レビュー平均★4.2、この報告のどこが悪い？」</h4>
+            <div class="stage">
+                <div class="st-title">🔔 第2問（ひっかけ注意）</div>
+                <p class="line"><span class="mc">ゴトウ:</span> ネットのレビューで「平均★4.2」という表示をよく見ますよね。この報告、実は<strong>ある問題</strong>があるんです。何だと思いますか?</p>
+                <p class="line"><span class="haya">ハヤテ:</span> 4.2なら良い店じゃないっすか! むしろ褒められる数字でしょ!</p>
+                <p class="line"><span class="doc">ミナセ博士:</span> ここが今夜の山場です。★のデータは<strong>順序尺度</strong>。「★4と★5の差」と「★2と★3の差」が、人によって同じ大きさかどうか——実は<strong>誰にも保証できません</strong>。間隔が等しくない数字の「平均」は、厳密には計算してはいけないんです。</p>
+                <p class="line"><span class="haya">ハヤテ:</span> ええ〜。でも4.2って、ちゃんと出てるじゃないっすか。</p>
+                <p class="line"><span class="doc">ミナセ博士:</span> しかも平均にはもっとやっかいな性質があります。<strong>中身を隠す</strong>んです。同じ「平均★4.2」でも、この2つの店、どっちに行きたいですか?</p>
+                <div class="answer-box">
+                    <strong>店X:</strong> ★3が10件・★4が60件・★5が30件 → 「ふつう〜満足」に1つの山<br>
+                    <strong>店Y:</strong> ★1が20件・★5が80件 → 「大好き」と「怒って★1」(2割)に分裂
+                </div>
+                <p class="line"><span class="haya">ハヤテ:</span> 店Yは2割の客が★1って……平均4.2なのに、ちょっと怖いっすね。</p>
+                <p class="line"><span class="doc">ミナセ博士:</span> その通り。★は「<strong>★4以上の割合</strong>」「<strong>★1の割合</strong>」で報告するのが正解です。平均は悪くないけど、順序データの平均は「参考」止まり。内訳を見せてこそ誠実な報告です。</p>
+            </div>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ あなたへの出題 — ★のレベル</p>
+              <p class="qq">レビューの★（★1〜★5）のデータは、レベルでいうとどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>名義</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>順序</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>間隔</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>比例</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">★5のほうが★1より「良い」という順番はありますが、★と★のあいだの幅が等しい保証はありません。「平均★4.2」は二極化などの内訳を隠すので、割合や分布とセットで報告するのが安全です。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Round 04 — 第3問</span>
+            <h4>「『20℃は10℃の2倍暖かい』——○か✗か」</h4>
+            <div class="stage">
+                <div class="st-title">🔔 第3問（ノリで答えると痛い目を見ます）</div>
+                <p class="line"><span class="mc">ゴトウ:</span> ここからは「数」のデータの問題です。気温20℃と10℃。「今日は昨日の2倍暖かい!」——この言い方、○でしょうか、✗でしょうか?</p>
+                <p class="line"><span class="haya">ハヤテ:</span> 2倍っしょ! 20は10の2倍! ビシッ!</p>
+                <p class="se">(ブブー)</p>
+                <p class="line"><span class="doc">ミナセ博士:</span> ざんねん。気温は<strong>間隔尺度</strong>。0℃は「熱がまったくない」という意味ではありません。−5℃だって存在しますよね。「2倍」を語れるのは、0が本当の<strong>「無」</strong>のときだけ。℃の0は、氷ができる温度を<strong>基準に決めただけ</strong>です。</p>
+                <p class="line"><span class="haya">ハヤテ:</span> じゃあ、気温では何なら言えるんすか?</p>
+                <p class="line"><span class="doc">ミナセ博士:</span> 「差」は言えます。「20℃と10℃の差は10℃」。間隔尺度は、差に意味があって、比に意味がない——これが定義です。同じ仲間に<strong>西暦</strong>があります。「2026年は1013年の2倍」は変ですよね。西暦0年も、時間がゼロではなく基準（紀元）を決めただけです。</p>
+            </div>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ あなたへの出題 — 気温のレベル</p>
+              <p class="qq">「気温 25℃」のデータは、どのレベル（尺度）でしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>名義</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>順序</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>間隔</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>比例</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">気温の0℃は「熱が無い」を意味しないので間隔尺度です。「20℃は10℃の2倍暖かい」とは言えません（−5℃も存在します）。0が本当の無かどうかで、次の比例と見分けます。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Round 05 — 第4問</span>
+            <h4>「『滞在60分は30分の2倍』——今度は○？」</h4>
+            <div class="stage">
+                <div class="st-title">🔔 第4問（さっきの続き・引っかけ問題）</div>
+                <p class="line"><span class="mc">ゴトウ:</span> 気温は「2倍」が言えませんでした。では、お店のデータ「滞在時間」。「60分滞在したお客様は、30分のお客様の2倍長くいた」——これは○でしょうか✗でしょうか?</p>
+                <p class="line"><span class="haya">ハヤテ:</span> さっき2倍って言ってブーされたから……今度は✗にしておくっす!</p>
+                <p class="se">(ピンポンピンポン! 正解ブザー)</p>
+                <p class="line"><span class="haya">ハヤテ:</span> え、正解!? なんで!?</p>
+                <p class="line"><span class="doc">ミナセ博士:</span> いい質問です。気温と滞在時間のちがい——それは<strong>「0」の意味</strong>です。滞在時間の0分は「まったく滞在していない」という<strong>本当の無</strong>。0円も「何も買っていない」、身長0cmも「身長がない」。</p>
+                <p class="line"><span class="doc">ミナセ博士:</span> 0が本当の無を表すデータを<strong>比例尺度</strong>と呼びます。比例尺度なら「2倍」が言えます。「170cmは85cmの2倍」「滞在60分は30分の2倍」——どちらも自然でしょう?</p>
+                <p class="line"><span class="haya">ハヤテ:</span> なるほど! 0が「無」かどうかで、間隔と比例を見分けるんすね! 博士、覚えました!</p>
+                <p class="line"><span class="doc">ミナセ博士:</span> 完璧です。平均を自由に計算できるのも、比例と間隔（数データ）だけ。名義と順序には平均を出しちゃダメ。これが今日の結論の半分です。</p>
+            </div>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ あなたへの出題 — 比例の見分け</p>
+              <p class="qq">「滞在時間 0分 ＝ まったく滞在していない」というデータ（滞在時間）の尺度はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>名義</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>順序</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>間隔</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">エ</span>比例</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">滞在時間の0分は「まったく滞在していない」という本当の無を意味します。だから比例尺度。「60分は30分の2倍」と比も言えます。0の意味で気温（間隔）と見分けるのがコツです。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Round 06 — 最終問題</span>
+            <h4>「データのレベル」、今夜の総まとめ</h4>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>レベル</th><th>よび方</th><th>たとえば</th><th>できること</th></tr>
+                  <tr><td>1</td><td><strong>名義</strong></td><td>血液型・都道府県・会員ID</td><td>分類するだけ</td></tr>
+                  <tr><td>2</td><td><strong>順序</strong></td><td>★レビュー・5段階評価</td><td>順番をつけられる</td></tr>
+                  <tr><td>3</td><td><strong>間隔</strong></td><td>気温（℃）・西暦</td><td>差を計算できる</td></tr>
+                  <tr><td>4</td><td><strong>比例</strong></td><td>身長・金額・時間</td><td>「2倍」も言える</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="figure">
+              <div class="level-stairs">
+                <div class="stair" style="height:84px; background-color:#FBF7EE;">
+                  <span class="lvl">Level 1</span><b>名義</b>分類するだけ
+                </div>
+                <div class="stair" style="height:118px; background-color:#F6EFDD;">
+                  <span class="lvl">Level 2</span><b>順序</b>＋ 順番をつける
+                </div>
+                <div class="stair" style="height:154px; background-color:#F0E6C9;">
+                  <span class="lvl">Level 3</span><b>間隔</b>＋ 差を計算
+                </div>
+                <div class="stair dark" style="height:196px;">
+                  <span class="lvl">Level 4</span><b>比例</b>＋ 「2倍」も言える
+                </div>
+              </div>
+              <p class="figure-caption">図1: レベルが上がるほど「できること」が増える。レベル1・2では平均できない</p>
+            </div>
+            <div class="stage">
+                <div class="st-title">📋 博士の3ステップ判定（これで全問解ける）</div>
+                <p class="line"><span class="doc">ミナセ博士:</span> 迷ったら、この<strong>3つの質問</strong>を順番に通してください。</p>
+                <p class="line"><span class="mc">質問1:</span> 順番に意味がある? → <strong>ない＝名義</strong>(レベル1)</p>
+                <p class="line"><span class="mc">質問2:</span> 値と値のあいだは同じ幅? → <strong>同じ幅とは言えない＝順序</strong>(レベル2)</p>
+                <p class="line"><span class="mc">質問3:</span> 0は「何もない」? → <strong>はい＝比例</strong>(レベル4)／<strong>いいえ＝間隔</strong>(レベル3)</p>
+            </div>
+            <div class="stage">
+                <div class="st-title">🔔 最終問題（優勝をかけた1問）</div>
+                <p class="line"><span class="mc">ゴトウ:</span> データに「会員ID（101、102、103…）」という列。レベルは? ハヤテさん、ここで逆転のチャンスです!</p>
+                <p class="line"><span class="haya">ハヤテ:</span> 数字だから……比例? いや待てよ、博士の3ステップ! 会員IDに順番の意味はない……から、<strong>名義</strong>っす!</p>
+                <p class="se">(ピンポンピンポン! 大正解)</p>
+                <p class="line"><span class="doc">ミナセ博士:</span> 正解! 会員IDは数字の<strong>フリ</strong>をした分類です。パソコンはint型として計算しますが、意味は名義のまま。<strong>数値型かどうかではなく「その列が何を表すか」</strong>——これがデータ分析の鉄則です。</p>
+            </div>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ あなたへの最終出題</p>
+              <p class="qq">データに「会員ID（101、102、103…）」という列があります。このデータのレベルはどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>名義</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>順序</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>間隔</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>比例</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">会員IDは数字に見えますが、順番に意味はなく「ただの番号」。分類（名義）レベルです。パソコン上の型ではなく「その列が何を表すか」で判断しましょう。</div></details>
+            </div>
+            <div class="stage">
+                <div class="st-title">🏆 今夜の結論</div>
+                <p class="line"><span class="doc">ミナセ博士:</span> <strong>「平均してよいのは、数（レベル3・4）のデータだけ」</strong>。レベル1・2は「いちばん多いもの」や「◯◯以上の割合」で伝える。これを守るだけで、ウソ報告にだまされなくなります。</p>
+                <p class="line"><span class="haya">ハヤテ:</span> 数字のフリした名義に気をつける……覚えました! 次回も出たいっす!</p>
+                <p class="line"><span class="mc">ゴトウ:</span> というわけで今夜はここまで! お相手は、データ博士ミナセと、迷回答ながら成長したハヤテでした。また次回!（テーマ曲）</p>
+            </div>
+        </div>
+
+
+            </div>
+
+<section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 番組の最終関門: データの種類と尺度（6問）</h2>
+      <div class="quiz-status">正解 <b>0</b> / 6問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. 「東京都」「大阪府」「北海道」…のような都道府県データは名義尺度です。このデータに「平均」を出すことはできるでしょうか？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>できる。番号を振れば計算できるから</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>できない。分類を表す名義尺度だから</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>できる。ExcelならAVERAGE関数で出るから</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>どちらでもよい</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">都道府県は名義尺度なので、四則演算は意味を持ちません。仮に「北海道=1, 青森=2, …」と番号を振って平均を出しても「都道府県コードの平均=24」と言っているだけで、何の情報にもなりません。出せるのは最頻値（最も多い都道府県）や各カテゴリの割合（例: 東京都在住が12%）です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. ネットショップのレビューで「★1〜★5」の平均が「4.2」と報告されています。★のデータはどの尺度で、この報告は厳密にはどういう問題があるでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>比例尺度なので問題ない</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>名義尺度なので、そもそも大小もない</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>順序尺度なので、平均は厳密には不適切。割合や中央値で報告するのが望ましい</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>間隔尺度なので平均は意味を持つ</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">★は順序尺度です。「★4と★5の差」と「★2と★3の差」が人によって同じとは限らないため、平均は厳密には不適切です。しかも平均は分布を隠します。同じ平均★4.2でも「★5ばかりの店」と「★5と★1が混在する二極化した店」では意味がまったく違います。「★4以上の割合」や中央値＋分布で報告するのが望ましいです。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. 次のうち「比例尺度」のデータはどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>最高気温 25℃</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>西暦 2026年</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>身長 170cm</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>会員ランク（A/B/C）</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">比例尺度の0は「無」を意味します。身長0cm＝身長がない、金額0円＝何も払っていない。だから「170cmは85cmの2倍」と比が成り立ちます。一方、気温0℃は「熱がまったくない」を意味しないので間隔尺度です（-5℃も存在します）。「20℃は10℃の2倍暖かい」とは言えませんね。身長・滞在時間・来店数は比例尺度です。</div></details>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q4. データ分析の現場で「コード上は数値(int)なのに、実は名義尺度」という落とし穴があります。次のうち、その例に当てはまるのはどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>滞在時間（分）</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>購入金額（円）</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>郵便番号</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>気温（℃）</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">郵便番号・会員ID・商品コード・電話番号は、見た目は数字ですが「足したり平均したり」する意味がありません（郵便番号の平均を出しても無意味）。滞在時間や購入金額は量を表すので平均できます。数値型かどうかではなく、その列の「意味」で尺度を判断しましょう。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. 「西暦（2010年・2026年など）」のデータは、どの尺度でしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>名義</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>順序</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>間隔</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>比例</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">西暦の0年は「時間がゼロ」を意味するのではなく、基準（紀元）を決めただけなので間隔尺度です。「2026年は1013年の2倍」とは言えませんね。差（何年後か）には意味があります。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q6. アンケートで「性別」を 1＝男性・2＝女性 のように数字にコード化しました。この列の正しい扱い方はどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>数字になったので平均を出してよい</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>1から2を引いて差を計算してよい</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>コードは「名義」のまま。割合で集計する</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>2倍すれば「男性2人分」になる</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">コード化しても意味は変わりません。1・2はただのラベル（名義尺度）なので、平均や引き算は無意味。正しくは「男性が40%、女性が60%」のように割合で集計します。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+  </section>
+
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
