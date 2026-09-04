@@ -153,6 +153,20 @@
             </div>
 
             <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 二峰の見分け</p>
+              <p class="qq">「男性・女性が半々の身長データ」のヒストグラムは、どの形になりやすいでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>左右対称の山型</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>二峰（山が2つ）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>右の裾が長い</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>どこも平ら</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">男性のピーク（高め）と女性のピーク（低め）が重なって、山が2つになりがちです。「二峰」は、データの中に2つのグループが混ざっているサイン。平均1つで語ると中身が見えなくなります。</div></details>
+            </div>
+
+
+            <div class="mini-q quiz-q">
               <p class="mc-label">✏️ 途中確認 — 形の判断</p>
               <p class="qq">年収データのヒストグラムは、どの形になりやすいでしょう？</p>
               <ul class="opts">
@@ -217,6 +231,19 @@
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">高い側の外れ値が平均を右へ引っ張るので「平均 &gt; 中央値」になります（例: 年収・注文金額）。このとき中央値をメインに報告するのが安全です。</div></details>
             </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 逆の形も読む</p>
+              <p class="qq">「平均 &lt; 中央値」になるとき、データの形はどうなっているでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>左右対称の山型</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>右の裾が長い</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>左の裾が長い（低い側に外れ値）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>二峰（山が2つ）</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">満点近くに集まるテストに1人だけ低得点がいると、平均が左に引っ張られて「平均 &lt; 中央値」になります。低い側の外れ値で左の裾が長くなるパターンです（表の3行目）。</div></details>
+            </div>
         </div>
 
         <div class="lesson-step">
@@ -234,6 +261,20 @@
                 </tbody>
               </table>
             </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 原因の見分け</p>
+              <p class="qq">データに「年齢 = −3」という値がありました。この外れ値の原因は、表のどのタイプでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>① 入力ミス</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>② 測定の異常</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>③ 本物の珍しい値</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>④ 別グループの混入</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">年齢がマイナスになることはあり得ないので、入力ミス（①）です。まず原因を確認して、正しい値に直すか削除します。いきなり「外れ値だから消そう」としないのが鉄則です。</div></details>
+            </div>
+
             <p>たとえばクレジットカードの不正検知では、ほかの人と違う「外れ値」こそが手がかりになります。外れ値＝ゴミではなく、<strong>外れ値＝調査対象</strong>と考えるのがデータサイエンスの基本です。</p>
 
             <div class="mini-q quiz-q">
@@ -303,6 +344,19 @@
               </ul>
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">絶対点数の75点に惑わされず、平均とσで基準化して比べます。数学z=1.0、英語z=0.5 → 平均からより離れて上位にいるのは数学です。</div></details>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — zスコアの計算</p>
+              <p class="qq">ある生徒のテストが85点。クラスの平均が70点・標準偏差が10点のとき、この生徒のzスコアはいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>0.5</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>1.5</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>2.0</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>15</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">z = (85 − 70) ÷ 10 = 1.5。「クラス平均から標準偏差1.5個分だけ上」という意味です。絶対点数が高いだけでは、ほかの科目と公平に比べられません。</div></details>
             </div>
         </div>
 

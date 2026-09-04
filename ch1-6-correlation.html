@@ -197,6 +197,19 @@
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">右下がり＝負の相関。一直線に並んでいる＝強い相関なので r ≈ −1 です。</div></details>
             </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 傾向なしの読み方</p>
+              <p class="qq">点が「丸くバラバラに散らばって、右上がりでも右下がりでもない」散布図の相関係数は、およそいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>r ≈ ＋1</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>r ≈ 0</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>r ≈ −1</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>計算できない</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">直線の傾向がなければ r ≈ 0 になります。ただし「直線の関係がない」だけで「無関係」とは言い切れません——曲線の関係は r では測れないからです（次のStepで詳しく）。</div></details>
+            </div>
         </div>
 
         <div class="lesson-step">
@@ -286,6 +299,18 @@
               <p class="figure-caption">図5: 2つは「相関している」だけで、原因は共通の「気温」。アイスを売っても事故は増えない</p>
             </div>
             <p>このように「一緒に動いているだけ」の関係を<strong>擬似相関</strong>と呼びます。相関係数が教えてくれるのは「一緒に動く傾向」だけで、<strong>「なぜ動くのか」は教えてくれません</strong>。後ろに共通の原因が隠れていないか、必ず考えましょう。</p>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 相関係数の限界</p>
+              <p class="qq">相関係数（r）が「教えてくれない」のは、次のうちどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>2つの変数が一緒に動く傾向の強さ</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>一緒に動く向き（正の相関か負の相関か）</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>なぜ一緒に動くのか（原因・因果）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>どちらも教えてくれる</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">r は「一緒に動く傾向の強さと向き」だけを数値にしたもの。「原因は何か」は教えてくれません。後ろに共通の原因（交絡）が隠れていないかは、データの意味を考えて判断します。</div></details>
+            </div>
 
             <div class="mini-q quiz-q">
               <p class="mc-label">✏️ 途中確認 — 擬似相関</p>
@@ -310,6 +335,18 @@
               <li>2グループの購入率を比べる</li>
             </ol>
             <p>ランダムに分けることで「たまたま元々買いやすい人が片方に偏る」のを防ぎます。これは第4章で学ぶ「A/Bテスト」の土台になる考え方です。</p>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — なぜランダムに分ける？</p>
+              <p class="qq">介入実験で、参加者を「ランダムに2グループに分ける」主な理由はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>元々の性質の違いが片方に偏るのを防ぐため</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>計算を楽にするため</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>全員に広告を見せられるようにするため</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>ランダムなら必ず効果が出るから</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">ランダムに分けると、2グループの「元々の違い（年齢や購買傾向など）」が均等に混ざります。そうしないと、施策の効果なのか元々の差なのか区別がつかなくなります（=交絡の防止）。</div></details>
+            </div>
 
             <div class="mini-q quiz-q">
               <p class="mc-label">✏️ 最後のひと休み — 因果の確かめ方</p>

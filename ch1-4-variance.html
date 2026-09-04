@@ -143,6 +143,19 @@
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">プラスの偏差とマイナスの偏差が必ず打ち消し合うので、合計はいつも0。だから2乗して全部プラスにしてから足し合わせます。</div></details>
             </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — なぜ2乗する？</p>
+              <p class="qq">偏差を2乗してから足し合わせる目的はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>計算を楽にするため</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>マイナスの偏差もプラスにして、打ち消し合うのを防ぐため</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>平均を大きく見せるため</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>外れ値を消すため</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">(−10)² も 10² も 100 になるように、2乗すればマイナスもプラスになります。偏差の合計がいつも0になる問題を回避して、「散らばりの大きさ」を足し合わせられるようにするためです。</div></details>
+            </div>
         </div>
         <div class="lesson-step">
             <span class="lesson-step-meta">Step 03</span>
@@ -171,6 +184,18 @@
             <p>分散62.5の単位は「cm²」。2乗したぶん、単位が変わってしまってイメージしにくいです。そこで平方根を取ったのが<strong>標準偏差</strong>です。</p>
             <div class="math-block">標準偏差 = √62.5 ≒ <strong>7.9cm</strong></div>
             <p>これで「この5人は、平均170cmからだいたい±7.9cmのあたりに散らばっている」と読めます。</p>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 標準偏差の読み方</p>
+              <p class="qq">「標準偏差 7.9cm」の読み方として正しいのはどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>平均身長が 7.9cm だということ</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>5人は平均170cmから、だいたい±7.9cmのあたりに散らばっている</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>いちばん高い人と低い人の差が 7.9cm だということ</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>全員の身長が 7.9cm ずつ伸びるということ</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">標準偏差は「平均からだいたいどれくらい散らばっているか」の目安。単位も「cm」に戻るので、「170cm ± 7.9cm あたりに収まる」とイメージできます。いちばん高い人と低い人の差（=20cm）とは別物です。</div></details>
+            </div>
             <div class="figure">
               <div class="dc-plot" style="height:130px;">
                 <div class="dc-axis"></div>
@@ -306,6 +331,19 @@
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">±1σ＝約68%、±2σ＝約95%、±3σ＝約99.7%。ただし左右対称の山型のときだけ。この目安は第2章の「正規分布」で再登場します。</div></details>
             </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 95%の目安</p>
+              <p class="qq">左右対称の山型データで、平均±2σ（標準偏差の2倍）の範囲に入るのは、およそ何%でしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>約50%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>約68%</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>約95%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約99.7%</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">±1σ=約68%・±2σ=約95%・±3σ=約99.7%。たとえばネジ工場なら「公差が±2σに入るか」が品質管理の目安になります。※年収のように歪んだデータでは使えないので注意。</div></details>
+            </div>
         </div>
         <div class="lesson-step">
             <span class="lesson-step-meta">Step 07</span>
@@ -320,6 +358,19 @@
                   <tr><td>pandas</td><td>df.var() / df.std() は最初からn−1方式</td></tr>
                 </tbody>
               </table>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 実務ツールの標準</p>
+              <p class="qq">データ分析の標準（n−1方式）が「最初から」採用されているのはどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>NumPy の np.var(x)（引数なし）</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>pandas の df.var() / df.std()（引数なし）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>どちらも n 方式</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>どちらも関係ない</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">pandas の var()/std() は最初から分母 n−1 の不偏版です。NumPy は np.var(x, ddof=1) のように指定しないと n で割ります（第3章の推定で大事になる話です）。</div></details>
             </div>
             <details class="kansetsu">
               <summary>Pythonで確かめたい人向け（任意）</summary>
