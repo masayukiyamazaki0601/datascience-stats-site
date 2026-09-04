@@ -132,6 +132,19 @@
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">手元にある30日分をまとめただけなので「記述統計」です。「500人のアンケートから20万人全体を当てる」ように、まだ見ていない全体を推測するのが推測統計でしたね。</div></details>
             </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — ちょっと確認（Step 02・もう1問）</p>
+              <p class="qq">ある店で「先週の注文1,000件すべて」のデータをまとめて、「平均単価 3,200円」と報告しました。これは統計のどの役割でしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>記述統計（まとめる）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>推測統計（当てる）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>どちらでもない</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>因果関係を調べる</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">手元にある1,000件すべてをまとめただけなので「記述統計」です。「一部の500人から全体20万人を当てる」ように、まだ見ていない対象を推定するのが推測統計でした。</div></details>
+            </div>
         </div>
         <div class="lesson-step">
             <span class="lesson-step-meta">Step 03</span>
@@ -266,15 +279,28 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">0℃は「熱がゼロ」ではなく、ただの基準点です。だから間隔レベル。「20℃は10℃より2倍あたたかい」とは言えませんね。</div></details>
             </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — ちょっと確認（Step 05・もう1問）</p>
+              <p class="qq">「滞在時間 0分」＝「まったく滞在していない」というデータ（滞在時間）の尺度はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>名義</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>順序</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>間隔</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">エ</span>比例</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">0分＝「滞在していない」という「何もない」を意味するので比例レベル。「20分の滞在は10分の2倍」と言えます。気温（0℃はただの基準）とちがう点がポイントです。</div></details>
+            </div>
         </div>
 
         <div class="lesson-step">
             <span class="lesson-step-meta">OUTPUT 練習</span>
-            <h4>ここまでを「解いて」定着させる（アウトプット6連）</h4>
+            <h4>ここまでを「解いて」定着させる（アウトプット8連）</h4>
             <p>読んだだけで満足しない！ ここまでの内容を、自分で答えを出してから解説を見ましょう。正解で経験値（EXP）も入ります。</p>
 
             <div class="mini-q quiz-q">
-              <p class="mc-label">✏️ アウトプット 1/6 — 記述と推測</p>
+              <p class="mc-label">✏️ アウトプット 1/8 — 記述と推測</p>
               <p class="qq">全顧客20万人全員には聞けないので、無作為に500人だけにアンケートして「全体では満足度74点くらい」と当てるのは、どちらの統計でしょう？</p>
               <ul class="opts">
                 <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>記述統計（まとめる）</button></li>
@@ -285,7 +311,7 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
             </div>
 
             <div class="mini-q quiz-q">
-              <p class="mc-label">✏️ アウトプット 2/6 — 平均してよいデータ</p>
+              <p class="mc-label">✏️ アウトプット 2/8 — 平均してよいデータ</p>
               <p class="qq">次のうち「平均」を計算して意味があるのはどれでしょう？</p>
               <ul class="opts">
                 <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>血液型（A/B/O/AB）</button></li>
@@ -298,7 +324,7 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
             </div>
 
             <div class="mini-q quiz-q">
-              <p class="mc-label">✏️ アウトプット 3/6 — レベルの判定</p>
+              <p class="mc-label">✏️ アウトプット 3/8 — レベルの判定</p>
               <p class="qq">「気温 25℃」のデータは、どのレベル（尺度）でしょう？</p>
               <ul class="opts">
                 <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>名義</button></li>
@@ -310,7 +336,7 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">0℃は「熱ゼロ」ではなく基準点なので間隔レベル。「25℃は5℃より5倍あたたかい」とは言えません。</div></details>
             </div>
             <div class="mini-q quiz-q">
-              <p class="mc-label">✏️ アウトプット 4/6 — レベルの判定</p>
+              <p class="mc-label">✏️ アウトプット 4/8 — レベルの判定</p>
               <p class="qq">「身長 170cm」は、どのレベル（尺度）でしょう？</p>
               <ul class="opts">
                 <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>順序</button></li>
@@ -323,7 +349,7 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
             </div>
 
             <div class="mini-q quiz-q">
-              <p class="mc-label">✏️ アウトプット 5/6 — ★の扱い</p>
+              <p class="mc-label">✏️ アウトプット 5/8 — ★の扱い</p>
               <p class="qq">レビュー★（1〜5）のデータで、もっとも誠実な報告の仕方はどれでしょう？</p>
               <ul class="opts">
                 <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>平均★を1つだけ書く</button></li>
@@ -335,7 +361,7 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
             </div>
 
             <div class="mini-q quiz-q">
-              <p class="mc-label">✏️ アウトプット 6/6 — 実務の罠</p>
+              <p class="mc-label">✏️ アウトプット 6/8 — 実務の罠</p>
               <p class="qq">「会員ランク（ブロンズ・シルバー・ゴールド）」のデータに、平均を出してよいでしょうか？</p>
               <ul class="opts">
                 <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>よい（数字にすれば平均できる）</button></li>
@@ -343,6 +369,32 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
               </ul>
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">会員ランクは順序レベル。ランクとランクの「間隔」が等しい保証がないので、平均は参考程度にしか使えません。最頻値や割合で伝えましょう。</div></details>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ アウトプット 7/8 — レベルの判定</p>
+              <p class="qq">マラソンの「順位（1位・2位・3位…）」のデータの尺度はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>名義</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>順序</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>間隔</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>比例</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">順位は「1位より2位のほうが上」と順番はありますが、「1位と2位の差」と「10位と11位の差」が同じとは限りません。なので順序レベル。平均より「最頻の順位」や割合で伝えます。</div></details>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ アウトプット 8/8 — レベルの応用</p>
+              <p class="qq">5段階評価（とても良い〜とても悪い）を集計するとき、もっとも適切な方法はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>評価を1〜5に変換して「平均3.4」とだけ報告する</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>1〜5に変換して「標準偏差0.8」とだけ報告する</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>「良い以上が何%」「悪いが何%」のように割合や分布で報告する</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>評価の数字を足して合計点で比べる</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">5段階評価は順序レベルなので、平均は「参考」程度。2極化を隠さないためには「良い以上が70%」「悪いが10%」のように割合や分布をセットで報告するのが安全です。</div></details>
             </div>
         </div>
 
@@ -407,8 +459,8 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
 
 <section class="quiz-block">
     <div class="quiz-head">
-      <h2>📝 クイズ: データの種類と尺度</h2>
-      <div class="quiz-status">正解 <b>0</b> / 4問</div>
+      <h2>📝 クイズ: データの種類と尺度（6問）</h2>
+      <div class="quiz-status">正解 <b>0</b> / 6問</div>
     </div>
 
     <div class="quiz-q">
@@ -454,6 +506,28 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
       </ul>
       <p class="quiz-feedback" aria-live="polite"></p>
       <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">郵便番号・会員ID・商品コード・電話番号は、見た目は数字ですが「足したり平均したり」する意味がありません（郵便番号の平均を出しても無意味）。滞在時間や購入金額は量を表すので平均できます。数値型かどうかではなく、その列の「意味」で尺度を判断しましょう。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. 「西暦（2010年・2026年など）」のデータは、どの尺度でしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>名義</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>順序</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>間隔</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>比例</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">西暦の0年は「時間がゼロ」を意味するのではなく、基準（紀元）を決めただけなので間隔尺度です。「2026年は1013年の2倍」とは言えませんね。差（何年後か）には意味があります。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q6. アンケートで「性別」を 1＝男性・2＝女性 のように数字にコード化しました。この列の正しい扱い方はどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>数字になったので平均を出してよい</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>1から2を引いて差を計算してよい</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>コードは「名義」のまま。割合で集計する</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>2倍すれば「男性2人分」になる</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">コード化しても意味は変わりません。1・2はただのラベル（名義尺度）なので、平均や引き算は無意味。正しくは「男性が40%、女性が60%」のように割合で集計します。</div></details>
     </div>
 
     <div class="quiz-actions">
