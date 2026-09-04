@@ -49,14 +49,8 @@
     <div class="lesson-flow">
         <div class="lesson-step">
             <span class="lesson-step-meta">Step 01</span>
-            <h4>今日のゴール: データの「種類」を見分けられるようになる</h4>
-            <p>データ分析では、計算のまえに「このデータは何のデータか」を確認します。データには、大きく分けて<strong>2種類</strong>あります。</p>
-            <ul>
-              <li><strong>数で表されるデータ</strong>（例: 注文金額・身長・気温）→ 足し算や平均ができる</li>
-              <li><strong>分類のデータ</strong>（例: 血液型・都道府県）→ 平均はできない</li>
-            </ul>
-            <p>このちがいを知っているだけで、あとで「変な平均」や「あやしい数字」にだまされにくくなります。このUnitでは、この見分け方を練習していきます。</p>
-            <p>まずは、数で表されるデータの例を2つ見てみましょう。数字を覚える必要はありません。流し読みでOKです。</p>
+            <h4>さっそく、2つのデータを見てみましょう</h4>
+            <p>このUnitでは「データの種類」を見分ける練習をします。いきなり言葉で説明するより、先に実物を見るほうが早いので、2つのデータを用意しました。数字を覚える必要はありません。形を見て、ざっと流してください。</p>
             <div class="figure">
               <svg viewBox="0 0 680 302" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="この章で追いかける2つのデータ。例Aはネットショップの注文金額10件、例Bはバスケ部員5人の身長">
                 <!-- カード 例A -->
@@ -87,8 +81,8 @@
                 <rect x="254" y="140" width="46" height="26" rx="7" fill="#FBE4DA" stroke="#B4432F"/>
                 <text x="277" y="156.5" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10.5" font-weight="700" fill="#B4432F">8900</text>
                 <text x="34" y="196" font-family="'Noto Sans JP',sans-serif" font-size="12" font-weight="700" fill="#B4432F">⚠ 赤いタグ＝8,900円の注文</text>
-                <text x="34" y="216" font-family="'Noto Sans JP',sans-serif" font-size="11" fill="#3E5063">ほか9件は 640〜3,400円なのに、この1件だけ</text>
-                <text x="34" y="234" font-family="'Noto Sans JP',sans-serif" font-size="11" fill="#3E5063">飛び抜けています。平均への影響は Unit② で。</text>
+                <text x="34" y="216" font-family="'Noto Sans JP',sans-serif" font-size="11" fill="#3E5063">ほかの9件は 640〜3,400円なのに、この1件だけ</text>
+                <text x="34" y="234" font-family="'Noto Sans JP',sans-serif" font-size="11" fill="#3E5063">飛び抜けています。この「ちがい」が今後のカギです。</text>
                 <!-- カード 例B -->
                 <rect x="348" y="16" width="312" height="270" rx="12" fill="#FFFFFF" stroke="#D9D2BE"/>
                 <rect x="362" y="32" width="44" height="22" rx="6" fill="#1C2B39"/>
@@ -112,12 +106,12 @@
                 <text x="504" y="223" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="10" fill="#3E5063">部員3</text>
                 <text x="562" y="223" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="10" fill="#3E5063">部員4</text>
                 <text x="620" y="223" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="10" fill="#3E5063">部員5</text>
-                <text x="362" y="256" font-family="'Noto Sans JP',sans-serif" font-size="11" fill="#3E5063">5人が 160・165・170・175・180cm の「5cm刻み」。</text>
-                <text x="362" y="274" font-family="'Noto Sans JP',sans-serif" font-size="11" fill="#3E5063">外れ値がなく、きれいに並んだ数データです。</text>
+                <text x="362" y="256" font-family="'Noto Sans JP',sans-serif" font-size="11" fill="#3E5063">5人が 160〜180cm に5cmずつ並んだ、きれいなデータ。</text>
+                <text x="362" y="274" font-family="'Noto Sans JP',sans-serif" font-size="11" fill="#3E5063">飛び抜けた値がなく、そろっています。</text>
               </svg>
               <p class="figure-caption">図1: 説明に使う2つの例。左＝お店の注文金額10件（赤い「8900円」の1件だけが飛び抜けている）、右＝バスケ部員5人の身長（きれいに並んでいる）</p>
             </div>
-            <p>例Aのポイントは<strong>1つだけ</strong>です。「8900円」という大きな注文が1件だけ混ざっています。この1件があるだけで平均がどう変わるか、次のUnitで確かめます。</p>
+            <p>2つの図を見比べてください。左の例Aは、ほかの注文と比べて<strong>「8900円」の1件だけが飛び抜けています</strong>。右の例Bは、160〜180cmが5cm刻みでそろっています。この「ちがい」が、このUnitのポイントです。</p>
 
             <div class="mini-q quiz-q">
               <p class="mc-label">✏️ ここでひと休み — ちょっと確認（Step 01）</p>
@@ -131,6 +125,8 @@
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">例Aは注文金額（円）、例Bは身長（cm）。どちらも「数」で表されたデータです。外れ値（飛び抜けた値）があるのは例Aの8900円だけで、例Bにはありません。「平均してよいデータかどうか」の話は、この先のStepで出てきます。</div></details>
             </div>
+
+            <p>例Aの「飛び抜けた1件」を、目で見て確かめてみましょう。注文10件を棒グラフにしました。</p>
 
             <div class="figure">
               <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="注文金額の棒グラフ。1件だけが非常に大きい">
@@ -169,7 +165,7 @@
 
             <div class="mini-q quiz-q">
               <p class="mc-label">✏️ ここでひと休み — グラフの読み取り（Step 01）</p>
-              <p class="qq">図1のグラフで、ほかの注文とくらべて1件だけ「飛び抜けている」注文はどれでしょう？</p>
+              <p class="qq">図3のグラフで、ほかの注文とくらべて1件だけ「飛び抜けている」注文はどれでしょう？</p>
               <ul class="opts">
                 <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>640円</button></li>
                 <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>1,200円</button></li>
@@ -278,11 +274,6 @@
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">手元にある1,000件すべてをまとめただけなので「記述統計」です。「一部の500人から全体20万人を当てる」ように、まだ見ていない対象を推定するのが推測統計でした。</div></details>
             </div>
-
-            <div class="note">
-              <span class="box-label">サンプルストアのデータでいうと…（1）</span>
-              <p>「先月の売上30個を、そのまま本部に見せても好調かどうか伝わらない。だから『1日あたり平均18.5万円』とまとめる」——このひと手間が<strong>記述統計</strong>です。Unit②では、この店の注文データ（例A）を使って平均を実際に計算します。</p>
-            </div>
         </div>
 
         <div class="lesson-step">
@@ -361,11 +352,6 @@ print(df["会員ID"].mean())    # 102.0 と計算できるが、意味はない<
               </ul>
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">会員IDは「ただの通し番号」＝名義（分類）。pandasの mean() で計算はできてしまいますが、出た値に意味はありません。判断の基準は「コード上の型」ではなく「その列が何を表すか」です。</div></details>
-            </div>
-
-            <div class="note">
-              <span class="box-label">サンプルストアのデータでいうと…（2）</span>
-              <p>もし注文データに「会員ID」や「利用デバイス（スマホ／PC）」の列があったら？ IDの平均も「スマホとPCの平均」も出せません。正しくは「デバイス別の注文数・割合」を集計します。分類の列は<strong>割合と最頻値</strong>で語る——これが店のデータを正しく読む第一歩です。</p>
             </div>
         </div>
 
@@ -520,11 +506,6 @@ print(df["会員ID"].mean())    # 102.0 と計算できるが、意味はない<
               </ul>
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">西暦の0年は「時間がゼロ」ではなく、基準（紀元）を決めただけ。だから0＝無ではない「間隔」レベルです。「2026年は1013年の2倍」とは言えませんが、「差（何年後か）」には意味があります。</div></details>
-            </div>
-
-            <div class="note">
-              <span class="box-label">サンプルストアのデータでいうと…（3）</span>
-              <p>サンプルストアの「注文金額」は 0円＝何も買っていない、だから<strong>比例データで平均OK</strong>。「滞在時間」も比例。いっぽう「キャンペーン期間を西暦の数字で平均する」のは間隔の罠です（2026年と2024年の「平均の年」に意味はありません）。これで、店のどの列が平均できるか迷わず言えるはずです。</p>
             </div>
         </div>
 
