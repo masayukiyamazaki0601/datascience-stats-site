@@ -133,6 +133,70 @@
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">絶対値0.9が大きい＝強い相関。符号がマイナスなので右下がり＝強い負の相関です。</div></details>
             </div>
+
+            <p>「強さ」と「向き」を、散布図の見た目とセットで覚えておきましょう。</p>
+            <div class="figure">
+              <div class="panel-row">
+                <div class="panel">
+                  <div class="panel-title">r ≈ ＋1</div>
+                  <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="150" r="4" fill="#A9782F"/><circle cx="75" cy="135" r="4" fill="#A9782F"/>
+                    <circle cx="100" cy="120" r="4" fill="#A9782F"/><circle cx="125" cy="105" r="4" fill="#A9782F"/>
+                    <circle cx="150" cy="90" r="4" fill="#A9782F"/><circle cx="175" cy="75" r="4" fill="#A9782F"/>
+                    <circle cx="200" cy="60" r="4" fill="#A9782F"/><circle cx="225" cy="45" r="4" fill="#A9782F"/>
+                  </svg>
+                </div>
+                <div class="panel">
+                  <div class="panel-title">r ≈ ＋0.7</div>
+                  <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="55" cy="135" r="4" fill="#A9782F"/><circle cx="90" cy="160" r="4" fill="#A9782F"/>
+                    <circle cx="115" cy="120" r="4" fill="#A9782F"/><circle cx="150" cy="105" r="4" fill="#A9782F"/>
+                    <circle cx="165" cy="150" r="4" fill="#A9782F"/><circle cx="195" cy="75" r="4" fill="#A9782F"/>
+                    <circle cx="220" cy="90" r="4" fill="#A9782F"/><circle cx="245" cy="60" r="4" fill="#A9782F"/>
+                  </svg>
+                </div>
+                <div class="panel">
+                  <div class="panel-title">r ≈ 0</div>
+                  <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="70" r="4" fill="#A9782F"/><circle cx="90" cy="160" r="4" fill="#A9782F"/>
+                    <circle cx="125" cy="45" r="4" fill="#A9782F"/><circle cx="155" cy="140" r="4" fill="#A9782F"/>
+                    <circle cx="190" cy="75" r="4" fill="#A9782F"/><circle cx="220" cy="170" r="4" fill="#A9782F"/>
+                    <circle cx="250" cy="100" r="4" fill="#A9782F"/>
+                  </svg>
+                </div>
+                <div class="panel">
+                  <div class="panel-title">r ≈ −0.7</div>
+                  <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="55" cy="60" r="4" fill="#A9782F"/><circle cx="90" cy="70" r="4" fill="#A9782F"/>
+                    <circle cx="120" cy="105" r="4" fill="#A9782F"/><circle cx="140" cy="150" r="4" fill="#A9782F"/>
+                    <circle cx="175" cy="110" r="4" fill="#A9782F"/><circle cx="205" cy="160" r="4" fill="#A9782F"/>
+                    <circle cx="230" cy="150" r="4" fill="#A9782F"/><circle cx="260" cy="185" r="4" fill="#A9782F"/>
+                  </svg>
+                </div>
+                <div class="panel">
+                  <div class="panel-title">r ≈ −1</div>
+                  <svg viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="50" cy="45" r="4" fill="#A9782F"/><circle cx="75" cy="70" r="4" fill="#A9782F"/>
+                    <circle cx="100" cy="95" r="4" fill="#A9782F"/><circle cx="125" cy="120" r="4" fill="#A9782F"/>
+                    <circle cx="150" cy="145" r="4" fill="#A9782F"/><circle cx="175" cy="170" r="4" fill="#A9782F"/>
+                    <circle cx="200" cy="180" r="4" fill="#A9782F"/>
+                  </svg>
+                </div>
+              </div>
+              <p class="figure-caption">図2: 相関の「向き」（右上がり/右下がり）と「強さ」（点のまとまり）。数字を覚える前に、まずこの見た目を覚えよう</p>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 図からrを読む</p>
+              <p class="qq">点が「きれいな右下がりの一直線」に並んでいる散布図の相関係数は、およそいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>r ≈ ＋1</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>r ≈ 0</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>r ≈ −1</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">右下がり＝負の相関。一直線に並んでいる＝強い相関なので r ≈ −1 です。</div></details>
+            </div>
         </div>
 
         <div class="lesson-step">
@@ -152,7 +216,7 @@
                 <circle cx="477.5" cy="148" r="5" fill="#A9782F" />
                 <circle cx="542.5" cy="107" r="5" fill="#A9782F" />
               </svg>
-              <p class="figure-caption">図2: 山型（逆U字）のような関係は「直線」では測れない。r ≈ 0 でも強い関係がある</p>
+              <p class="figure-caption">図3: 山型（逆U字）のような関係は「直線」では測れない。r ≈ 0 でも強い関係がある</p>
             </div>
             <p>たとえば「練習時間と成績」は、やりすぎると疲れて下がるため山型になります。こんな関係は直線の当てはまりが悪く、r ≈ 0 になりえます。だから<strong>必ず散布図とセットで確認</strong>するのがルールです。</p>
 
@@ -166,6 +230,44 @@
               </ul>
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">rは「直線」の当てはまりしか見ません。山型のような関係はr≈0になります。散布図を先に見る習慣が大切です。</div></details>
+            </div>
+
+            <p>もう1つ、相関係数は<strong>外れ値1個で大きく変わってしまう</strong>弱点もあります。</p>
+            <div class="figure">
+              <div class="panel-row">
+                <div class="panel">
+                  <div class="panel-title">外れ値なし <span class="avg">r ≈ 0.5</span></div>
+                  <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="60" cy="140" r="5" fill="#A9782F"/><circle cx="95" cy="120" r="5" fill="#A9782F"/>
+                    <circle cx="130" cy="160" r="5" fill="#A9782F"/><circle cx="165" cy="110" r="5" fill="#A9782F"/>
+                    <circle cx="200" cy="150" r="5" fill="#A9782F"/><circle cx="235" cy="100" r="5" fill="#A9782F"/>
+                    <circle cx="270" cy="130" r="5" fill="#A9782F"/>
+                  </svg>
+                </div>
+                <div class="panel">
+                  <div class="panel-title">外れ値を1個追加 <span class="avg">r ≈ 0.95 に急上昇!</span></div>
+                  <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="60" cy="140" r="5" fill="#A9782F"/><circle cx="95" cy="120" r="5" fill="#A9782F"/>
+                    <circle cx="130" cy="160" r="5" fill="#A9782F"/><circle cx="165" cy="110" r="5" fill="#A9782F"/>
+                    <circle cx="200" cy="150" r="5" fill="#A9782F"/><circle cx="235" cy="100" r="5" fill="#A9782F"/>
+                    <circle cx="270" cy="130" r="5" fill="#A9782F"/>
+                    <circle cx="305" cy="30" r="7" fill="#B4432F"/>
+                  </svg>
+                </div>
+              </div>
+              <p class="figure-caption">図4: 右上の赤い点が1個増えただけで、相関が「弱い」→「とても強い」に見える。外れ値の影響をチェックしよう</p>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 外れ値と相関係数</p>
+              <p class="qq">相関係数を計算する前に、外れ値の有無を確認するにはどうすればよいでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>何もせずrだけ計算する</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>散布図を描いて点の飛び出しを確認する</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>データを全部削除する</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">rは外れ値に弱いので、まず散布図で飛び出した点を探します。あれば、その原因を調べて「あり／なし」で結果を比べるのが実務の基本です。</div></details>
             </div>
         </div>
         <div class="lesson-step">
@@ -181,7 +283,7 @@
                   <div style="background:#fff;border:1.5px solid var(--color-brass);border-radius:6px;padding:8px 18px;font-size:13px;">水難事故の件数</div>
                 </div>
               </div>
-              <p class="figure-caption">図3: 2つは「相関している」だけで、原因は共通の「気温」。アイスを売っても事故は増えない</p>
+              <p class="figure-caption">図5: 2つは「相関している」だけで、原因は共通の「気温」。アイスを売っても事故は増えない</p>
             </div>
             <p>このように「一緒に動いているだけ」の関係を<strong>擬似相関</strong>と呼びます。相関係数が教えてくれるのは「一緒に動く傾向」だけで、<strong>「なぜ動くのか」は教えてくれません</strong>。後ろに共通の原因が隠れていないか、必ず考えましょう。</p>
 

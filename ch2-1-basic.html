@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2章(1) 確率の基本と条件付き確率 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+    <style>
+        .dice { display: flex; gap: 8px; justify-content: center; margin: 14px 0 6px; flex-wrap: wrap; }
+        .dice span {
+            width: 46px; height: 46px; display: flex; align-items: center; justify-content: center;
+            font-family: var(--font-mono); font-size: 18px; font-weight: 700;
+            border: 2px solid var(--color-ink); border-radius: 8px; background: #fff;
+        }
+        .dice span.even { background: #F2E9D5; border-color: var(--color-brass); color: var(--color-brass); }
+        .pline { position: relative; height: 16px; border-top: 2px solid var(--color-ink); margin: 26px 4px 30px; }
+        .pline i { position: absolute; top: -4px; width: 0; height: 12px; border-left: 2px solid var(--color-ink); }
+        .pline .lbl { position: absolute; top: 12px; transform: translateX(-50%); font-family: var(--font-mono); font-size: 11px; color: var(--color-ink-soft); white-space: nowrap; }
+        .band { position: relative; height: 26px; background: #F6F3EA; border-radius: 4px; margin: 18px 0 4px; overflow: hidden; }
+        .band i { position: absolute; top: 0; height: 100%; }
+        .band b { position: absolute; top: -18px; transform: translateX(-50%); font-family: var(--font-mono); font-size: 10.5px; color: var(--color-ink-soft); white-space: nowrap; }
+    </style>
+</head>
+<body data-file="ch2-1-basic.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt; 第2章 確率と確率分布 &gt; Unit 01
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 02 / Unit 01 — 確率モデルと確率分布</span>
+                <h2 class="lesson-title">確率の基本と条件付き確率</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このUnitでできるようになること</span>
+      <ul>
+        <li>確率の意味（0〜1の数字）と求め方を説明できる</li>
+        <li>「〜という条件のもとで」の確率（条件付き確率）を計算できる</li>
+      </ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>確率 = 「全体の中で、その目が出る割合」</h4>
+            <p>サイコロを1回振って「偶数が出る確率」を考えてみましょう。サイコロの目は6つ。そのうち偶数は「2・4・6」の3つです。</p>
+            <div class="figure">
+              <div class="dice">
+                <span>1</span><span class="even">2</span><span>3</span>
+                <span class="even">4</span><span>5</span><span class="even">6</span>
+              </div>
+              <p class="figure-caption">図1: 6つの目（全体）のうち、偶数（brass色）は3つ</p>
+            </div>
+            <p>確率の基本はこれだけです。</p>
+            <div class="math-block">確率 = 「当てはまる数」 ÷ 「全部の数」</div>
+            <div class="math-block">偶数が出る確率 = 3 ÷ 6 = <strong>1/2</strong>（= 0.5 = 50%）</div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 確率の求め方</p>
+              <p class="qq">サイコロを1回振って「3の倍数（3か6）」が出る確率はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>1/6</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>1/3</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>1/2</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>2/3</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">当てはまるのは「3」と「6」の2つ。全部で6つなので 2 ÷ 6 = 1/3 です。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>確率は「0〜1」の数字。全部足すと必ず1</h4>
+            <p>確率は「絶対に起きない＝0」から「必ず起きる＝1」までの数字です。天気予報の「降水確率70%」は、確率0.7のことです。</p>
+            <div class="figure">
+              <div class="pline">
+                <i style="left:0%"></i><span class="lbl" style="left:0%">0（絶対にない）</span>
+                <i style="left:50%"></i><span class="lbl" style="left:50%">1/2（半々）</span>
+                <i style="left:100%"></i><span class="lbl" style="left:100%">1（必ず起きる）</span>
+              </div>
+              <p class="figure-caption">図2: 確率の物差し。表と裏のコインは1/2（=0.5）の位置</p>
+            </div>
+            <p>そして大切なルールが1つ。<strong>「起こりうる全部の確率を足すと1になる」</strong>ことです。サイコロなら 1/6 が6つで 6/6 = 1。「表が出る確率1/2＋裏が出る確率1/2 = 1」も同じです。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 確率の範囲</p>
+              <p class="qq">コインを1回投げて「表が出る確率」はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>1/4</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>1/2</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>1</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>0</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">表・裏の2つのうち表は1つ。確率 = 1/2 です。「表＋裏 = 1」になることもチェックしておきましょう。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 03</span>
+            <h4>条件付き確率 = 「分母を、その条件の人に絞る」</h4>
+            <p>ここからがデータサイエンスで特に重要です。あるECサイトの今月のデータを見てみましょう。</p>
+            <ul>
+              <li>サイトを訪れた人: <strong>20,000人</strong></li>
+              <li>そのうち広告を見た人: <strong>3,000人</strong></li>
+              <li>広告を見た3,000人の中で実際に購入した人: <strong>600人</strong></li>
+            </ul>
+            <div class="figure">
+              <div class="band">
+                <i style="left:0; width:100%; background:#F0E6C9;"></i>
+                <i style="left:0; width:15%; background:rgba(169,120,47,0.5);"></i>
+                <i style="left:0; width:3%; background:#A9782F;"></i>
+                <b style="left:8%;">広告を見た 3,000人（15%）</b>
+                <b style="left:1.5%;">さらに購入 600人（3%）</b>
+                <b style="left:95%;">全体 20,000人</b>
+              </div>
+              <p class="figure-caption">図3: 全体（2万人）→ 広告を見た（3,000人）→ その中で購入（600人）</p>
+            </div>
+            <p>ここで「広告を見た人の中で購入する確率」を求めるとき、分母は<strong>20,000人ではなく3,000人</strong>に絞ります。これを<strong>条件付き確率</strong>と呼びます。</p>
+            <div class="math-block">P(購入 | 広告を見た) = 600 ÷ 3,000 = <strong>0.2（20%）</strong></div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 条件付き確率</p>
+              <p class="qq">広告を見た3,000人のうち購入したのが600人。P(購入 | 広告を見た) はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>600 ÷ 20,000 = 3%</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>600 ÷ 3,000 = 20%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>3,000 ÷ 20,000 = 15%</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">「広告を見た人の中で」という条件なので、分母はその3,000人に絞ります。600 ÷ 3,000 = 20% です。分母を間違えると確率は変わります。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 04</span>
+            <h4>「全体の中で」と「広告を見た人の中で」は別の数字</h4>
+            <p>同じ「購入する確率」でも、分母によって数字が変わります。全体の購入者を1,800人とすると、こうなります。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>分母</th><th>計算</th><th>確率</th></tr>
+                  <tr><td>全体（20,000人）</td><td>1,800 ÷ 20,000</td><td><strong>9%</strong></td></tr>
+                  <tr><td>広告を見た人（3,000人）</td><td>600 ÷ 3,000</td><td><strong>20%</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>「広告を見た人は、見ていない人より購入率が高い（20% vs 9%）」と言えます。ただしこれは<strong>「関連」の話</strong>。因果（広告のおかげで買った）までは、この数字だけでは言えません（第1章ユニット⑥の復習です）。</p>
+            <p>条件付き確率ができるようになると、次のUnit「ベイズの定理」や、第4章の「陽性でも本当に病気？」という話につながっていきます。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 分母のちがい</p>
+              <p class="qq">全体の購入率は9%、広告を見た人の購入率は20%。この差から正しく言えることは？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>広告が購入を増やしたと証明された</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>「広告を見た人」と「購入」に関連がありそうだ</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>広告を見た人も見ない人も同じ</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">条件付き確率の差は「関連の強さのヒント」。因果と結論するには、ランダムに分けた比較実験（A/Bテスト）が必要です。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 05</span>
+            <h4>まとめ: このUnitの3つのポイント</h4>
+            <ul>
+              <li><strong>確率 = 当てはまる数 ÷ 全部の数</strong>（答えは0〜1）</li>
+              <li><strong>全部の確率を足すと1</strong></li>
+              <li><strong>「〜の条件で」は分母を絞る</strong>＝条件付き確率</li>
+            </ul>
+            <p>次はUnit ②「ベイズの定理」で、「結果から原因をさかのぼる確率」を学びます。条件付き確率の分母の感覚がそのまま生きてきます。</p>
+        </div>
+    </div>
+
+    <section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 第2章ユニット①の確認クイズ（4問）</h2>
+      <div class="quiz-status">正解 <b>0</b> / 4問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. サイコロを1回振って「5以上の目（5か6）」が出る確率はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>1/6</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>1/2</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>1/3</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>2/3</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">当てはまるのは5と6の2つ。6つの目の中で2つなので 2 ÷ 6 = 1/3 です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. 袋に赤玉3個・白玉5個（合計8個）が入っています。よく混ぜて1個取り出すとき、白玉である確率は？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>3/8</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>5/8</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>1/2</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>8/5</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">白は5個、全体は8個。確率 = 5 ÷ 8 = 5/8 です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. クラス30人のうち、めがねをかけている人は12人。その12人のうち運動部なのは8人。P(運動部 | めがね) はいくら？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>8 ÷ 30</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>8 ÷ 12 = 2/3</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>12 ÷ 30</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">「めがねをかけている人の中で」なので分母は12人。運動部は8人だから 8 ÷ 12 = 2/3 です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q4. 起こりうるすべての場合の確率を足すと、必ずいくつになるでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>0</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>1</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>100</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>決まっていない</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">コインなら 1/2 + 1/2 = 1。サイコロなら 1/6 × 6 = 1。何かが必ず1つ起きるからです。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+    </section>
+
+    <nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
+
+
+

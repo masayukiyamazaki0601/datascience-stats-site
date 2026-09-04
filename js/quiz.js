@@ -1,7 +1,8 @@
 /* ==========================================================================
-   選択式クイズエンジン（正解/不正解の表示 ＋ 効果音）
-   - 効果音は Web Audio API で生成（音声ファイル不要・オフラインでもOK）
-   - サイドバー下のボタンで ON/OFF 切替（localStorage に保存）
+   クイズエンジン＋経験値（XP）システム
+   - 選択式クイズ: 正解/不正解の表示＋効果音（Web Audio生成）
+   - 正解で経験値を獲得（途中確認=10XP / 章末クイズ=20XP / 確認テスト=25XP）
+   - レベルと経験値は localStorage に保存（学習の積み重ね）
    ========================================================================== */
 (function () {
   "use strict";
@@ -32,21 +33,15 @@
     osc.start(t0);
     osc.stop(t0 + dur + 0.05);
   }
-  function playCorrect() {           // 正解：明るい2音（ミ → シ）
+  function playCorrect() {
     if (muted || !ensureCtx()) { return; }
     tone(659.25, 0, 0.16, "sine", 0.22);
     tone(987.77, 0.13, 0.24, "sine", 0.22);
   }
-  function playWrong() {             // 不正解：低いブザー音
+  function playWrong() {
     if (muted || !ensureCtx()) { return; }
     tone(155.56, 0, 0.2, "square", 0.1);
     tone(116.54, 0.18, 0.26, "square", 0.08);
-  }
-  function finishSound() {           // 全問回答：ファンファーレ風
-    if (muted || !ensureCtx()) { return; }
-    [523.25, 659.25, 783.99, 1046.5].forEach(function (f, i) {
-      tone(f, i * 0.11, 0.22, "triangle", 0.2);
-    });
   }
 
   /* ---------- サウンド ON/OFF ボタン ---------- */
@@ -55,13 +50,12 @@
     btn.type = "button";
     btn.id = "sound-toggle";
     btn.className = "sound-btn" + (muted ? " off" : "");
-    btn.setAttribute("aria-pressed", muted ? "false" : "true");
     updateLabel(btn);
     btn.addEventListener("click", function () {
       muted = !muted;
       localStorage.setItem(MUTE_KEY, muted ? "1" : "0");
       updateLabel(btn);
-      if (!muted) { ensureCtx(); tone(880, 0, 0.1, "sine", 0.2); }  // ON確認音
+      if (!muted) { ensureCtx(); tone(880, 0, 0.1, "sine", 0.2); }
     });
     return btn;
   }
@@ -69,10 +63,115 @@
     btn.textContent = muted ? "🔇 効果音: OFF" : "🔊 効果音: ON";
     btn.className = "sound-btn" + (muted ? " off" : "");
   }
-  // 画面右下に固定表示（CSS の position: fixed で配置）
   document.body.appendChild(makeSoundButton());
 
-  /* ---------- クイズの回答処理 ---------- */
+  /* ---------- 経験値（XP） ---------- */
+  var XP_KEY = "dsStatsXp";
+  var DONE_KEY = "dsStatsDone";
+  var xp = parseInt(localStorage.getItem(XP_KEY) || "0", 10) || 0;
+  var done = {};
+  try { done = JSON.parse(localStorage.getItem(DONE_KEY) || "{}"); } catch (e) { done = {}; }
+
+  var LEVEL_XP = 100;
+  var LEVEL_NAMES = [
+    "データ見習い", "集計ビギナー", "統計スターター", "ばらつきハンター",
+    "分布リーダー", "分析マスター", "統計の達人", "DS見習い",
+    "DS候補生", "データサイエンティスト"
+  ];
+
+  function levelOf(x) { return Math.floor(x / LEVEL_XP) + 1; }
+  function levelName(l) {
+    return (l <= LEVEL_NAMES.length) ? LEVEL_NAMES[l - 1] : "伝説のアナリスト Lv." + l;
+  }
+  function saveState() {
+    localStorage.setItem(XP_KEY, String(xp));
+    localStorage.setItem(DONE_KEY, JSON.stringify(done));
+  }
+
+  function questionKey(q) {
+    var file = (document.body.getAttribute("data-file") || "page") + "/";
+    var all = document.querySelectorAll(".quiz-q");
+    var idx = 0;
+    for (var i = 0; i < all.length; i++) { if (all[i] === q) { idx = i; break; } }
+    return file + "q" + idx;
+  }
+  function xpGainFor(q) {
+    var block = q.closest(".quiz-block");
+    if (!block) { return 10; }
+    if (block.hasAttribute("data-test")) { return 25; }
+    return 20;
+  }
+
+  function grantXp(q) {
+    var key = questionKey(q);
+    if (done[key]) { return; }
+    done[key] = true;
+    var beforeLevel = levelOf(xp);
+    xp += xpGainFor(q);
+    saveState();
+    renderHud();
+    var afterLevel = levelOf(xp);
+    if (afterLevel > beforeLevel) {
+      showToast("レベルアップ! Lv." + afterLevel + " " + levelName(afterLevel));
+      if (!muted && ensureCtx()) {
+        [523.25, 659.25, 783.99, 1046.5].forEach(function (f, i) {
+          tone(f, i * 0.11, 0.22, "triangle", 0.18);
+        });
+      }
+    } else {
+      showToast("+ " + xpGainFor(q) + " EXP");
+    }
+  }
+
+  /* ---------- XP HUD ---------- */
+  function makeHud() {
+    var hud = document.createElement("div");
+    hud.id = "xp-hud";
+    hud.className = "xp-hud";
+    hud.innerHTML =
+      '<div class="xp-top"><span class="xp-level" id="xp-level">Lv.1</span>' +
+      '<span class="xp-name" id="xp-name"></span></div>' +
+      '<div class="xp-bar"><i id="xp-bar-fill"></i></div>' +
+      '<div class="xp-meta"><span id="xp-now">0</span> XP' +
+      '<button type="button" id="xp-reset">リセット</button></div>';
+    document.body.appendChild(hud);
+    hud.querySelector("#xp-reset").addEventListener("click", function () {
+      if (!confirm("学習記録（経験値）をリセットしますか？")) { return; }
+      xp = 0; done = {}; saveState(); renderHud();
+      showToast("学習記録をリセットしました");
+    });
+  }
+  function renderHud() {
+    var hud = document.getElementById("xp-hud");
+    if (!hud) { return; }
+    var level = levelOf(xp);
+    var fill = xp % LEVEL_XP;
+    var width = (xp === 0) ? 0 : (fill === 0 ? 100 : fill);
+    hud.querySelector("#xp-level").textContent = "Lv." + level;
+    hud.querySelector("#xp-name").textContent = levelName(level);
+    hud.querySelector("#xp-now").textContent = xp;
+    hud.querySelector("#xp-bar-fill").style.width = width + "%";
+  }
+  /* ---------- トースト ---------- */
+  var toastTimer = null;
+  function showToast(text) {
+    var el = document.getElementById("xp-toast");
+    if (!el) {
+      el = document.createElement("div");
+      el.id = "xp-toast";
+      el.className = "xp-toast";
+      document.body.appendChild(el);
+    }
+    el.textContent = text;
+    el.classList.add("show");
+    if (toastTimer) { clearTimeout(toastTimer); }
+    toastTimer = setTimeout(function () { el.classList.remove("show"); }, 1800);
+  }
+
+  makeHud();
+  renderHud();
+
+  /* ---------- 回答処理 ---------- */
   function correctText(q) {
     var good = q.querySelector('button.opt[data-correct="1"]');
     return good ? good.textContent.replace(/\s+/g, " ").trim() : "";
@@ -90,21 +189,10 @@
     }
     var st = block.querySelector(".quiz-status b");
     if (st) { st.textContent = score; }
-
-    // 章末テスト用: 進捗バー
     var bar = block.querySelector(".bar-fill");
-    if (bar) {
-      bar.style.width = Math.round((answered / total) * 100) + "%";
-    }
-    // 全問回答で結果を表示
+    if (bar) { bar.style.width = Math.round((answered / total) * 100) + "%"; }
     if (answered === total && total > 0) {
-      if (block.hasAttribute("data-test")) {
-        showResult(block, score, total);
-      }
-      if (!block.dataset.doneNotified) {
-        block.dataset.doneNotified = "1";
-        finishSound();
-      }
+      if (block.hasAttribute("data-test")) { showResult(block, score, total); }
     }
   }
 
@@ -115,19 +203,20 @@
     var msg = panel.querySelector(".rank-msg");
     panel.classList.remove("perfect", "good", "so-so");
     if (big) { big.textContent = score + " / " + total; }
+    var ratio = score / total;
     var text = "";
-    if (score === total) {
+    if (ratio === 1) {
       panel.classList.add("perfect");
-      text = "🎉 満点！ 記述統計はもうマスターです！次の第2章へ進みましょう。";
-    } else if (score / total >= 0.8) {
+      text = "🎉 満点！ 次のステップへ進みましょう。";
+    } else if (ratio >= 0.8) {
       panel.classList.add("good");
-      text = "👍 よくできました！間違えた問題の解説を読んでから次へ進みましょう。";
-    } else if (score / total >= 0.6) {
+      text = "👍 よくできました。間違えた問題の解説を読みましょう。";
+    } else if (ratio >= 0.6) {
       panel.classList.add("so-so");
-      text = "💪 あと一歩！ 間違えた問題を中心に、該当ページを復習してみましょう。";
+      text = "💪 あと一歩。該当ページを復習して再挑戦しましょう。";
     } else {
       panel.classList.add("so-so");
-      text = "📖 もう一度、第1章の各ページを復習してから再チャレンジしましょう。";
+      text = "📖 もう一度、各ページを復習してから再チャレンジしましょう。";
     }
     if (msg) { msg.textContent = text; }
     panel.classList.add("show");
@@ -152,8 +241,8 @@
     if (bar) { bar.style.width = "0%"; }
     var panel = block.querySelector(".quiz-result");
     if (panel) { panel.classList.remove("show"); }
-    block.dataset.doneNotified = "";
   }
+
   document.addEventListener("click", function (e) {
     var btn = e.target && e.target.closest ? e.target.closest("button.opt") : null;
     if (btn) {
@@ -179,7 +268,7 @@
           ? "✅ 正解！その調子です。"
           : "❌ 不正解… 正解は「" + correctText(q) + "」でした。";
       }
-      if (isOk) { playCorrect(); } else { playWrong(); }
+      if (isOk) { playCorrect(); grantXp(q); } else { playWrong(); }
       updateBlock(q.closest(".quiz-block"));
       return;
     }
@@ -189,5 +278,4 @@
       if (block) { resetQuiz(block); }
     }
   });
-/* @@PART2@@ */
 })();
