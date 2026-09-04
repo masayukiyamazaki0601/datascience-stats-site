@@ -14,25 +14,44 @@
   var ctx = null;
 
   function ensureCtx() {
-    if (!ctx && AC) { ctx = new AC(); }
-    if (ctx && ctx.state === "suspended") { ctx.resume(); }
+    if (!ctx && AC) {
+      try { ctx = new AC(); } catch (e) { ctx = null; }
+    }
+    if (ctx && ctx.state === "suspended" && ctx.resume) { ctx.resume(); }
     return ctx;
   }
   function tone(freq, delay, dur, type, vol) {
-    if (!ctx) { return; }
-    var t0 = ctx.currentTime + (delay || 0);
-    var osc = ctx.createOscillator();
-    var gain = ctx.createGain();
-    osc.type = type || "sine";
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0.0001, t0);
-    gain.gain.exponentialRampToValueAtTime(vol || 0.2, t0 + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.start(t0);
-    osc.stop(t0 + dur + 0.05);
+    var c = ensureCtx();
+    if (!c) { return; }
+    function schedule() {
+      var t0 = c.currentTime + (delay || 0);
+      var osc = c.createOscillator();
+      var gain = c.createGain();
+      osc.type = type || "sine";
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(vol || 0.2, t0 + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(gain);
+      gain.connect(c.destination);
+      osc.start(t0);
+      osc.stop(t0 + dur + 0.05);
+    }
+    if (c.state === "suspended") {
+      var p = c.resume ? c.resume() : null;
+      if (p && typeof p.then === "function") { p.then(schedule); } else { schedule(); }
+    } else {
+      schedule();
+    }
   }
+
+  /* ---------- スマホ向け: 最初のタップで音をアンロック ----------
+     iOS / Android は「ユーザー操作の中で AudioContext を起動」しないと
+     効果音を出せないブラウザが多い。最初のタッチ/クリックで先に作っておく。 */
+  function unlockAudio() { ensureCtx(); }
+  document.addEventListener("touchstart", unlockAudio, { passive: true });
+  document.addEventListener("pointerdown", unlockAudio, { passive: true });
+  document.addEventListener("click", unlockAudio, { passive: true });
   function playCorrect() {
     if (muted || !ensureCtx()) { return; }
     tone(659.25, 0, 0.16, "sine", 0.22);
