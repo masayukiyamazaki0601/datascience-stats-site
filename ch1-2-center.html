@@ -58,6 +58,19 @@
             </div>
             <p>この10件を「1つの数字」で表すとしたら、みなさんはどうしますか？ たとえば上司に「昨日の売上はどんな感じ？」と聞かれたら、何と答えますか？</p>
             <p>このUnitでは、その「1つの数字」の作り方として、<strong>平均・中央値・最頻値</strong>の3つを順番に学びます。</p>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — データのおさらい</p>
+              <p class="qq">今回使う注文データ（640〜8900円）で、平均や中央値の話をするときに「要注意」なのはどの注文でしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>640円の注文</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>1200円の注文（2件ある）</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>8900円の注文</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>どれも気にしなくてよい</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">8900円の注文だけが、ほかの9件（640〜3400円）から大きく飛び抜けた「外れ値」。平均はこの1件に引っ張られ、中央値は引っ張られない——このちがいが本Unitのテーマです。</div></details>
+            </div>
+
         </div>
 
         <div class="lesson-step">
@@ -88,6 +101,19 @@
               <li>まず全部足す: 50 + 60 + 70 + 80 + 90 = <strong>350</strong></li>
               <li>人数（5人）で割る: 350 ÷ 5 = <strong>70点</strong></li>
             </ol>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 平均の意味</p>
+              <p class="qq">50・60・70・80・90点の平均が「70点」。「平均70点」の意味として正しいのはどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>いちばん多かった点数が70点だった</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>5人全員が70点だったときと同じ合計になる値</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>真ん中の人の点数が70点だった</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>最高点と最低点を足して2で割った値</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">合計350点を5人に「平らにならす」と1人あたり70点。つまり全員が70点のときと同じ合計になる値が平均です。「いちばん多い値」は最頻値、「真ん中の値」は中央値で、別のものです。</div></details>
+            </div>
+
             <p>これを数式で書いたのが「平均 = 合計 ÷ 個数」です。では、これを注文10件でやってみましょう。</p>
             <div class="math-block">640 + 760 + 850 + 980 + 1200 + 1200 + 1500 + 2100 + 3400 + 8900 = <strong>21530</strong></div>
             <div class="math-block">平均 = 21530 ÷ 10 = <strong>2153円</strong></div>
@@ -162,6 +188,19 @@
               <p class="figure-caption">図2: 平均は右の外れ値（赤い点）に引っ張られる。中央値は「真ん中」なので動かない（数値はドット下の小さなラベル）</p>
             </div>
             <p>つまり中央値は「<strong>データのど真ん中にいる人</strong>」の値なので、はるか右にいる8900円の注文の影響をまったく受けません。</p>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 外れ値に強い？</p>
+              <p class="qq">もし8900円の注文が、もっと極端な90000円だったら、中央値（1200円）はどうなるでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>90000円に引っ張られて大きくなる</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>1200円のまま変わらない</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>必ず0になる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>平均と同じ値になる</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">中央値は「小さい順に並べたときの真ん中」を見るだけ。いちばん大きい値が90000円になっても、真ん中（5番目・6番目の1200円）は動きません。ここが平均との大きなちがいです。</div></details>
+            </div>
+
 
             <div class="mini-q quiz-q">
               <p class="mc-label">✏️ ここでひと休み — ちょっと確認（中央値）</p>
@@ -174,6 +213,19 @@
               </ul>
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">10件（偶数）なので、小さい順に並べて5番目と6番目（1200と1200）の平均を取ります。中央値 = 1200円。8900円があっても真ん中は動きません。</div></details>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 中央値の計算練習</p>
+              <p class="qq">5人のテストの点数が「3・7・1・9・5」点でした。中央値は何点でしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>3点</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>5点</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>7点</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>9点</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">まず小さい順に並べ替えます（1・3・5・7・9）。ちょうど真ん中の「5点」が中央値です。並べる前の順番（3,7,1,9,5）のまま真ん中を取らないのがコツです。</div></details>
             </div>
         </div>
 
@@ -197,6 +249,18 @@
             </div>
 
             <p>最頻値には、ほかの2つにない特徴があります。<strong>分類（カテゴリ）のデータにも使える</strong>ことです。たとえば100人への調査で「利用デバイス＝スマホ46人・PC34人・タブレット20人」だったら、「いちばん多いのはスマホ」と言えますよね。これが最頻値です。平均や中央値は「足し算」や「並べ替え」が必要なので、カテゴリには使えません。</p>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — なぜ使えない？</p>
+              <p class="qq">平均や中央値が、血液型のような分類（カテゴリ）データに使えない理由はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>分類データは数が少なすぎるから</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>足し算（平均）や並べ替え（中央値）が意味を持たないから</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>分類データには中央値だけが使えるから</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>実はふつうに使える</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">平均は「合計を足す」、中央値は「順番に並べる」必要があります。A型とB型を足しても、どちらが大きいか並べても意味がありません。だから分類データの代表値は「いちばん多いもの＝最頻値」を使います。</div></details>
+            </div>
             <div class="figure">
               <div class="panel-row">
                 <div class="panel">
@@ -221,6 +285,19 @@
               </ul>
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">最頻値は「いちばん多いもの」を見るだけなので、血液型や都道府県のような分類データでも使えます。平均・中央値は足し算や並べ替えが必要なため使えません。</div></details>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 順序データの最頻値</p>
+              <p class="qq">ある商品の★レビューが「★5が8件・★4が5件・★1が2件」。このデータの最頻値はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>★1</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>★4</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>★5</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>★の平均</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">最頻値は「いちばん多く登場した値」。★は順序データですが「数える」ことはできるので、最頻値（★5）は使えます。いっぽう★の「平均」は、★と★の間隔が等しくないので不適切でしたね（Unit①）。</div></details>
             </div>
         </div>
         <div class="lesson-step">
@@ -280,6 +357,19 @@
               </table>
             </div>
             <p>「うちの部署の平均年収は800万円」と言われても、実際に働く人の感覚（300〜450万円）と大きくずれますよね。こういうデータでは<strong>中央値を報告するのが親切</strong>です。</p>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 平均と中央値のズレを読む</p>
+              <p class="qq">年収データで「平均 = 800万円 ＞ 中央値 = 400万円」となりました。このデータの分布はどんな形でしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>左右対称の形</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>左の裾が長い形</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>右の裾が長い形（高い外れ値で引き延ばされている）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>全員が同じ年収の形</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">平均が中央値より大きいのは、2500万円のような「高い外れ値」で右の裾が長くなっているサイン。逆に、異常に低い値があると平均は中央値より小さくなります。左右対称なら平均と中央値はほぼ一致します。</div></details>
+            </div>
+
 
             <div class="mini-q quiz-q">
               <p class="mc-label">✏️ ここでひと休み — 最後の確認</p>
@@ -296,6 +386,19 @@
             <div class="tip">
               <span class="box-label">実務のコツ（1行）</span>
               <p>報告に迷ったら<strong>「平均」と「中央値」を両方載せる</strong>のがいちばん安全。2つが大きくずれるときは「外れ値か、右に裾の長いデータ」のサインです（この続きはユニット③で）。</p>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 報告のコツ</p>
+              <p class="qq">「平均と中央値が大きくずれるデータ」を報告するとき、いちばん安全なのはどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>平均だけを載せる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>中央値だけを載せる</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>平均と中央値を両方載せる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>外れ値を勝手に消してから平均を載せる</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">平均だけだと外れ値に引っ張られ、中央値だけだと「全体の合計の大きさ」が見えにくくなります。2つを並べて載せると、その差が「歪み」のサインとして読み手に伝わります。</div></details>
             </div>
         </div>
     </div>
