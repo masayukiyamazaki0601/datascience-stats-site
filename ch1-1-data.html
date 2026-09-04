@@ -68,6 +68,20 @@
               </table>
             </div>
             <p>例Aのポイントは<strong>1つだけ</strong>です。「8900円」という大きな注文が1件だけ混ざっています。この1件があるだけで平均がどう変わるか、次のUnitで確かめます。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — ちょっと確認（Step 01）</p>
+              <p class="qq">例A（注文金額）と例B（身長）に共通する、このUnitのカギになる特徴はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>どちらも「数」で表されている</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>どちらも分類（カテゴリ）を表している</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>どちらも平均を出してはいけない</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>どちらも外れ値が1件ずつある</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">例Aは注文金額（円）、例Bは身長（cm）。どちらも「数」で表されたデータです。外れ値（飛び抜けた値）があるのは例Aの8900円だけで、例Bにはありません。「平均してよいデータかどうか」の話は、この先のStepで出てきます。</div></details>
+            </div>
+
             <div class="figure">
               <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="注文金額の棒グラフ。1件だけが非常に大きい">
                 <line x1="52" y1="50" x2="526" y2="50" stroke="#D9D2BE" stroke-width="1" />
@@ -101,6 +115,19 @@
                 <text x="511" y="45" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="bold" fill="#B4432F" text-anchor="middle">8,900</text>
               </svg>
               <p class="figure-caption">図1: 例Aの注文10件（円）。右端の8900円だけが飛び抜けている</p>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — グラフの読み取り（Step 01）</p>
+              <p class="qq">図1のグラフで、ほかの注文とくらべて1件だけ「飛び抜けている」注文はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>640円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>1,200円</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>8,900円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>3,400円</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">右端の赤い棒が「8,900円」の注文です。ほかの注文はだいたい640〜3,400円なのに、この1件だけ飛び抜けています。この1件の扱いで「平均」がどう変わるかが、次のUnit（平均・中央値）のテーマになります。</div></details>
             </div>
         </div>
 
@@ -173,6 +200,20 @@
             <p>なぜ分類はダメなのか。「血液型の平均＝O型とA型の間」なんて、変ですよね。つまり、まずはこの2つだけ見分けられればいいんです。</p>
 
             <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — ちょっと確認（Step 03・分類の伝え方）</p>
+              <p class="qq">「血液型の平均」が意味がないように、分類データでは平均は使えません。では、分類データ（血液型・都道府県など）では、何なら伝えてよいでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>血液型に番号を振って、その平均を伝える</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>「いちばん多いもの」と「それぞれの割合」で伝える</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>値の「差」を計算して伝える</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>分類データは何も伝えられない</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">分類データで意味があるのは「いちばん多いもの（最頻値）」と「それぞれの割合」だけ。たとえば「O型が35%でいちばん多い」のような伝え方です。「血液型の平均＝AB型」のような報告は、数字の見た目だけで意味がありません。</div></details>
+            </div>
+
+
+            <div class="mini-q quiz-q">
               <p class="mc-label">✏️ ここでひと休み — ちょっと確認（Step 03）</p>
               <p class="qq">平均してよいのは、次のうちどれでしょう？</p>
               <ul class="opts">
@@ -195,6 +236,19 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
                 <p>コードの型（int/object）ではなく「この列は何を表すか」で判断しましょう。</p>
               </div>
             </details>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — ちょっと確認（Step 03・会員IDの罠）</p>
+              <p class="qq">「会員ID（1001、1002、1003…）」は、パソコン上では計算できてしまいます。データ分析の現場で正しい考え方はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>int型の数字だから、普通に平均を出してよい</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>数値型かどうかではなく「この列は何を表すか」で判断する</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>分類でも数字にすれば、平均に意味が出てくる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>数字のデータはすべて平均してよい</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">会員IDは「ただの通し番号」＝名義（分類）。pandasの mean() で計算はできてしまいますが、出た値に意味はありません。判断の基準は「コード上の型」ではなく「その列が何を表すか」です。</div></details>
+            </div>
         </div>
 
         <div class="lesson-step">
@@ -236,6 +290,19 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
             </div>
             <p class="figure-caption">図2: 店Xも店Yも平均★4.2。でも★の「かたち」はまったくちがう（縦の高さ＝件数）</p>
 
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — ちょっと確認（Step 04・平均のトリック）</p>
+              <p class="qq">「店Xも店Yも平均★4.2」。この「平均」の数字だけを見ていると、気づきにくいのはどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>どちらの店が人気か</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>平均の計算が合っているか</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>店Yは2割の客が★1を付けている（中身のちがい）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>どちらの店にも★5の客がいること</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">平均は「中身（分布）」を隠します。同じ4.2でも、店Yは2割の客が★1という二極化したお店。だから報告するときは「★4以上の割合」や「★1の割合」もセットで見せる必要があります。</div></details>
+            </div>
+
             <p>では、順番すらない分類（血液型、都道府県、「スマホ／PC」など）は<strong>名義データ</strong>と呼びます。これは平均できるかどうか以前に、比べることすら意味がありません。</p>
 
             <div class="mini-q quiz-q">
@@ -249,6 +316,19 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
               </ul>
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">★5と★1では「★5のほうが良い」と順番はつけられます。でも「★の差」は人によって感じ方がちがい、等しい幅とは言えません。だから「順序」レベルです。</div></details>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — ちょっと確認（Step 04・もう1問）</p>
+              <p class="qq">★（順序データ）とちがって、血液型・都道府県のように「順番すらつけられない」分類データを何と呼ぶでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>名義データ</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>順序データ</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>間隔データ</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>比例データ</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">血液型や都道府県は、どちらが「上」か比べることすらできない分類＝「名義データ」です。★は順番があるので「順序データ」。この2つが分類データの仲間でした。どちらも平均は使えません。</div></details>
             </div>
         </div>
 
@@ -265,6 +345,19 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
               <li>「100cmの人は、50cmの人の2倍の身長」→ 言えます。これが 0=「何もない」のタイプ（<strong>比例データ</strong>）。</li>
               <li>「20℃は、10℃より2倍あたたかい」→ 言えませんね。これが 0=「ただの基準」のタイプ（<strong>間隔データ</strong>）。</li>
             </ul>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — ちょっと確認（Step 05・0の意味）</p>
+              <p class="qq">次のうち、0が「何もない」を意味する（比例データ）のはどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>気温 0℃</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>西暦 0年</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>身長 0cm</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>深夜 0時</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">身長0cmは「身長がない」という本当の無を意味します。だから「0＝何もない」の比例データで、「170cmは85cmの2倍」のように比も言えます。気温や西暦・時刻の0は「基準を決めただけ」なので間隔データです。</div></details>
+            </div>
             <p>まとめると、数データは「0が何もない＝<strong>比例</strong>」と「0がただの基準＝<strong>間隔</strong>」の2種類。身長・金額・時間は比例、気温・西暦・偏差値は間隔と覚えておけば十分です。</p>
 
             <div class="mini-q quiz-q">
@@ -291,6 +384,19 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
               </ul>
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">0分＝「滞在していない」という「何もない」を意味するので比例レベル。「20分の滞在は10分の2倍」と言えます。気温（0℃はただの基準）とちがう点がポイントです。</div></details>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — ちょっと確認（Step 05・応用）</p>
+              <p class="qq">「西暦（2010年・2026年など）」のデータは、どのレベルでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>名義</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>順序</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>間隔</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>比例</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">西暦の0年は「時間がゼロ」ではなく、基準（紀元）を決めただけ。だから0＝無ではない「間隔」レベルです。「2026年は1013年の2倍」とは言えませんが、「差（何年後か）」には意味があります。</div></details>
             </div>
         </div>
 
@@ -453,6 +559,19 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
               </ul>
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">会員IDは数字に見えますが、順番に意味はなく「ただの番号」です。分類（名義）レベルなので、平均を出しても意味がありません。パソコン上の型ではなく「その列が何を表すか」で判断しましょう。</div></details>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ ここでひと休み — 最後にもう1問（まとめ）</p>
+              <p class="qq">データに「郵便番号（100-0001、100-0002…）」という列があります。このデータのレベルはどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>名義</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>順序</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>間隔</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>比例</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">郵便番号は数字の見た目ですが、足したり平均したりする意味のない「ただのラベル」。つまり名義（分類）データです。さっきの「実務のコツ」どおり、数字に見えても会員ID・郵便番号はレベル1（名義）ですね。</div></details>
             </div>
         </div>
     </div>
