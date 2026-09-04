@@ -118,3 +118,76 @@
     pager.innerHTML = out;
   }
 })();
+
+/* ==========================================================================
+   図のクリック／タップ拡大（figure 内の svg をオーバーレイ表示）
+   - スマホで縮小されて読めない図を、タップで等倍表示して読めるようにする
+   - figure が無いページでは何もしない
+   ========================================================================== */
+(function () {
+  "use strict";
+
+  function zoomClose() {
+    var z = document.getElementById("fig-zoom");
+    if (z && z.parentNode) { z.parentNode.removeChild(z); }
+    document.removeEventListener("keydown", zoomEsc);
+  }
+
+  function zoomEsc(e) {
+    if (e.key === "Escape") { zoomClose(); }
+  }
+
+  function zoomOpen(svg) {
+    if (document.getElementById("fig-zoom")) { return; }
+    var fig = svg.closest ? svg.closest(".figure") : null;
+
+    var wrap = document.createElement("div");
+    wrap.id = "fig-zoom";
+    wrap.className = "fig-zoom";
+
+    var img = svg.cloneNode(true);
+    img.classList.remove("zoomable");
+    img.removeAttribute("tabindex");
+    wrap.appendChild(img);
+
+    if (fig) {
+      var cap = fig.querySelector(".figure-caption");
+      if (cap) {
+        var c = document.createElement("p");
+        c.className = "fig-zoom-cap";
+        c.textContent = cap.textContent;
+        wrap.appendChild(c);
+      }
+    }
+
+    var close = document.createElement("button");
+    close.type = "button";
+    close.className = "fig-zoom-close";
+    close.setAttribute("aria-label", "拡大表示を閉じる");
+    close.textContent = "×";
+    wrap.appendChild(close);
+
+    document.body.appendChild(wrap);
+
+    close.addEventListener("click", function (e) {
+      e.stopPropagation();
+      zoomClose();
+    });
+    wrap.addEventListener("click", function (e) {
+      if (e.target === wrap) { zoomClose(); }
+    });
+    document.addEventListener("keydown", zoomEsc);
+  }
+
+  var zoomSvgs = document.querySelectorAll(".figure svg");
+  for (var zi = 0; zi < zoomSvgs.length; zi++) {
+    (function (svg) {
+      svg.classList.add("zoomable");
+      svg.setAttribute("tabindex", "0");
+      svg.addEventListener("click", function (e) {
+        e.preventDefault();
+        zoomOpen(svg);
+      });
+    })(zoomSvgs[zi]);
+  }
+})();

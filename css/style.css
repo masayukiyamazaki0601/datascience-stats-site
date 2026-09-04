@@ -1870,3 +1870,91 @@ button.btn-sim.active { background: var(--color-brass); border-color: var(--colo
     .level-card .level-q { font-size: 19px; }
 }
 
+/* ============================================================
+   図のタップ拡大（オーバーレイ）
+   ============================================================ */
+.figure svg.zoomable { cursor: zoom-in; }
+
+.fig-zoom {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(20, 30, 40, .93);
+    overflow: auto; -webkit-overflow-scrolling: touch;
+    padding: 56px 16px 36px;
+}
+.fig-zoom svg {
+    display: block; width: auto; height: auto; max-width: none;
+    min-width: 680px;
+    margin: 0 auto;
+    background: #FFFFFF;
+    border-radius: 10px;
+    box-shadow: 0 24px 70px rgba(0, 0, 0, .4);
+}
+.fig-zoom-cap {
+    color: #d8cfbb; font-size: 13px; line-height: 1.7;
+    text-align: center; margin: 16px auto 0; max-width: 720px;
+    font-family: var(--font-body);
+}
+.fig-zoom-close {
+    position: fixed; top: 10px; right: 12px;
+    width: 44px; height: 44px; border: 0; border-radius: 50%;
+    background: rgba(255, 255, 255, .16); color: #fff;
+    font-size: 26px; line-height: 1; cursor: pointer; z-index: 1001;
+}
+.fig-zoom-close:hover { background: rgba(255, 255, 255, .34); }
+
+/* ============================================================
+   スマートフォン向けバランス調整
+   ============================================================ */
+@media (max-width: 640px) {
+    body { font-size: 17px; }
+    .container { padding: 0 16px; }
+    .lesson-container {
+        padding: 26px 16px 42px;
+        margin: 18px auto 56px;
+    }
+    .lesson-breadcrumbs { font-size: 12px; margin-bottom: 18px; }
+    .lesson-header { padding-bottom: 14px; margin-bottom: 26px; }
+    .lesson-chapter-label { font-size: 11.5px; margin-bottom: 6px; }
+    .lesson-title { font-size: 23px; line-height: 1.45; }
+    .unit-tabs { margin: 20px 0 8px; }
+
+    .lesson-container { line-height: 1.85; }
+    .lesson-container h2 { font-size: 20px; margin: 34px 0 12px; }
+    .lesson-container h3 { font-size: 18px; margin: 24px 0 8px; }
+    .lesson-container p { line-height: 1.85; margin-bottom: 14px; }
+    .lesson-container li { line-height: 1.85; margin: 5px 0; }
+    .lesson-container .lesson-step { margin-bottom: 40px; line-height: 1.85; }
+    .lesson-container .lesson-step h4 { font-size: 19px; line-height: 1.5; margin-bottom: 12px; }
+
+    .goal, .tip, .warn, .dangerbox, .note {
+        padding: 14px 15px; font-size: 15px; margin: 16px 0;
+        line-height: 1.8;
+    }
+    .goal ul, .tip ul, .warn ul, .dangerbox ul, .note ul { padding-left: 1.35em; }
+
+    .table-wrap { margin: 12px 0; }
+    .lesson-container table { font-size: 13.5px; }
+    .lesson-container th, .lesson-container td { padding: 7px 9px; }
+
+    .figure { margin: 20px 0 14px; }
+    .figure-caption { font-size: 10.5px; }
+    .figure .figure-caption::before {
+        content: "🔍 図をタップで拡大できます  ";
+        font-family: var(--font-body);
+        color: var(--color-brass);
+    }
+
+    .quiz-head h2 { font-size: 17px; line-height: 1.4; }
+    .quiz-status { font-size: 11.5px; padding: 4px 11px; }
+    .quiz-q { padding: 16px 0 6px; }
+    .qq { font-size: 15px; line-height: 1.75; margin-bottom: 10px; }
+    .opts { gap: 7px; }
+    .opts button.opt { font-size: 14px; padding: 11px 13px; line-height: 1.6; }
+    .mini-q.quiz-q { padding: 14px 15px; }
+    .mini-q.quiz-q .qq { font-size: 14.5px; }
+
+    .sim { padding: 16px 14px 18px; margin: 22px 0 8px; }
+    .sim-lead { font-size: 14px; }
+    .route-block { margin: 18px 0 4px; }
+}
+
