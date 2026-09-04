@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2章(8) 中心極限定理 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+    <script src="js/sim.js" defer></script>
+</head>
+<body data-file="ch2-8-clt.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt; 第2章 確率と確率分布 &gt; Unit 08
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 02 / Unit 08 — 中心極限定理</span>
+                <h2 class="lesson-title">中心極限定理：どんな分布でも「平均」は正規に近づく</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このUnitでできるようになること</span>
+      <ul>
+        <li>標本平均 X̄ は、母平均 μ を中心にばらつくことを説明できる</li>
+        <li>標本平均の標準偏差（標準誤差）が σ ÷ √n になることを説明できる</li>
+        <li>中心極限定理の意味を説明し、標本平均の確率を z で計算できる</li>
+      </ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>「正規分布はどこにでも現れる」理由</h4>
+            <p>Unit⑥で「身長やテストの点数はだいたい正規分布になる」と学びました。でも、よく考えると不思議です。世の中のデータは、収入のように右に長く尾を引くものや、0や1のカウントデータなど、正規分布とはほど遠い形をしたものがたくさんあります。それなのに、なぜ統計学は正規分布をこんなに重視するのでしょうか？</p>
+            <p>その答えが、このUnitのテーマ<strong>中心極限定理（Central Limit Theorem）</strong>です。ざっくり言うと、次の主張です。</p>
+            <div class="warn">
+              <span class="box-label">⭐ 中心極限定理（直感的な表現）</span>
+              <p>もとの分布がどんな形をしていても、<strong>そこから「大きめの標本」をとって平均を計算すると、その平均の分布は（ほぼ）正規分布になる</strong>。</p>
+            </div>
+            <p>測定誤差が正規分布になるのも、この定理の応用と考えられます。「測定値」はたくさんの微小な誤差の合計・平均だからです。1つ1つの誤差の分布が何であっても、たくさん足し合わせると釣り鐘型に近づく——これが正規分布が「どこにでも現れる」秘密です。</p>
+            <p>このUnitでは、この定理を正確に理解するために次の順に進みます。</p>
+            <ol>
+              <li>「標本平均」という確率変数を準備する（期待値は母平均 μ）</li>
+              <li>標本平均のばらつきは σ ÷ √n に縮むことを知る</li>
+              <li>中心極限定理の意味と「正規近似できる」ことの実感（シミュレーション）</li>
+              <li>標本平均の確率を z で計算する</li>
+            </ol>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>準備: 「標本平均 X̄」も1つの確率変数</h4>
+            <p>母集団全体の平均を <strong>μ</strong>、標準偏差を <strong>σ</strong> とします（これを母平均・母標準偏差と呼びます）。現実には母集団全部は調べられないので、そこから n 個を無作為に抽出して平均を計算します。これが<strong>標本平均</strong>です。</p>
+            <div class="math-block">X̄ = (x₁ ＋ x₂ ＋ … ＋ xₙ) ÷ n</div>
+            <p>抽出のたびに選ばれる人が変わるので、標本平均 X̄ も<strong>確率変数</strong>です（Unit③の復習）。毎回少しずつ値がブレます。</p>
+            <ul>
+              <li>たまたま大きな値が多い標本なら X̄ は大きめになる</li>
+              <li>たまたま小さな値が多い標本なら X̄ は小さめになる</li>
+            </ul>
+            <p>では、この X̄ はどんな分布をするのでしょうか？まず平均の位置から。抽出に偏りがなければ、「標本平均の平均」は母平均 μ に一致します。</p>
+            <div class="math-block">E(X̄) = μ　（標本平均の期待値 ＝ 母平均）</div>
+            <p>つまり標本平均は「母平均 μ のまわり」に分布します。あとは「どのくらい μ のまわりに集まるか（広がり）」が問題です。それが次のStepの σ ÷ √n です。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 標本平均の中心</p>
+              <p class="qq">母平均 μ の母集団から無作為に標本をとって標本平均 X̄ を計算しました。E(X̄)（標本平均の期待値）はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>μ（母平均）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>0</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>σ ÷ √n</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>μ × n</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">無作為抽出なら偏りがないので、標本平均の期待値は母平均 μ と一致します。X̄ は μ を中心に上下にブレる確率変数です。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 03</span>
+            <h4>標本平均のばらつきは「σ ÷ √n」に縮む</h4>
+            <p>標本平均の分布の広がりは、個々の値 X のばらつき（σ）より小さくなります。なぜなら、平均をとることで「大きい値と小さい値が打ち消し合う」からです。数学的には、次の公式になります。</p>
+            <div class="math-block">V(X̄) = σ² ÷ n　／　SD(X̄) = σ ÷ √n</div>
+            <p>この「標本平均の標準偏差」を<strong>標準誤差（Standard Error, SE）</strong>と呼びます。n が大きいほど √n も大きくなるので、標準誤差はどんどん小さくなります。つまり「n を増やすほど、標本平均は母平均 μ の近くに集まる」ということです。</p>
+            <div class="figure">
+              <svg viewBox="0 0 660 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="個々の値の分布は広く、標本平均の分布は狭いことを示す2つの釣り鐘型の曲線">
+                <line x1="60" y1="218" x2="600" y2="218" stroke="#1C2B39" stroke-width="2"/>
+                <line x1="330" y1="40" x2="330" y2="218" stroke="#1C2B39" stroke-width="1.5" stroke-dasharray="5 4"/>
+                <path d="M78.0 218.0 L90.0 217.9 L102.0 217.9 L114.0 217.7 L126.0 217.5 L138.0 217.0 L150.0 216.2 L162.0 214.7 L174.0 212.4 L186.0 208.7 L198.0 203.3 L210.0 195.7 L222.0 185.3 L234.0 172.1 L246.0 156.1 L258.0 137.7 L270.0 117.9 L282.0 98.2 L294.0 80.2 L306.0 65.7 L318.0 56.3 L330.0 53.0 L342.0 56.3 L354.0 65.7 L366.0 80.2 L378.0 98.2 L390.0 117.9 L402.0 137.7 L414.0 156.1 L426.0 172.1 L438.0 185.3 L450.0 195.7 L462.0 203.3 L474.0 208.7 L486.0 212.4 L498.0 214.7 L510.0 216.2 L522.0 217.0 L534.0 217.5 L546.0 217.7 L558.0 217.9 L570.0 217.9 L582.0 218.0" fill="none" stroke="#A9782F" stroke-width="3"/>
+                <path d="M254.4 218.0 L258.0 217.9 L261.6 217.9 L265.2 217.7 L268.8 217.5 L272.4 217.0 L276.0 216.2 L279.6 214.7 L283.2 212.4 L286.8 208.7 L290.4 203.3 L294.0 195.7 L297.6 185.3 L301.2 172.1 L304.8 156.1 L308.4 137.7 L312.0 117.9 L315.6 98.2 L319.2 80.2 L322.8 65.7 L326.4 56.3 L330.0 53.0 L333.6 56.3 L337.2 65.7 L340.8 80.2 L344.4 98.2 L348.0 117.9 L351.6 137.7 L355.2 156.1 L358.8 172.1 L362.4 185.3 L366.0 195.7 L369.6 203.3 L373.2 208.7 L376.8 212.4 L380.4 214.7 L384.0 216.2 L387.6 217.0 L391.2 217.5 L394.8 217.7 L398.4 217.9 L402.0 217.9 L405.6 218.0" fill="none" stroke="#1C2B39" stroke-width="3"/>
+                <text x="160" y="60" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#A9782F">個々の値 X</text>
+                <text x="160" y="78" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063">（広がり σ）</text>
+                <text x="520" y="90" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">標本平均 X̄</text>
+                <text x="520" y="108" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063">（広がり σ ÷ √n）</text>
+                <text x="330" y="240" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#1C2B39">μ（どちらも中心は同じ）</text>
+              </svg>
+              <p class="figure-caption">図1: 個々の値 X の分布は広いが、標本平均 X̄ の分布は σ÷√n まで縮む（n が大きいほど狭く、μ の周りに集中）</p>
+            </div>
+            <p>具体例で確認しましょう。σ = 10 の母集団なら、n = 25 の標本平均の標準誤差は 10 ÷ √25 = 10 ÷ 5 = <strong>2</strong>。個々の値のばらつき10より、ずっと小さくなります。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 標準誤差</p>
+              <p class="qq">母標準偏差 σ = 20 の母集団から n = 16 の標本をとるとき、標本平均の標準誤差 SE はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>20</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>1.25</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>5</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>320</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">SE = σ ÷ √n = 20 ÷ √16 = 20 ÷ 4 = 5 です。n を4倍（16）にしても誤差は1/4ではなく1/2にしか減らない、という点も覚えておきましょう。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 04</span>
+            <h4>中心極限定理の「正しい」言い方</h4>
+            <p>Step03で見た E(X̄) = μ と SD(X̄) = σ/√n は、実は母集団の分布の形によらず成り立ちます。中心極限定理はさらに強いことを言います。</p>
+            <div class="warn">
+              <span class="box-label">⭐ 中心極限定理（正確な表現）</span>
+              <p>母集団がどんな分布でも（正規分布でなくても）、標本サイズ n が十分大きければ、<strong>標本平均 X̄ の分布は、平均 μ・分散 σ²/n の正規分布に近づく</strong>。</p>
+            </div>
+            <div class="math-block">X̄ ≈ N(μ, σ² ÷ n)　／　Z = (X̄ − μ) ÷ (σ ÷ √n) ≈ N(0, 1)</div>
+            <p>つまり、右に大きく歪んだ母集団からでも、標本平均をたくさん集めれば釣り鐘型になる、ということです。この様子を図にすると次のイメージです。</p>
+            <div class="figure">
+              <svg viewBox="0 0 660 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="右に歪んだ母集団と、その標本平均の分布。標本平均は正規分布に近づく">
+                <text x="120" y="26" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#1C2B39">母集団 X（右に歪む）</text>
+                <text x="445" y="26" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#1C2B39">標本平均 X̄（n が大きい）</text>
+                <rect x="40"  y="60"  width="40" height="140" fill="#A9782F"/>
+                <rect x="95"  y="95"  width="40" height="105" fill="#A9782F"/>
+                <rect x="150" y="130" width="40" height="70"  fill="#A9782F"/>
+                <rect x="205" y="165" width="40" height="35"  fill="#C9B48A"/>
+                <line x1="30" y1="200" x2="260" y2="200" stroke="#1C2B39" stroke-width="2"/>
+                <text x="60"  y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">0</text>
+                <text x="115" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">1</text>
+                <text x="170" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">2</text>
+                <text x="225" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">3</text>
+                <line x1="285" y1="150" x2="330" y2="150" stroke="#1C2B39" stroke-width="2"/>
+                <polygon points="330,145 342,150 330,155" fill="#1C2B39"/>
+                <text x="290" y="140" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">平均 ×n 回</text>
+                <path d="M232.0 199.8 L240.2 199.6 L248.5 199.4 L256.8 198.9 L265.0 198.3 L273.2 197.4 L281.5 196.1 L289.8 194.2 L298.0 191.6 L306.2 188.1 L314.5 183.5 L322.7 177.6 L331.0 170.3 L339.2 161.5 L347.5 151.3 L355.7 139.7 L364.0 127.0 L372.2 113.6 L380.5 100.0 L388.7 86.8 L397.0 74.7 L405.2 64.4 L413.5 56.6 L421.7 51.7 L430.0 50.0 L438.2 51.7 L446.5 56.6 L454.7 64.4 L463.0 74.7 L471.2 86.8 L479.5 100.0 L487.7 113.6 L496.0 127.0 L504.2 139.7 L512.5 151.3 L520.7 161.5 L529.0 170.3 L537.2 177.6 L545.5 183.5 L553.7 188.1 L562.0 191.6 L570.2 194.2 L578.5 196.1 L586.7 197.4 L595.0 198.3 L603.2 198.9 L611.5 199.4 L619.7 199.6 L628.0 199.8" fill="none" stroke="#1C2B39" stroke-width="3"/>
+                <text x="430" y="44" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#B4432F">正規分布に近づく</text>
+                <line x1="360" y1="200" x2="620" y2="200" stroke="#1C2B39" stroke-width="2"/>
+                <text x="430" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">μ（中心は母平均）</text>
+              </svg>
+              <p class="figure-caption">図2: 右裾の母集団でも、標本平均 X̄ の分布は n が大きいと釣り鐘型（正規分布）に近づく</p>
+            </div>
+            <p>「n が十分大きい」の目安は、母集団の形によって変わります。左右対称に近い分布なら n ≈ 15 でもよく近似できますが、<strong>強い歪みがある場合は n ≈ 30 以上</strong>がひとつの目安です（実務では「n ≥ 30 ならだいたいOK」とよく言われます）。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 中心極限定理の主張</p>
+              <p class="qq">収入のように右裾が長く歪んだ母集団から、n = 30 の標本を何度もとって標本平均を計算しました。標本平均の分布はどうなるでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>母集団と同じく右に歪んだまま</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>ほぼ正規分布（釣り鐘型）になる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>左に歪んだ分布になる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>一様分布になる</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">中心極限定理により、母集団が歪んでいても、標本サイズが十分大きければ標本平均の分布は正規分布に近づきます。これが統計的推測が「正規分布」を前提にできる理由です。</div></details>
+            </div>
+            <p>最後に、この定理を「手を動かして」確かめてみましょう。右に歪んだ母集団（値0,1,2,3 を確率40%,30%,20%,10%で出す。母平均 μ=1）から標本をとり、平均を記録していきます。</p>
+
+            <div class="sim" id="clt-sim">
+              <span class="box-label">🧪 動かして確かめる — 歪んだ母集団の「平均」が釣り鐘になる</span>
+              <p class="sim-lead">右に歪んだ母集団から n 個を抽出して平均をとる試行を繰り返し、標本平均のヒストグラムを作ります。標本サイズ n を大きくすると、形が正規分布に近づくのを見てください。</p>
+              <div class="sim-stage">
+                <div class="sim-counts">
+                  <div>試行回数 <b id="clt-exp">0</b></div>
+                  <div>標本平均の平均 <b id="clt-avg">—</b></div>
+                  <div>実際のばらつき <b id="clt-sd">—</b> <span class="sim-target">（理論 SE = σ ÷ √n）</span></div>
+                </div>
+                <div class="sim-btns" id="clt-ngroup">
+                  <span class="plabel">標本サイズ n ＝</span>
+                  <button type="button" class="btn-sim" data-n="1">1</button>
+                  <button type="button" class="btn-sim" data-n="2">2</button>
+                  <button type="button" class="btn-sim" data-n="5">5</button>
+                  <button type="button" class="btn-sim active" data-n="10">10</button>
+                  <button type="button" class="btn-sim" data-n="30">30</button>
+                </div>
+              </div>
+              <div class="sim-bars" id="clt-bars"></div>
+              <div class="sim-axis" id="clt-axis"></div>
+              <p class="sim-note" id="clt-msg"></p>
+              <div class="sim-btns">
+                <button type="button" class="btn-sim" id="clt-run100">100回試行</button>
+                <button type="button" class="btn-sim" id="clt-run500">500回試行</button>
+                <button type="button" class="btn-sim" id="clt-run2000">2000回試行</button>
+                <button type="button" class="btn-sim ghost" id="clt-reset">リセット</button>
+              </div>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 05</span>
+            <h4>実践: 標本平均の「確率」を計算する</h4>
+            <p>中心極限定理のおかげで、X̄ は（近似的に）正規分布 N(μ, σ²/n) にしたがいます。Unit⑦のz表と同じ方法が使えます。ただ、標準偏差が σ ではなく <strong>標準誤差 σ ÷ √n</strong> になる点だけ注意してください。</p>
+            <div class="math-block">z = (X̄ − μ) ÷ (σ ÷ √n)</div>
+            <p>例で確認しましょう。ある店の「1日あたりの来店客数 X」は、平均 μ = 100人・標準偏差 σ = 15人で、しかも右に歪んだ分布だとします。36日分の平均 X̄ を考えると、中心極限定理から</p>
+            <ul>
+              <li>X̄ の平均 = μ = 100人</li>
+              <li>X̄ の標準誤差 = σ ÷ √n = 15 ÷ √36 = 15 ÷ 6 = <strong>2.5人</strong></li>
+              <li>n = 36 なので X̄ の分布はほぼ正規</li>
+            </ul>
+            <p>「36日間の平均が105人以上になる確率」を求めましょう。</p>
+            <div class="math-block">z = (105 − 100) ÷ 2.5 = <strong>2.0</strong>　→　P(Z ≥ 2) = 1 − 0.9772 ≈ <strong>0.0228</strong></div>
+            <p>つまり、たまたま「平均105人以上」の36日間になる確率は、約2.3%しかありません。もし実際にそうなったら「何かが起きている」と疑う材料になります。この発想が、第3章の推定・第4章の検定の原点です。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 標本平均の確率</p>
+              <p class="qq">上の店の例で、「36日間の平均が105人以上」になる確率はおよそいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>約16%</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>約2.3%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約31%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約50%</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">SE = 15÷√36 = 2.5、z = (105−100)÷2.5 = 2.0。P(Z ≥ 2) = 1 − 0.9772 ≈ 0.0228 なので約2.3%です。ここで使う標準偏差は「個々の値のσ」ではなく「標本平均のσ÷√n」である点がポイントです。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 06</span>
+            <h4>まとめ: このUnitで身につけた道具</h4>
+            <ul>
+              <li>標本平均 X̄ も確率変数。<strong>E(X̄) = μ</strong>（母平均が中心）</li>
+              <li>標本平均の広がりは<strong>標準誤差 SE = σ ÷ √n</strong>（n が大きいほど狭い）</li>
+              <li><strong>中心極限定理</strong>：母集団がどんな形でも、n が大きいと X̄ の分布は正規分布 N(μ, σ²/n) に近づく</li>
+              <li>確率計算は Unit⑦のz表で：z = (X̄ − μ) ÷ (σ ÷ √n)</li>
+              <li>強い歪みの目安は <strong>n ≥ 30</strong></li>
+            </ul>
+            <div class="math-block">E(X̄) = μ　／　SE = σ ÷ √n　／　z = (X̄ − μ) ÷ (σ ÷ √n)</div>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>用語</th><th>意味</th><th>このUnitでの例</th></tr>
+                  <tr><td>母平均 μ・母標準偏差 σ</td><td>母集団全体の平均・標準偏差</td><td>来店客数 μ=100, σ=15</td></tr>
+                  <tr><td>標本平均 X̄</td><td>n個の標本の平均（確率変数）</td><td>36日間の平均来店客数</td></tr>
+                  <tr><td>標準誤差 SE</td><td>標本平均の標準偏差 = σ ÷ √n</td><td>15 ÷ √36 = 2.5</td></tr>
+                  <tr><td>中心極限定理</td><td>n 大で X̄ の分布は N(μ, σ²/n) に近づく</td><td>右裾の母集団でも釣り鐘に</td></tr>
+                  <tr><td>近似の目安</td><td>歪みが強いとき n ≥ 30 程度</td><td>n=36 ならほぼ正規とみなせる</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>ここで第2章の柱は完成です。確率（Unit①〜⑤）→ 正規分布とz表（Unit⑥⑦）→ 中心極限定理（本Unit）と、統計的推測に必要な「道具」がそろいました。</p>
+            <p>次はUnit⑨「指数分布と発生間隔（発展）」で、ポアソン分布とペアになる「次に起きるまでの時間」の分布を扱います。その先の第3章（推定）では、今日の「標準誤差」がそのまま区間推定の主役になります。</p>
+        </div>
+    </div>
+
+    <section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 第2章ユニット⑧の確認クイズ（5問）</h2>
+      <div class="quiz-status">正解 <b>0</b> / 5問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. 標本平均 X̄ の標準偏差（標準誤差）の式として正しいものはどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>σ ÷ √n</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>σ</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>σ ÷ n</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>σ² ÷ n</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">標本平均の標準偏差は σ ÷ √n です。エの σ²÷n は「分散」の式で、標準偏差にするにはルートを取ります。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. 収入のように右に大きく歪んだ母集団から、n = 50 の標本を何度もとって標本平均を計算しました。標本平均の分布はどうなりますか？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>母集団と同じ形に歪んだまま</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>ほぼ正規分布（釣り鐘型）になる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>一様分布になる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>形が決まらない</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">中心極限定理により、母集団の分布がどんな形でも、標本サイズが大きければ標本平均の分布は正規分布に近づきます。n=50 ならほぼ正規とみなせます。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. 標本サイズ n を4倍（例：10→40）にすると、標準誤差 σ÷√n はどうなりますか？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>1/4になる</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>1/2になる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>変わらない</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>2倍になる</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">√n が √4 = 2倍になるので、標準誤差は 1/2 になります。誤差を半分にするには標本を4倍にする必要がある、というのは実務でも重要な感覚です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q4. 来店客数 X が平均100人・標準偏差15人（分布は歪んでいる）とします。36日間の平均 X̄ の標準誤差 SE はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>15</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>2.5</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>0.42</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>90</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">SE = σ ÷ √n = 15 ÷ √36 = 15 ÷ 6 = 2.5 です。標本平均は平均100人を中心に、標準誤差2.5人でばらつきます。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. 上記の店の例で、「36日間の平均が105人以上」になる確率を求めたいです。z はいくつになり、確率はおよそいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>z=0.33、約37%</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>z=1.0、約16%</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>z=2.0、約2.3%</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>z=5.0、ほぼ0%</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">z = (105−100) ÷ 2.5 = 2.0。P(Z ≥ 2) = 1 − 0.9772 ≈ 0.0228（約2.3%）です。個々の値のσ=15で割ってしまうと間違えます。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+    </section>
+
+    <nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

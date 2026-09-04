@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2章(9) 指数分布と発生間隔 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+    <script src="js/sim.js" defer></script>
+</head>
+<body data-file="ch2-9-exponential.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt; 第2章 確率と確率分布 &gt; Unit 09
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 02 / Unit 09 — 指数分布と発生間隔（発展）</span>
+                <h2 class="lesson-title">指数分布：「次に起こるまでの時間」の分布</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このUnitでできるようになること</span>
+      <ul>
+        <li>ポアソン分布（回数）と指数分布（間隔）がペアであることを説明できる</li>
+        <li>平均待ち時間が 1 ÷ λ になることを計算できる</li>
+        <li>P(T ≤ t) = 1 − e^(−λt) で、t までに起きる確率を求められる（発展内容）</li>
+      </ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>ポアソン分布が「回数」なら、こちらは「時間」</h4>
+            <p>Unit⑤でポアソン分布を学びました。「1時間に平均2件の問い合わせ（λ = 2）」のように、<strong>ある期間に何回起きるか</strong>を数える分布でした。ここで、視点を1つ変えてみましょう。</p>
+            <ul>
+              <li>ポアソン分布：「1時間に平均何回起きるか」＝ 回数（離散）</li>
+              <li><strong>指数分布：「次の1回が起きるまで、どのくらい待つか」＝ 間隔・時間（連続）</strong></li>
+            </ul>
+            <p>平均2件/時間のコールセンターなら、電話と電話の間隔は平均 <strong>0.5時間（30分）</strong>になります。でも「常にちょうど30分ごと」なのではなく、短い間隔もあれば長い間隔もあります。この「次の発生までの時間 T」がしたがう分布が、このUnitのテーマ<strong>指数分布</strong>です。</p>
+            <p>指数分布は、次のような「待ち時間」のモデルとして現れます。</p>
+            <ul>
+              <li>次の問い合わせ・注文・アクセスが来るまでの時間</li>
+              <li>機械や部品が故障するまでの時間（信頼性分析）</li>
+              <li>サービスを待つ時間（ただし現実は「混雑」があるため近似）</li>
+            </ul>
+            <p>※ このUnitは「発展」なので、数式は「こんなもの」という雰囲気で読み、<strong>「平均 = 1 ÷ λ」「t までに起きる確率 = 1 − e^(−λt)」</strong>の使い方を中心に押さえましょう。</p>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>定義: 発生率 λ で決まる「右裾の長い」連続分布</h4>
+            <p>単位時間あたりの平均発生回数を λ（ポアソン分布と同じ）とすると、次の発生までの時間 T の確率密度は次の式です（暗記不要。形を覚えてください）。</p>
+            <div class="math-block">f(t) = λ × e^(−λt)　（t ≧ 0）　／　平均 E(T) = 1 ÷ λ　／　分散 V(T) = 1 ÷ λ²</div>
+            <p>t = 0 でいちばん高く、時間がたつにつれて指数関数的に減っていく、<strong>右裾が長い</strong>曲線です。λ を変えると曲線がこう変わります。</p>
+            <div class="figure">
+              <svg viewBox="0 0 660 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="発生率ラムダが異なる3本の指数分布の曲線">
+                <line x1="70" y1="210" x2="600" y2="210" stroke="#1C2B39" stroke-width="2"/>
+                <path d="M70.0 172.5 L75.3 173.4 L80.6 174.3 L85.9 175.2 L91.2 176.1 L96.5 176.9 L101.8 177.7 L107.1 178.5 L112.4 179.3 L117.7 180.1 L123.0 180.8 L128.3 181.5 L133.6 182.2 L138.9 182.9 L144.2 183.6 L149.5 184.2 L154.8 184.9 L160.1 185.5 L165.4 186.1 L170.7 186.7 L176.0 187.3 L181.3 187.8 L186.6 188.4 L191.9 188.9 L197.2 189.4 L202.5 189.9 L207.8 190.4 L213.1 190.9 L218.4 191.4 L223.7 191.8 L229.0 192.3 L234.3 192.7 L239.6 193.2 L244.9 193.6 L250.2 194.0 L255.5 194.4 L260.8 194.8 L266.1 195.1 L271.4 195.5 L276.7 195.9 L282.0 196.2 L287.3 196.5 L292.6 196.9 L297.9 197.2 L303.2 197.5 L308.5 197.8 L313.8 198.1 L319.1 198.4 L324.4 198.7 L329.7 199.0 L335.0 199.3 L340.3 199.5 L345.6 199.8 L350.9 200.0 L356.2 200.3 L361.5 200.5 L366.8 200.8 L372.1 201.0 L377.4 201.2 L382.7 201.4 L388.0 201.6 L393.3 201.8 L398.6 202.0 L403.9 202.2 L409.2 202.4 L414.5 202.6 L419.8 202.8 L425.1 203.0 L430.4 203.1 L435.7 203.3 L441.0 203.5 L446.3 203.6 L451.6 203.8 L456.9 204.0 L462.2 204.1 L467.5 204.2 L472.8 204.4 L478.1 204.5 L483.4 204.7 L488.7 204.8 L494.0 204.9 L499.3 205.1 L504.6 205.2 L509.9 205.3 L515.2 205.4 L520.5 205.5 L525.8 205.6 L531.1 205.7 L536.4 205.8 L541.7 205.9 L547.0 206.0 L552.3 206.1 L557.6 206.2 L562.9 206.3 L568.2 206.4 L573.5 206.5 L578.8 206.6 L584.1 206.7 L589.4 206.8 L594.7 206.8 L600.0 206.9" fill="none" stroke="#D9D2BE" stroke-width="3"/>
+                <path d="M70.0 135.0 L75.3 138.7 L80.6 142.1 L85.9 145.4 L91.2 148.6 L96.5 151.6 L101.8 154.4 L107.1 157.1 L112.4 159.7 L117.7 162.2 L123.0 164.5 L128.3 166.7 L133.6 168.8 L138.9 170.8 L144.2 172.8 L149.5 174.6 L154.8 176.3 L160.1 177.9 L165.4 179.5 L170.7 181.0 L176.0 182.4 L181.3 183.8 L186.6 185.0 L191.9 186.3 L197.2 187.4 L202.5 188.5 L207.8 189.6 L213.1 190.6 L218.4 191.5 L223.7 192.4 L229.0 193.3 L234.3 194.1 L239.6 194.9 L244.9 195.6 L250.2 196.3 L255.5 197.0 L260.8 197.6 L266.1 198.2 L271.4 198.8 L276.7 199.3 L282.0 199.8 L287.3 200.3 L292.6 200.8 L297.9 201.3 L303.2 201.7 L308.5 202.1 L313.8 202.5 L319.1 202.8 L324.4 203.2 L329.7 203.5 L335.0 203.8 L340.3 204.1 L345.6 204.4 L350.9 204.7 L356.2 205.0 L361.5 205.2 L366.8 205.4 L372.1 205.7 L377.4 205.9 L382.7 206.1 L388.0 206.3 L393.3 206.4 L398.6 206.6 L403.9 206.8 L409.2 206.9 L414.5 207.1 L419.8 207.2 L425.1 207.4 L430.4 207.5 L435.7 207.6 L441.0 207.7 L446.3 207.8 L451.6 208.0 L456.9 208.1 L462.2 208.1 L467.5 208.2 L472.8 208.3 L478.1 208.4 L483.4 208.5 L488.7 208.6 L494.0 208.6 L499.3 208.7 L504.6 208.8 L509.9 208.8 L515.2 208.9 L520.5 208.9 L525.8 209.0 L531.1 209.0 L536.4 209.1 L541.7 209.1 L547.0 209.2 L552.3 209.2 L557.6 209.2 L562.9 209.3 L568.2 209.3 L573.5 209.4 L578.8 209.4 L584.1 209.4 L589.4 209.4 L594.7 209.5 L600.0 209.5" fill="none" stroke="#3E5063" stroke-width="3"/>
+                <path d="M70.0 60.0 L75.3 74.3 L80.6 87.2 L85.9 98.9 L91.2 109.5 L96.5 119.0 L101.8 127.7 L107.1 135.5 L112.4 142.6 L117.7 149.0 L123.0 154.8 L128.3 160.1 L133.6 164.8 L138.9 169.1 L144.2 173.0 L149.5 176.5 L154.8 179.7 L160.1 182.6 L165.4 185.2 L170.7 187.6 L176.0 189.7 L181.3 191.6 L186.6 193.4 L191.9 195.0 L197.2 196.4 L202.5 197.7 L207.8 198.9 L213.1 199.9 L218.4 200.9 L223.7 201.7 L229.0 202.5 L234.3 203.2 L239.6 203.9 L244.9 204.5 L250.2 205.0 L255.5 205.5 L260.8 205.9 L266.1 206.3 L271.4 206.6 L276.7 207.0 L282.0 207.3 L287.3 207.5 L292.6 207.8 L297.9 208.0 L303.2 208.2 L308.5 208.3 L313.8 208.5 L319.1 208.6 L324.4 208.8 L329.7 208.9 L335.0 209.0 L340.3 209.1 L345.6 209.2 L350.9 209.3 L356.2 209.3 L361.5 209.4 L366.8 209.4 L372.1 209.5 L377.4 209.5 L382.7 209.6 L388.0 209.6 L393.3 209.7 L398.6 209.7 L403.9 209.7 L409.2 209.8 L414.5 209.8 L419.8 209.8 L425.1 209.8 L430.4 209.8 L435.7 209.8 L441.0 209.9 L446.3 209.9 L451.6 209.9 L456.9 209.9 L462.2 209.9 L467.5 209.9 L472.8 209.9 L478.1 209.9 L483.4 209.9 L488.7 209.9 L494.0 209.9 L499.3 210.0 L504.6 210.0 L509.9 210.0 L515.2 210.0 L520.5 210.0 L525.8 210.0 L531.1 210.0 L536.4 210.0 L541.7 210.0 L547.0 210.0 L552.3 210.0 L557.6 210.0 L562.9 210.0 L568.2 210.0 L573.5 210.0 L578.8 210.0 L584.1 210.0 L589.4 210.0 L594.7 210.0 L600.0 210.0" fill="none" stroke="#A9782F" stroke-width="3"/>
+                <rect x="70" y="30" width="14" height="14" fill="#A9782F"/><text x="90" y="42" font-family="'JetBrains Mono',monospace" font-size="12" fill="#3E5063">λ = 2（発生が多い）</text>
+                <rect x="70" y="50" width="14" height="14" fill="#3E5063"/><text x="90" y="62" font-family="'JetBrains Mono',monospace" font-size="12" fill="#3E5063">λ = 1</text>
+                <rect x="70" y="70" width="14" height="14" fill="#D9D2BE"/><text x="90" y="82" font-family="'JetBrains Mono',monospace" font-size="12" fill="#3E5063">λ = 0.5（まれ）</text>
+                <text x="70"  y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">0</text>
+                <text x="176" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">1</text>
+                <text x="282" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">2</text>
+                <text x="388" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">3</text>
+                <text x="494" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">4</text>
+                <text x="600" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">5時間</text>
+              </svg>
+              <p class="figure-caption">図1: 指数分布 f(t)=λe^(−λt)。λ が大きいほど「短い待ち時間」が多くなり、曲線の初期の高さも高くなる。右裾が長い</p>
+            </div>
+            <p>平均 E(T) = 1 ÷ λ は「次の発生までの平均待ち時間」です。λ = 2件/時間なら平均0.5時間（30分）、λ = 0.5件/時間なら平均2時間、といった具合です。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 平均待ち時間</p>
+              <p class="qq">平均 λ = 2件/時間で発生する事象について、次の発生までの平均待ち時間 E(T) はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>2時間</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>2分</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>0.5時間（30分）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>0.5分</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">E(T) = 1 ÷ λ = 1 ÷ 2 = 0.5時間（30分）です。ポアソンのλ（回数/時間）と指数の平均1/λ（時間/回）は、分子と分母がひっくり返った関係です。</div></details>
+            </div>
+
+            <div class="sim" id="exp-sim">
+              <span class="box-label">🧪 動かして確かめる — λ で「次の発生」の分布が変わる</span>
+              <p class="sim-lead">発生率 λ をスライダーで変えると、指数分布の曲線と「平均待ち時間 1/λ」（赤い破線）が動きます。</p>
+              <div class="sim-sliders">
+                <label>発生率 λ <input type="range" id="exp-lam" min="0.2" max="3" step="0.1" value="2"><b id="exp-lam-val">2</b></label>
+              </div>
+              <svg class="exp-svg" id="exp-svg" viewBox="0 0 660 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="指数分布。発生率ラムダのスライダーで曲線と平均待ち時間が動く">
+                <line x1="70" y1="210" x2="600" y2="210" stroke="#1C2B39" stroke-width="2"/>
+                <path id="exp-curve" d="" fill="none" stroke="#A9782F" stroke-width="3"/>
+                <line id="exp-mean" x1="0" y1="40" x2="0" y2="210" stroke="#B4432F" stroke-width="1.5" stroke-dasharray="4 4"/>
+                <text id="exp-meanlbl" x="0" y="34" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#B4432F"></text>
+                <text x="335" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">時間 t（0〜5）</text>
+              </svg>
+              <p class="sim-note" id="exp-msg"></p>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 03</span>
+            <h4>「t までに起きる確率」= 1 − e^(−λt)</h4>
+            <p>指数分布でよく使うのは、累積確率です。「時間 t までに（次の発生が）起きる確率」は次の式で表されます。</p>
+            <div class="math-block">P(T ≦ t) = 1 − e^(−λt)　／　P(T &gt; t) = e^(−λt)（t を過ぎても起きない確率）</div>
+            <p>λ = 2件/時間のコールセンターで、「30分（=0.5時間）以内に次の電話が来る確率」を求めてみましょう。</p>
+            <div class="math-block">P(T ≦ 0.5) = 1 − e^(−2 × 0.5) = 1 − e^(−1) ≈ 1 − 0.368 = <strong>0.632</strong></div>
+            <p>つまり、約63%の確率で「30分以内」に次の電話が来ます。この「t=0.5 より左の面積」が0.632であることを、図で確認しましょう。</p>
+            <div class="figure">
+              <svg viewBox="0 0 660 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="指数分布（ラムダ2）。0.5時間までが塗られ、その面積が0.632であることを示す">
+                <line x1="70" y1="210" x2="600" y2="210" stroke="#1C2B39" stroke-width="2"/>
+                <path d="M 70.0 210.0 L70.0 60.0 L71.3 63.7 L72.7 67.3 L74.0 70.8 L75.3 74.3 L76.6 77.6 L78.0 80.9 L79.3 84.1 L80.6 87.2 L81.9 90.2 L83.2 93.2 L84.6 96.1 L85.9 98.9 L87.2 101.6 L88.5 104.3 L89.9 106.9 L91.2 109.5 L92.5 111.9 L93.9 114.4 L95.2 116.7 L96.5 119.0 L97.8 121.3 L99.2 123.5 L100.5 125.6 L101.8 127.7 L103.1 129.7 L104.5 131.7 L105.8 133.6 L107.1 135.5 L108.4 137.4 L109.8 139.1 L111.1 140.9 L112.4 142.6 L113.7 144.3 L115.1 145.9 L116.4 147.5 L117.7 149.0 L119.0 150.5 L120.4 152.0 L121.7 153.4 L123.0 154.8 L 123.0 210.0 Z" fill="#A9782F" opacity="0.5"/>
+                <path d="M70.0 60.0 L75.3 74.3 L80.6 87.2 L85.9 98.9 L91.2 109.5 L96.5 119.0 L101.8 127.7 L107.1 135.5 L112.4 142.6 L117.7 149.0 L123.0 154.8 L128.3 160.1 L133.6 164.8 L138.9 169.1 L144.2 173.0 L149.5 176.5 L154.8 179.7 L160.1 182.6 L165.4 185.2 L170.7 187.6 L176.0 189.7 L181.3 191.6 L186.6 193.4 L191.9 195.0 L197.2 196.4 L202.5 197.7 L207.8 198.9 L213.1 199.9 L218.4 200.9 L223.7 201.7 L229.0 202.5 L234.3 203.2 L239.6 203.9 L244.9 204.5 L250.2 205.0 L255.5 205.5 L260.8 205.9 L266.1 206.3 L271.4 206.6 L276.7 207.0 L282.0 207.3 L287.3 207.5 L292.6 207.8 L297.9 208.0 L303.2 208.2 L308.5 208.3 L313.8 208.5 L319.1 208.6 L324.4 208.8 L329.7 208.9 L335.0 209.0 L340.3 209.1 L345.6 209.2 L350.9 209.3 L356.2 209.3 L361.5 209.4 L366.8 209.4 L372.1 209.5 L377.4 209.5 L382.7 209.6 L388.0 209.6 L393.3 209.7 L398.6 209.7 L403.9 209.7 L409.2 209.8 L414.5 209.8 L419.8 209.8 L425.1 209.8 L430.4 209.8 L435.7 209.8 L441.0 209.9 L446.3 209.9 L451.6 209.9 L456.9 209.9 L462.2 209.9 L467.5 209.9 L472.8 209.9 L478.1 209.9 L483.4 209.9 L488.7 209.9 L494.0 209.9 L499.3 210.0 L504.6 210.0 L509.9 210.0 L515.2 210.0 L520.5 210.0 L525.8 210.0 L531.1 210.0 L536.4 210.0 L541.7 210.0 L547.0 210.0 L552.3 210.0 L557.6 210.0 L562.9 210.0 L568.2 210.0 L573.5 210.0 L578.8 210.0 L584.1 210.0 L589.4 210.0 L594.7 210.0 L600.0 210.0" fill="none" stroke="#A9782F" stroke-width="3"/>
+                <line x1="123" y1="60" x2="123" y2="210" stroke="#B4432F" stroke-width="1.5" stroke-dasharray="5 4"/>
+                <text x="123" y="52" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#B4432F">t = 0.5時間</text>
+                <text x="95" y="170" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">P(T ≦ 0.5) ≈ 0.632</text>
+                <text x="400" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">P(T &gt; 0.5) ≈ 0.368</text>
+                <text x="70"  y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">0</text>
+                <text x="176" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">1</text>
+                <text x="282" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">2</text>
+                <text x="388" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">3</text>
+                <text x="494" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">4</text>
+                <text x="600" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">5時間</text>
+              </svg>
+              <p class="figure-caption">図2: λ=2 のときの P(T ≤ 0.5)。t=0.5 より左の面積が約0.632（63.2%）、右側が約0.368</p>
+            </div>
+            <p>この式のいいところは「t までに起きる確率」と「t を過ぎても起きない確率」が、掛け算だけで出ることです。たとえば「1時間待っても電話が来ない確率」は P(T &gt; 1) = e^(−2) ≈ 0.135 とすぐに出せます。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 累積確率</p>
+              <p class="qq">λ = 2 のとき、「30分以内に次の電話が来る」確率 P(T ≤ 0.5) はおよそいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>約0.632</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>約0.368</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約0.135</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約0.5</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">P(T ≤ 0.5) = 1 − e^(−2×0.5) = 1 − e^(−1) ≈ 0.632 です。イの0.368は「30分過ぎても来ない」確率 e^(−1) なので、足すと1になります。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 04</span>
+            <h4>特殊な性質「無記憶性（メモリーレス）」</h4>
+            <p>指数分布には、ほかの分布にはない面白い性質があります。それは<strong>「これまで待った時間を覚えていない」</strong>という性質（無記憶性・メモリーレス）です。式で書くと次の通りです。</p>
+            <div class="math-block">P(T &gt; s＋t ｜ T &gt; s) = P(T &gt; t)</div>
+            <p>意味は「すでに s だけ待ったとしても、あと t 以上待つ確率は、何も待っていないときの P(T &gt; t) と同じ」。例で見てみましょう。</p>
+            <ul>
+              <li><strong>バスの例（平均10分間隔＝λ=0.1/分）:</strong> 8分待った人も、今来たばかりの人も、「あと平均10分待つ」は同じ</li>
+              <li><strong>機械の寿命（指数モデルの場合）:</strong> 使い始めたばかりの機械も、10年動いた機械も「あとどれだけ持つか」の期待値は同じ</li>
+            </ul>
+            <p>これは「偶然の発生がランダムに起きる（＝ポアソン過程）」という前提から来る性質です。一方、現実の機械は疲労で劣化しますし、バス停も「8分待った→そろそろ来る」と期待できることが多い。ですから<strong>現実の寿命や待ち時間への応用は、あくまで単純なモデル（近似）</strong>だという点に注意してください。</p>
+            <p>なお、「t を過ぎても起きない確率」P(T &gt; t) = e^(−λt) は、このUnitで何度も使うので覚えておきましょう。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 生き残り確率</p>
+              <p class="qq">λ = 2 のとき、「1時間待っても電話が来ない」確率 P(T &gt; 1) はおよそいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>約0.632</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>約0.135</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約0.368</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約0.5</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">P(T &gt; 1) = e^(−λt) = e^(−2×1) = e^(−2) ≈ 0.135 です。e^(−1)≈0.368 と混同しないように、指数の肩に「λ × t」を入れる点に注意しましょう。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 05</span>
+            <h4>ポアソン分布と指数分布の対応・実務での注意</h4>
+            <p>ポアソン分布と指数分布は、同じ「ポアソン過程」の2つの見方です。表にまとめると次のようになります。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th></th><th>ポアソン分布 Po(λ)</th><th>指数分布 Exp(λ)</th></tr>
+                  <tr><td>表すもの</td><td>ある期間に起きる<strong>回数</strong></td><td>次の発生までの<strong>時間（間隔）</strong></td></tr>
+                  <tr><td>値のタイプ</td><td>離散（0,1,2,…）</td><td>連続（t ≧ 0）</td></tr>
+                  <tr><td>平均</td><td>λ（回）</td><td>1/λ（時間）</td></tr>
+                  <tr><td>例</td><td>1時間の問い合わせ件数</td><td>問い合わせの間隔</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>使いどころは、次のような場面です。</p>
+            <ul>
+              <li><strong>コールセンター／カスタマーサポート:</strong> 電話の発生件数（ポアソン）と、待ち時間・応答間隔（指数）をセットでモデル化</li>
+              <li><strong>信頼性分析:</strong> 部品・システムの故障までの時間を指数分布で近似（寿命試験）</li>
+              <li><strong>ネットワーク／サーバー:</strong> 到着間隔・処理時間の単純モデル（M/M/1待ち行列理論など）</li>
+            </ul>
+            <p>ただし実務では、次の点に注意が必要です。</p>
+            <ul>
+              <li>指数分布は「λ が時間によって一定（定常）」を仮定する。繁忙期があると崩れる</li>
+              <li>無記憶性は強い仮定。故障・劣化がある機器にはそのまま使えない（近似として利用）</li>
+              <li>「平均だけ」に注目しすぎず、実際のヒストグラムと比べること</li>
+            </ul>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 無記憶性の例</p>
+              <p class="qq">平均10分間隔（λ=0.1/分）で来るバスを、すでに8分待っています。指数分布のモデルでは、あと平均どのくらい待つと見込めるでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>2分</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>8分</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>10分（これまでの待ち時間は関係ない）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>18分</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">指数分布には無記憶性があるので、8分待ったかどうかは関係なく「あと平均10分」です。これが現実のバスとちがう点（モデルの近似）でもあります。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 06</span>
+            <h4>まとめ＋第2章の「分布マップ」</h4>
+            <ul>
+              <li><strong>指数分布 Exp(λ)</strong> = 次の発生までの「時間」（連続）の分布。ポアソンの λ とペア</li>
+              <li>確率密度 f(t)=λe^(−λt)、平均 <strong>E(T) = 1/λ</strong>、分散 1/λ²</li>
+              <li>累積: <strong>P(T ≤ t) = 1 − e^(−λt)</strong>／P(T &gt; t) = e^(−λt)</li>
+              <li>右裾が長い。λ が大きいほど短い待ち時間が多くなる</li>
+              <li><strong>無記憶性（メモリーレス）</strong>に注意（現実の待ち・寿命では近似）</li>
+            </ul>
+            <div class="math-block">f(t) = λe^(−λt)　／　E(T) = 1 ÷ λ　／　P(T ≦ t) = 1 − e^(−λt)</div>
+            <p>これで第2章の全ユニット（①〜⑨）がそろいました。学んだ分布を一覧にすると、次のようになります。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>タイプ</th><th>分布</th><th>特徴</th><th>例</th></tr>
+                  <tr><td>離散</td><td>一様（サイコロ）</td><td>どの結果も同確率</td><td>サイコロの目</td></tr>
+                  <tr><td>離散</td><td>二項 Bin(n, p)</td><td>n回の試行の成功回数</td><td>コイン10回の表の回数</td></tr>
+                  <tr><td>離散</td><td>ポアソン Po(λ)</td><td>期間あたりの発生回数</td><td>1時間の問い合わせ件数</td></tr>
+                  <tr><td>連続</td><td>正規 N(μ, σ²)</td><td>釣り鐘型・CLTの主役</td><td>点数・身長・標本平均</td></tr>
+                  <tr><td>連続</td><td>指数 Exp(λ)</td><td>次の発生までの時間</td><td>電話の間隔・故障時間</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>確率（Unit①〜⑤）・正規分布とz表（Unit⑥⑦）・中心極限定理（Unit⑧）・このUnit⑨で、第2章のゴール「データの背後にある確率分布を扱える」に到達しました。</p>
+            <p>次はいよいよ<strong>第3章「推定」</strong>です。母集団全部を見られないとき、標本から母平均を「当てる」方法を学びます。そこでは Unit⑧の「標準誤差」とUnit⑦の「±1.96」が、そのまま主役になります。</p>
+        </div>
+    </div>
+
+    <section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 第2章ユニット⑨の確認クイズ（5問）</h2>
+      <div class="quiz-status">正解 <b>0</b> / 5問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. 指数分布がモデル化するのは、次のうちどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>「次の発生」までの時間（間隔）</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>ある期間に発生する回数</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>コインを10回投げたときの表の回数</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>身長の分布</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">指数分布は「次の発生までの時間（待ち時間）」の連続分布です。回数はポアソン分布、試行の回数は二項分布、身長などは正規分布で扱います。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. 平均 λ = 0.5件/時間で発生する事象の、次の発生までの平均待ち時間はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>30分</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>2分</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>2時間</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>0.5時間</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">E(T) = 1 ÷ λ = 1 ÷ 0.5 = 2時間 です。発生が少ない（λが小さい）ほど、平均待ち時間は長くなります。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. λ = 2 のとき、「1時間以内に次の電話が来る」確率 P(T ≤ 1) はおよそいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>約0.865</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>約0.632</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約0.135</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約0.368</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">P(T ≤ 1) = 1 − e^(−2×1) = 1 − e^(−2) ≈ 1 − 0.135 = 0.865 です。ウの0.135は「1時間過ぎても来ない」確率です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q4. 平均15分間隔（λ=1/15）で来るシャトルバスを、すでに10分待っています。指数分布のモデルでは、あと平均どのくらい待つと見込めるでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>5分</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>15分</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>10分</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>25分</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">無記憶性により、10分待ったことは影響せず「あと平均15分」です。これは指数分布の強い仮定であり、現実のバスには当てはまらないことも多い、という注意もセットで覚えましょう。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. 1時間あたり平均4件の問い合わせが来る（ポアソン λ=4）とき、問い合わせの間隔の平均はどのくらいでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>15分</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>4分</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>1時間</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>30分</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">指数分布の平均は 1/λ = 1/4時間 = 15分です。ポアソン（回数/時間）と指数（時間/回）は逆数の関係にあります。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+    </section>
+
+    <nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

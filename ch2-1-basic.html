@@ -17,6 +17,7 @@
     <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
     <script src="js/main.js" defer></script>
     <script src="js/quiz.js" defer></script>
+    <script src="js/sim.js" defer></script>
     <style>
         .dice { display: flex; gap: 8px; justify-content: center; margin: 14px 0 6px; flex-wrap: wrap; }
         .dice span {
@@ -28,9 +29,6 @@
         .pline { position: relative; height: 16px; border-top: 2px solid var(--color-ink); margin: 26px 4px 30px; }
         .pline i { position: absolute; top: -4px; width: 0; height: 12px; border-left: 2px solid var(--color-ink); }
         .pline .lbl { position: absolute; top: 12px; transform: translateX(-50%); font-family: var(--font-mono); font-size: 11px; color: var(--color-ink-soft); white-space: nowrap; }
-        .band { position: relative; height: 26px; background: #F6F3EA; border-radius: 4px; margin: 18px 0 4px; overflow: hidden; }
-        .band i { position: absolute; top: 0; height: 100%; }
-        .band b { position: absolute; top: -18px; transform: translateX(-50%); font-family: var(--font-mono); font-size: 10.5px; color: var(--color-ink-soft); white-space: nowrap; }
     </style>
 </head>
 <body data-file="ch2-1-basic.html">
@@ -56,14 +54,16 @@
       <ul>
         <li>確率の意味（0〜1の数字）と求め方を説明できる</li>
         <li>「〜という条件のもとで」の確率（条件付き確率）を計算できる</li>
+        <li>クロス集計表から必要な分母を読み取り、確率の大小を正しく比べられる</li>
       </ul>
     </div>
 
     <div class="lesson-flow">
         <div class="lesson-step">
             <span class="lesson-step-meta">Step 01</span>
-            <h4>確率 = 「全体の中で、その目が出る割合」</h4>
-            <p>サイコロを1回振って「偶数が出る確率」を考えてみましょう。サイコロの目は6つ。そのうち偶数は「2・4・6」の3つです。</p>
+            <h4>確率 = 「全体の中で、当てはまる割合」</h4>
+            <p>確率の話のはじめに、サイコロを1回振る場面を考えましょう。サイコロを振って目が出る……この「実験」を統計では<strong>試行</strong>、出た目（「4の目が出た」など）を<strong>結果</strong>と呼びます。そして「偶数が出る」のように注目している結果のまとまりを<strong>事象</strong>と呼び、事象Aの確率を <strong>P(A)</strong> と書きます。名前はむずかしく見えますが、中身はこれからやる「割合」です。</p>
+            <p>「偶数が出る確率」を求めてみましょう。サイコロの目は全部で6つ。そのうち偶数は「2・4・6」の3つです。</p>
             <div class="figure">
               <div class="dice">
                 <span>1</span><span class="even">2</span><span>3</span>
@@ -71,9 +71,22 @@
               </div>
               <p class="figure-caption">図1: 6つの目（全体）のうち、偶数（brass色）は3つ</p>
             </div>
-            <p>確率の基本はこれだけです。</p>
+            <p>「全部の目が同じ確からしさで出る」と考えられるからこそ、この単純な割り算だけで確率が求まります。確率の基本は、これだけです。</p>
             <div class="math-block">確率 = 「当てはまる数」 ÷ 「全部の数」</div>
-            <div class="math-block">偶数が出る確率 = 3 ÷ 6 = <strong>1/2</strong>（= 0.5 = 50%）</div>
+            <div class="math-block">P(偶数) = 3 ÷ 6 = <strong>1/2</strong>（= 0.5 = 50%）</div>
+            <p>ほかの例も、表にまとめておきましょう。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>事象</th><th>当てはまる目</th><th>計算</th><th>確率</th></tr>
+                  <tr><td>偶数が出る</td><td>2・4・6</td><td>3 ÷ 6</td><td>1/2</td></tr>
+                  <tr><td>3の倍数が出る</td><td>3・6</td><td>2 ÷ 6</td><td>1/3</td></tr>
+                  <tr><td>5以上の目が出る</td><td>5・6</td><td>2 ÷ 6</td><td>1/3</td></tr>
+                  <tr><td>1の目が出る</td><td>1</td><td>1 ÷ 6</td><td>1/6</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>どの例もやり方は同じです。「当てはまる目を数えて、6で割る」。まずはこのリズムに慣れましょう。</p>
 
             <div class="mini-q quiz-q">
               <p class="mc-label">✏️ 途中確認 — 確率の求め方</p>
@@ -90,8 +103,13 @@
         </div>
         <div class="lesson-step">
             <span class="lesson-step-meta">Step 02</span>
-            <h4>確率は「0〜1」の数字。全部足すと必ず1</h4>
-            <p>確率は「絶対に起きない＝0」から「必ず起きる＝1」までの数字です。天気予報の「降水確率70%」は、確率0.7のことです。</p>
+            <h4>確率は「0〜1」の数字。基本ルールは3つ</h4>
+            <p>確率は<strong>「絶対に起きない＝0」から「必ず起きる＝1」までの数字</strong>です。天気予報の「降水確率70%」は、確率0.7のことですね。確率を扱うときの基本ルールは、次の3つです。</p>
+            <ul>
+              <li><strong>ルール1（範囲）:</strong> 確率は必ず 0 以上 1 以下になる</li>
+              <li><strong>ルール2（合計）:</strong> 起こりうる全部の確率を足すと、必ず 1 になる</li>
+              <li><strong>ルール3（余事象）:</strong> 「Aが起きない」確率 = 1 − P(A)。「でない方」を<strong>余事象</strong>と呼ぶ</li>
+            </ul>
             <div class="figure">
               <div class="pline">
                 <i style="left:0%"></i><span class="lbl" style="left:0%">0（絶対にない）</span>
@@ -100,7 +118,23 @@
               </div>
               <p class="figure-caption">図2: 確率の物差し。表と裏のコインは1/2（=0.5）の位置</p>
             </div>
-            <p>そして大切なルールが1つ。<strong>「起こりうる全部の確率を足すと1になる」</strong>ことです。サイコロなら 1/6 が6つで 6/6 = 1。「表が出る確率1/2＋裏が出る確率1/2 = 1」も同じです。</p>
+            <p>まずルール2を確かめましょう。サイコロはどの目も 1/6 なので、6つ全部を足すと 6/6 = 1。コインも「表 1/2 ＋ 裏 1/2 = 1」です。「何かが必ず1つは起きる」からこそ、このルールが成り立ちます。</p>
+            <p>ルール3の余事象は、<strong>「でない方」を 1 から引いて出す</strong>テクニックです。例を見てみましょう。「6の目が出る確率」が 1/6 なら、「6以外の目が出る確率」は 1 − 1/6 = 5/6 になります。</p>
+            <div class="figure">
+              <svg viewBox="0 0 640 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="全体を1とした棒。「6の目」が6分の1、「6以外」が6分の5">
+                <defs><clipPath id="barClip"><rect x="80" y="42" width="480" height="36" rx="6"/></clipPath></defs>
+                <text x="120" y="30" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#A9782F">6の目 1/6</text>
+                <text x="360" y="30" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#3E5063">6以外の目 5/6</text>
+                <g clip-path="url(#barClip)">
+                  <rect x="80" y="42" width="480" height="36" fill="#EDE7D6"/>
+                  <rect x="80" y="42" width="80" height="36" fill="#A9782F"/>
+                  <line x1="160" y1="42" x2="160" y2="78" stroke="#FFFFFF" stroke-width="3"/>
+                </g>
+              </svg>
+              <p class="figure-caption">図3: 全体＝1 を「6の目（1/6）」と「6以外（5/6）」に分ける。足すとちょうど 1</p>
+            </div>
+            <div class="math-block">P(6の目が出る) = 1/6、P(6以外の目が出る) = 1 − 1/6 = <strong>5/6</strong></div>
+            <p>5/6 は「5 ÷ 6」で数えても同じ答えです。でも「でない方」を数えるのが大変な場面では、1 から引く方がずっと速いことがあります。余事象はあとのUnitでも頻繁に使います。</p>
 
             <div class="mini-q quiz-q">
               <p class="mc-label">✏️ 途中確認 — 確率の範囲</p>
@@ -114,6 +148,40 @@
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">表・裏の2つのうち表は1つ。確率 = 1/2 です。「表＋裏 = 1」になることもチェックしておきましょう。</div></details>
             </div>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 余事象</p>
+              <p class="qq">サイコロを1回振って「6以外の目」が出る確率はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>1/6</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>5/6</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>0</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>1</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">「6が出る確率」は 1/6。その反対なので 1 − 1/6 = 5/6 です。実際に数えても「1・2・3・4・5」の5つで 5 ÷ 6 = 5/6 になります。</div></details>
+            </div>
+
+            <div class="sim" id="coin-sim">
+              <span class="box-label">🧪 動かして確かめる — コインの表が出る割合</span>
+              <p class="sim-lead">「表の出る確率は 1/2（50%）」と言いました。では実際にコインを投げ続けると、表の割合はどうなるでしょう？ ボタンを押して確かめてみましょう。</p>
+              <div class="sim-stage">
+                <div class="sim-face coin-face" id="coin-face">—</div>
+                <div class="sim-counts">
+                  <div>投げた回数 <b id="coin-n">0</b></div>
+                  <div>表の回数 <b id="coin-h">0</b></div>
+                  <div>表の割合 <b id="coin-p">—</b></div>
+                </div>
+              </div>
+              <div class="sim-bar-track"><i id="coin-bar"></i></div>
+              <div class="sim-scale"><span class="s0">0%</span><b>50%（1/2）</b><span class="s100">100%</span></div>
+              <p class="sim-note" id="coin-msg"></p>
+              <div class="sim-btns">
+                <button type="button" class="btn-sim" id="coin-once">投げる</button>
+                <button type="button" class="btn-sim" id="coin-ten">10回投げる</button>
+                <button type="button" class="btn-sim" id="coin-hundred">100回投げる</button>
+                <button type="button" class="btn-sim ghost" id="coin-reset">リセット</button>
+              </div>
+            </div>
         </div>
 
         <div class="lesson-step">
@@ -125,19 +193,39 @@
               <li>そのうち広告を見た人: <strong>3,000人</strong></li>
               <li>広告を見た3,000人の中で実際に購入した人: <strong>600人</strong></li>
             </ul>
-            <div class="figure">
-              <div class="band">
-                <i style="left:0; width:100%; background:#F0E6C9;"></i>
-                <i style="left:0; width:15%; background:rgba(169,120,47,0.5);"></i>
-                <i style="left:0; width:3%; background:#A9782F;"></i>
-                <b style="left:8%;">広告を見た 3,000人（15%）</b>
-                <b style="left:1.5%;">さらに購入 600人（3%）</b>
-                <b style="left:95%;">全体 20,000人</b>
-              </div>
-              <p class="figure-caption">図3: 全体（2万人）→ 広告を見た（3,000人）→ その中で購入（600人）</p>
+            <p>人ごとの状況を1つの表にまとめると、次のようになります。縦と横の2つの項目で分類したこの表を<strong>クロス集計表</strong>（2×2の分割表）と呼びます。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th></th><th>購入した</th><th>購入していない</th><th>合計</th></tr>
+                  <tr><td><strong>広告を見た</strong></td><td><strong>600人</strong></td><td>2,400人</td><td>3,000人</td></tr>
+                  <tr><td><strong>広告を見なかった</strong></td><td>1,200人</td><td>15,800人</td><td>17,000人</td></tr>
+                  <tr><td><strong>合計</strong></td><td>1,800人</td><td>18,200人</td><td>20,000人</td></tr>
+                </tbody>
+              </table>
             </div>
-            <p>ここで「広告を見た人の中で購入する確率」を求めるとき、分母は<strong>20,000人ではなく3,000人</strong>に絞ります。これを<strong>条件付き確率</strong>と呼びます。</p>
+            <p>「広告を見た人の中で購入する確率」を求めたいので、見るのは<strong>「広告を見た」の行（3,000人）</strong>だけ。その中で購入したのは600人です。つまり分母は、全体の20,000人ではなく<strong>条件に当てはまる3,000人に絞ります</strong>。これを<strong>条件付き確率</strong>と呼びます。</p>
             <div class="math-block">P(購入 | 広告を見た) = 600 ÷ 3,000 = <strong>0.2（20%）</strong></div>
+            <p>「|」の右側が<strong>分母（条件のグループ）</strong>です。この「|の右＝分母」の感覚が、確率を使いこなす最大のコツです。上の表のうち、どこの数字を使って計算したかも見ておきましょう。</p>
+            <div class="figure">
+              <svg viewBox="0 0 660 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ベン図。「広告を見た」と「購入した」の2つの円。重なった部分が両方に当てはまる600人">
+                <ellipse cx="240" cy="160" rx="175" ry="120" fill="rgba(169,120,47,0.22)" stroke="#A9782F" stroke-width="2"/>
+                <ellipse cx="420" cy="160" rx="175" ry="120" fill="rgba(28,43,57,0.10)" stroke="#1C2B39" stroke-width="2"/>
+                <text x="160" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#1C2B39">広告を見た</text>
+                <text x="160" y="118" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#3E5063">3,000人</text>
+                <text x="500" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#1C2B39">購入した</text>
+                <text x="500" y="118" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#3E5063">1,800人</text>
+                <text x="150" y="215" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">広告のみ 2,400人</text>
+                <text x="510" y="215" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">購入のみ 1,200人</text>
+                <text x="330" y="152" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="700" fill="#7A2A1E">両方に当てはまる</text>
+                <text x="330" y="172" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="700" fill="#B4432F">600人</text>
+              </svg>
+              <p class="figure-caption">図4: 「広告を見た（3,000人）」を分母にすると、その中の「購入した600人」が20%。※表の全体20,000人には、この2つの円の外（広告も購入もない15,800人）も含まれます</p>
+            </div>
+            <p>この「重なった部分（両方に当てはまる人）」を <strong>P(購入 ∩ 広告を見た)</strong> と書きます。「∩」は「かつ」を表す記号です（「キャップ」と読みます）。実は、条件付き確率は「確率の割り算」でも求められます。</p>
+            <div class="math-block">P(購入 ∩ 広告を見た) = 600 ÷ 20,000 = <strong>0.03</strong>（全体の中で両方の割合）</div>
+            <div class="math-block">P(購入 | 広告を見た) = P(購入 ∩ 広告を見た) ÷ P(広告を見た) = 0.03 ÷ 0.15 = <strong>0.2</strong></div>
+            <p>意味は「広告を見たグループ（0.15）の中で、両方のグループ（0.03）が占める割合」。これは次回Unit②「ベイズの定理」で、そのまま使う形です。</p>
 
             <div class="mini-q quiz-q">
               <p class="mc-label">✏️ 途中確認 — 条件付き確率</p>
@@ -150,22 +238,54 @@
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">「広告を見た人の中で」という条件なので、分母はその3,000人に絞ります。600 ÷ 3,000 = 20% です。分母を間違えると確率は変わります。</div></details>
             </div>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — クロス集計表の読み方</p>
+              <p class="qq">上の表で「広告を見た3,000人」の中で「購入していない人」は何人でしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>1,200人</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>2,400人</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>3,000人</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>18,200人</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">「広告を見た」の行（3,000人）のうち購入したのが600人なので、残りは 3,000 − 600 = 2,400人。エの18,200人は「購入していない人」の全体で、条件は「広告を見た」なのでちがいます。</div></details>
+            </div>
         </div>
         <div class="lesson-step">
             <span class="lesson-step-meta">Step 04</span>
-            <h4>「全体の中で」と「広告を見た人の中で」は別の数字</h4>
-            <p>同じ「購入する確率」でも、分母によって数字が変わります。全体の購入者を1,800人とすると、こうなります。</p>
+            <h4>分母がちがえば、同じデータでも数字が変わる</h4>
+            <p>同じ「購入する確率」でも、分母をどちらにするかで数字が変わります。全体の購入者は1,800人だったので、こうなります。</p>
             <div class="table-wrap">
               <table>
                 <tbody>
-                  <tr><th>分母</th><th>計算</th><th>確率</th></tr>
+                  <tr><th>分母</th><th>計算</th><th>購入率</th></tr>
                   <tr><td>全体（20,000人）</td><td>1,800 ÷ 20,000</td><td><strong>9%</strong></td></tr>
                   <tr><td>広告を見た人（3,000人）</td><td>600 ÷ 3,000</td><td><strong>20%</strong></td></tr>
                 </tbody>
               </table>
             </div>
-            <p>「広告を見た人は、見ていない人より購入率が高い（20% vs 9%）」と言えます。ただしこれは<strong>「関連」の話</strong>。因果（広告のおかげで買った）までは、この数字だけでは言えません（第1章ユニット⑥の復習です）。</p>
-            <p>条件付き確率ができるようになると、次のUnit「ベイズの定理」や、第4章の「陽性でも本当に病気？」という話につながっていきます。</p>
+            <p>2つの数字を棒グラフで並べると、差が一目でわかります。</p>
+            <div class="figure">
+              <svg viewBox="0 0 500 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="購入率の比較棒グラフ。分母が全体のとき9%、広告を見た人に絞ると20%">
+                <line x1="60" y1="185" x2="440" y2="185" stroke="#1C2B39" stroke-width="2"/>
+                <rect x="85"  y="122" width="80" height="63"  fill="#A9782F"/>
+                <rect x="285" y="45"  width="80" height="140" fill="#1C2B39"/>
+                <text x="125" y="113" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="15" font-weight="700" fill="#1C2B39">9%</text>
+                <text x="325" y="36" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="15" font-weight="700" fill="#1C2B39">20%</text>
+                <text x="125" y="210" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">分母＝全体</text>
+                <text x="125" y="226" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">20,000人</text>
+                <text x="325" y="210" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">分母＝広告を見た人</text>
+                <text x="325" y="226" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">3,000人</text>
+              </svg>
+              <p class="figure-caption">図5: 同じデータでも、分母（条件）で購入率は 9% と 20% に分かれる（棒の高さは購入率に比例）</p>
+            </div>
+            <p>「広告を見た人は、見ていない人より購入率が高い（20% vs 9%）」。こうしたグループ同士の比較は、マーケティングでよく見る<strong>セグメント比較</strong>です。地域・使っている端末・クーポンの有無など、グループを分けて比べるときは「それぞれのグループの中での割合」＝条件付き確率を使います。</p>
+            <div class="warn">
+              <span class="box-label">注意: 関連と因果は別物</span>
+              <p>20%と9%の差は、「広告を見た人」と「購入」に<strong>関連がある</strong>ことのヒントです。しかし「広告のおかげで買った（因果）」とは、まだ言えません。広告を見た人と見ない人では、もともとの属性（新規のお客さんか、買い物の予算が大きいかなど）がちがうかもしれないからです。因果を確かめるには、人を無作為に2組に分けて片方だけに広告を見せて比べる<strong>A/Bテスト</strong>のような比較実験が必要です（第1章ユニット⑥「相関と因果」の復習です）。</p>
+            </div>
+            <p>数字を比べるときは、いつも「<strong>どちらも同じ分母（同じ条件）で比べているか？</strong>」を確認しましょう。分母がちがう数字をそのまま並べると、誤った結論になります。</p>
+            <p>この「全体の中での確率」と「条件の下での確率」を両方つかい分けられるようになると、次のUnit②「ベイズの定理」（検査で「陽性」でも本当に病気とは限らない話）へそのまま進めます。</p>
 
             <div class="mini-q quiz-q">
               <p class="mc-label">✏️ 途中確認 — 分母のちがい</p>
@@ -182,20 +302,35 @@
 
         <div class="lesson-step">
             <span class="lesson-step-meta">Step 05</span>
-            <h4>まとめ: このUnitの3つのポイント</h4>
+            <h4>まとめ: このUnitで身につけた道具</h4>
             <ul>
-              <li><strong>確率 = 当てはまる数 ÷ 全部の数</strong>（答えは0〜1）</li>
-              <li><strong>全部の確率を足すと1</strong></li>
-              <li><strong>「〜の条件で」は分母を絞る</strong>＝条件付き確率</li>
+              <li><strong>確率 = 当てはまる数 ÷ 全部の数</strong>（答えは必ず0〜1の間）</li>
+              <li><strong>全部の確率を足すと1</strong>。「Aが起きない」確率 = 1 − P(A)（余事象）</li>
+              <li><strong>「〜という条件で」は、分母を条件のグループに絞る</strong>＝条件付き確率 P(A | B)</li>
+              <li><strong>比べるときは分母をそろえる</strong>。分母がちがえば、同じデータでも数字が変わる（全体9% vs 広告を見た人20%）</li>
+              <li><strong>条件付き確率の差は「関連」のヒント</strong>。因果の証明にはA/Bテストのような比較実験が必要</li>
             </ul>
-            <p>次はUnit ②「ベイズの定理」で、「結果から原因をさかのぼる確率」を学びます。条件付き確率の分母の感覚がそのまま生きてきます。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>用語</th><th>意味</th><th>このUnitでの例</th></tr>
+                  <tr><td>試行・結果</td><td>実験と、そこで起きること</td><td>サイコロを振る／「4の目が出る」</td></tr>
+                  <tr><td>事象 A と P(A)</td><td>注目する結果のまとまりと、その確率</td><td>偶数が出る／P(偶数) = 1/2</td></tr>
+                  <tr><td>余事象</td><td>「Aが起きない」こと。確率は 1 − P(A)</td><td>「6以外」の目 = 1 − 1/6 = 5/6</td></tr>
+                  <tr><td>条件付き確率 P(A | B)</td><td>Bのグループの中でAの割合（分母はB）</td><td>P(購入 | 広告を見た) = 20%</td></tr>
+                  <tr><td>同時確率 P(A ∩ B)</td><td>全体の中で「AもBも」起きる割合</td><td>P(購入 ∩ 広告を見た) = 600÷20,000 = 3%</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>このUnitのポイントは、つきつめると1つです。<strong>確率の「|（バー）」の右側＝分母が、何のグループなのかをいつも意識する</strong>こと。これができれば、確率の計算でつまずくことはほとんどありません。</p>
+            <p>次はUnit②「ベイズの定理」で、「結果から原因をさかのぼる確率」を学びます。そこで使うのは、このUnitで身につけた「分母を絞る」感覚と「確率の割り算」です。上の用語表を見て、すべての計算を自分の言葉で説明できる状態で次へ進みましょう。</p>
         </div>
     </div>
 
     <section class="quiz-block">
     <div class="quiz-head">
-      <h2>📝 第2章ユニット①の確認クイズ（4問）</h2>
-      <div class="quiz-status">正解 <b>0</b> / 4問</div>
+      <h2>📝 第2章ユニット①の確認クイズ（5問）</h2>
+      <div class="quiz-status">正解 <b>0</b> / 5問</div>
     </div>
 
     <div class="quiz-q">
@@ -240,6 +375,17 @@
       </ul>
       <p class="quiz-feedback" aria-live="polite"></p>
       <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">コインなら 1/2 + 1/2 = 1。サイコロなら 1/6 × 6 = 1。何かが必ず1つ起きるからです。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. ECサイトのデータでは、全体20,000人のうち「広告を見て購入した」のは600人でした。全体の中で両方に当てはまる人の割合 P(広告を見た ∩ 購入) はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>600 ÷ 3,000 = 20%</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>600 ÷ 20,000 = 3%</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>1,800 ÷ 20,000 = 9%</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>600 ÷ 1,800 = 約33%</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">「全体20,000人の中で」の割合なので分母は20,000人。600 ÷ 20,000 = 0.03 = 3% です。アの20%は分母を「広告を見た3,000人」にした条件付き確率 P(購入 | 広告を見た) なので、問いの向きがちがいます。</div></details>
     </div>
 
     <div class="quiz-actions">

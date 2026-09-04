@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2章(4) 二項分布 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+    <script src="js/sim.js" defer></script>
+</head>
+<body data-file="ch2-4-binomial.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt; 第2章 確率と確率分布 &gt; Unit 04
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 02 / Unit 04 — 二項分布</span>
+                <h2 class="lesson-title">二項分布：「成功する回数」の確率分布</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このUnitでできるようになること</span>
+      <ul>
+        <li>「成功確率pの試行をn回」という前提（ベルヌーイ試行）を説明できる</li>
+        <li>P(X = k) = nCk × p^k × (1−p)^(n−k) で確率を計算できる</li>
+        <li>二項分布の期待値 E(X) = n × p を使い、分布の「山の位置」を説明できる</li>
+      </ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>「コインを10回投げて、表がk回」になる確率</h4>
+            <p>「表が出る確率 1/2 のコインを10回投げて、表がちょうど5回になる確率は？」——このUnitのゴールは、こうした問いに答えられるようになることです。Unit③で学んだ「確率変数 X」を使うと、表の回数を X（0〜10のどれか）と書けます。あとは X の確率分布を求めればよいわけです。</p>
+            <p>でも、全部の場合を書き出して数えるのは大変です。コイン10回の結果は全部で 2^10 = <strong>1,024通り</strong>あります。表が5回になる場合だけでも、並び方がたくさんあります。そこで「こんな問題ならいつも使える公式」が欲しくなります。それが<strong>二項分布</strong>です。</p>
+            <p>二項分布が使えるのは、次の2つが満たされる場面です。</p>
+            <ul>
+              <li>1回1回の結果が「成功か失敗か」の2通り（例: 表／裏、開封する／しない）</li>
+              <li>毎回、成功の確率 p が同じで、回と回の結果は<strong>独立</strong>（前の結果が次に影響しない）</li>
+            </ul>
+            <p>このような「1回の試行」のことを<strong>ベルヌーイ試行</strong>と呼びます。コイン投げ・アンケートの回答・クリックするかしないか・製品の不良品かどうか……データサイエンスではたくさん登場する設定です。</p>
+            <p>このUnitでは、次の順に進めます。</p>
+            <ol>
+              <li>小さい例（コイン2回）で「場合の数」の考え方を整理</li>
+              <li>確率の公式 P(X = k) を身につける</li>
+              <li>成功確率 p を変えると分布の形がどう変わるかを見る</li>
+              <li>期待値 E(X) = n × p で「山の位置」を一発で出す</li>
+            </ol>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>まず2回で考える。カギは「並び方の数」</h4>
+            <p>いきなり10回は難しいので、まず<strong>コインを2回</strong>投げる例で考えましょう。1回目と2回目は独立なので、結果の4通り（表表・表裏・裏表・裏裏）はどれも同じ確率です。樹形図にすると次のようになります。</p>
+            <div class="figure">
+              <svg viewBox="0 0 660 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="コインを2回投げる樹形図。4つの結果にそれぞれ確率4分の1">
+                <text x="330" y="30" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#1C2B39">スタート</text>
+                <path d="M330 38 V58 H190 V88" fill="none" stroke="#1C2B39" stroke-width="1.5"/>
+                <path d="M330 38 V58 H470 V88" fill="none" stroke="#1C2B39" stroke-width="1.5"/>
+                <text x="240" y="78" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#A9782F">表（1/2）</text>
+                <text x="420" y="78" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#A9782F">裏（1/2）</text>
+                <text x="190" y="112" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">1回目：表</text>
+                <text x="470" y="112" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">1回目：裏</text>
+                <path d="M190 122 V140 H115 V172" fill="none" stroke="#1C2B39" stroke-width="1.5"/>
+                <path d="M190 122 V140 H265 V172" fill="none" stroke="#1C2B39" stroke-width="1.5"/>
+                <path d="M470 122 V140 H395 V172" fill="none" stroke="#1C2B39" stroke-width="1.5"/>
+                <path d="M470 122 V140 H545 V172" fill="none" stroke="#1C2B39" stroke-width="1.5"/>
+                <text x="115" y="160" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#3E5063">1/2</text>
+                <text x="265" y="160" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#3E5063">1/2</text>
+                <text x="395" y="160" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#3E5063">1/2</text>
+                <text x="545" y="160" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10.5" fill="#3E5063">1/2</text>
+                <text x="115" y="196" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">表・表</text>
+                <text x="115" y="214" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#A9782F">表2回 ＝ 1/4</text>
+                <text x="265" y="196" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">表・裏</text>
+                <text x="265" y="214" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063">表1回 ＝ 1/4</text>
+                <text x="395" y="196" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">裏・表</text>
+                <text x="395" y="214" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063">表1回 ＝ 1/4</text>
+                <text x="545" y="196" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">裏・裏</text>
+                <text x="545" y="214" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063">表0回 ＝ 1/4</text>
+              </svg>
+              <p class="figure-caption">図1: コイン2回の樹形図。4つの葉はどれも確率 1/4。ただし「表の回数」でまとめると 表1回 は2つぶんある</p>
+            </div>
+            <p>「表の回数」に注目して整理すると、次のようになります。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>表の回数 k</th><td>0回</td><td>1回</td><td>2回</td></tr>
+                  <tr><th>当てはまる並び</th><td>裏裏</td><td>表裏・裏表</td><td>表表</td></tr>
+                  <tr><th>並びの数</th><td>1通り</td><td><strong>2通り</strong></td><td>1通り</td></tr>
+                  <tr><th>確率</th><td>1/4</td><td><strong>1/2</strong></td><td>1/4</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>ここでのポイントは、「表裏」と「裏表」は<strong>別の並び</strong>だけど、<strong>表の回数は同じ「1回」</strong>だということです。回数だけに注目すると、「何通りの並び方があるか」を数える必要が出てきます。この「n回のうち、成功がk回になる並び方の数」が、次のStepの公式の鍵になります。</p>
+            <div class="math-block">P(表が1回) = 2 ÷ 4 = <strong>1/2</strong></div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 2回のコイン</p>
+              <p class="qq">コインを2回投げて「表がちょうど1回」になる確率はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>1/4</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>1/2</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>2/3</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>1</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">「表裏」と「裏表」の2通りが当てはまります。4通りのうち2通りなので 2 ÷ 4 = 1/2 です。並びの順番がちがっても「表の回数」は同じ、というのがここでの要点です。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 03</span>
+            <h4>公式: P(X = k) = nCk × p^k × (1−p)^(n−k)</h4>
+            <p>コイン2回の例で見えた構造を、そのまま一般化します。「表がk回」になる1つの並び（例: 表・表・裏・表……）が起きる確率は、表がk回ぶんの p^k と、裏が (n−k) 回ぶんの (1−p)^(n−k) を掛けたものです。コインなら p = 1/2 なので、どの並びも同じ確率 (1/2)^n になります。</p>
+            <p>あとは「そういう並びが何通りあるか」を数えます。この「n回のうち成功がk回になる並び方の数」を <strong>nCk</strong> と書き、<strong>二項係数</strong>と呼びます。</p>
+            <div class="math-block">P(X = k) = nCk × p^k × (1 − p)^(n − k)</div>
+            <p>nCk は「n個の場所から、成功が入るk個の場所を選ぶ」数です。例えば「10回のうち表が5回になる並び」は</p>
+            <div class="math-block">10C5 = (10×9×8×7×6) ÷ (5×4×3×2×1) = <strong>252通り</strong></div>
+            <p>1つの並びの確率は (1/2)^10 = 1/1024 なので、両方を掛けて、ちょうど5回表になる確率は</p>
+            <div class="math-block">P(X = 5) = 252 × (1/2)^10 = 252 ÷ 1024 ≈ <strong>0.246</strong></div>
+            <p>「10回も投げれば5回くらいは出そう」と直感しますが、<strong>ちょうど5回になる確率は約25%</strong>。これも分布として見るとよくわかります。コイン10回（p = 1/2）の分布表とグラフがこちらです。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>表の回数 k</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td></tr>
+                  <tr><th>10Ck（並び数）</th><td>1</td><td>10</td><td>45</td><td>120</td><td>210</td><td>252</td><td>210</td><td>120</td><td>45</td><td>10</td><td>1</td></tr>
+                  <tr><th>P(X = k)</th><td>0.001</td><td>0.010</td><td>0.044</td><td>0.117</td><td>0.205</td><td><strong>0.246</strong></td><td>0.205</td><td>0.117</td><td>0.044</td><td>0.010</td><td>0.001</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="figure">
+              <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="コイン10回で表が出る回数の確率分布。5回を中心とした対称な山">
+                <line x1="60" y1="200" x2="590" y2="200" stroke="#1C2B39" stroke-width="2"/>
+                <rect x="78"  y="199" width="24" height="1"   fill="#A9782F"/>
+                <rect x="124" y="196" width="24" height="4"   fill="#A9782F"/>
+                <rect x="170" y="180" width="24" height="20"  fill="#A9782F"/>
+                <rect x="216" y="148" width="24" height="52"  fill="#A9782F"/>
+                <rect x="262" y="108" width="24" height="92"  fill="#A9782F"/>
+                <rect x="308" y="90"  width="24" height="110" fill="#A9782F"/>
+                <rect x="354" y="108" width="24" height="92"  fill="#A9782F"/>
+                <rect x="400" y="148" width="24" height="52"  fill="#A9782F"/>
+                <rect x="446" y="180" width="24" height="20"  fill="#A9782F"/>
+                <rect x="492" y="196" width="24" height="4"   fill="#A9782F"/>
+                <rect x="538" y="199" width="24" height="1"   fill="#A9782F"/>
+                <line x1="320" y1="50" x2="320" y2="200" stroke="#B4432F" stroke-width="1.5" stroke-dasharray="5 4"/>
+                <text x="320" y="42" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#B4432F">平均 5回 = n×p</text>
+                <text x="90"  y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">0</text>
+                <text x="136" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">1</text>
+                <text x="182" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">2</text>
+                <text x="228" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">3</text>
+                <text x="274" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">4</text>
+                <text x="320" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">5</text>
+                <text x="366" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">6</text>
+                <text x="412" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">7</text>
+                <text x="458" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">8</text>
+                <text x="504" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">9</text>
+                <text x="550" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">10</text>
+              </svg>
+              <p class="figure-caption">図2: コイン10回（p=1/2）の表の回数の分布。k=5 を中心に対称な山。棒の高さは確率に比例</p>
+            </div>
+            <p>p = 1/2 のときは、二項係数が左右対称（1,10,45,…252,…45,10,1）なので、分布も対称になります。表の合計が1になっていることも確認してみてください。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 公平なコイン10回</p>
+              <p class="qq">コインを10回投げて「表がちょうど5回」になる確率はおよそいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>0.5</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>約0.246</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約0.117</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約0.205</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">P(X=5) = 10C5 × (1/2)^10 = 252 ÷ 1024 ≈ 0.246 です。0.205（= P(X=4)）と間違えないように、10C4=210 ではなく 10C5=252 を使います。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 04</span>
+            <h4>現実のデータ: p が小さいと「左に寄った山」になる</h4>
+            <p>実際のデータサイエンスでは、成功確率 p が小さい場面が多くあります。メールの開封、広告のクリック、商談の成約……。例として<strong>開封率20%（p = 0.2）のメルマガを10人に送る</strong>場面を考えましょう。開封する人の数 X（0〜10人）が二項分布にしたがいます。</p>
+            <p>まず公式に p = 0.2, n = 10 を代入してみます。</p>
+            <div class="math-block">P(X = 0) = 0.8^10 ≈ <strong>0.107</strong>（1人も開かない確率）</div>
+            <div class="math-block">P(X = 2) = 10C2 × 0.2^2 × 0.8^8 ≈ <strong>0.302</strong> ← いちばん起こりやすい</div>
+            <p>0人〜3人までをまとめて「3人以下」の確率を出してみましょう。</p>
+            <div class="math-block">P(X ≤ 3) = 0.107 ＋ 0.268 ＋ 0.302 ＋ 0.201 ≈ <strong>0.879</strong></div>
+            <div class="math-block">P(X ≥ 4) = 1 − 0.879 ≈ <strong>0.121</strong>（4人以上になる確率）</div>
+            <div class="figure">
+              <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="開封率20%で10人に送ったときの開封人数の分布。0から3人に集中し、右側は淡い色">
+                <line x1="60" y1="200" x2="590" y2="200" stroke="#1C2B39" stroke-width="2"/>
+                <rect x="78"  y="161" width="24" height="39"  fill="#A9782F"/>
+                <rect x="124" y="102" width="24" height="98"  fill="#A9782F"/>
+                <rect x="170" y="90"  width="24" height="110" fill="#A9782F"/>
+                <rect x="216" y="127" width="24" height="73"  fill="#A9782F"/>
+                <rect x="262" y="168" width="24" height="32"  fill="#C9B48A"/>
+                <rect x="308" y="190" width="24" height="10"  fill="#C9B48A"/>
+                <rect x="354" y="198" width="24" height="2"   fill="#C9B48A"/>
+                <line x1="182" y1="42" x2="182" y2="200" stroke="#B4432F" stroke-width="1.5" stroke-dasharray="5 4"/>
+                <text x="182" y="34" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#B4432F">平均 np=2</text>
+                <rect x="420" y="22" width="12" height="12" fill="#A9782F"/>
+                <text x="438" y="33" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063">開封3人以下 ≈ 0.879</text>
+                <rect x="420" y="44" width="12" height="12" fill="#C9B48A"/>
+                <text x="438" y="55" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063">4人以上 ≈ 0.121</text>
+                <text x="90"  y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">0</text>
+                <text x="136" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">1</text>
+                <text x="182" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">2</text>
+                <text x="228" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">3</text>
+                <text x="274" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">4</text>
+                <text x="320" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">5</text>
+                <text x="366" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">6</text>
+                <text x="412" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">7</text>
+                <text x="458" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">8</text>
+                <text x="504" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">9</text>
+                <text x="550" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">10</text>
+              </svg>
+              <p class="figure-caption">図3: n=10, p=0.2 の開封人数の分布。山は左（0〜3人）に集中し、右側に長く尾を引く。破線は平均 np=2</p>
+            </div>
+            <p>p = 1/2 なら左右対称でしたが、<strong>p が小さいと山は左（0に近い方）に寄り、右側に長く尾を引きます</strong>。「4人以上」は右側の淡い棒を全部足した分しかなく、約12%しかありません。この「山が偏る」感覚は、p値や信頼区間の話（あとの章）でも必要になります。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — p が小さい二項分布</p>
+              <p class="qq">開封率20%のメルマガを10人に送ったとき、「1人も開かない」確率 P(X = 0) はおよそいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>約0.107</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>約0.302</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約0.268</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約0.879</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">P(X=0) は「10人全員が開かない」= 0.8^10 ≈ 0.107 です。ウの0.268は P(X=1)、エの0.879は P(X≦3) なので、聞かれている確率とちがいます。</div></details>
+            </div>
+            <div class="sim" id="binom-sim">
+              <span class="box-label">🧪 動かして確かめる — 「10回中k回」のヒストグラムを作る</span>
+              <p class="sim-lead">成功確率 p の試行を「10回1セット」にして、成功した回数（0〜10）をヒストグラムに記録します。セットを重ねると、形が上の二項分布のグラフに近づいていくのが見えます。</p>
+              <div class="sim-stage">
+                <div class="sim-counts">
+                  <div>セット数 <b id="binom-exp">0</b></div>
+                  <div>成功回数の平均 <b id="binom-avg">—</b> <span class="sim-target" id="binom-target">（期待値 10×p）</span></div>
+                </div>
+                <div class="sim-btns" id="binom-pgroup">
+                  <span class="plabel">p ＝</span>
+                  <button type="button" class="btn-sim" data-p="0.2">20%</button>
+                  <button type="button" class="btn-sim active" data-p="0.5">50%</button>
+                  <button type="button" class="btn-sim" data-p="0.8">80%</button>
+                </div>
+              </div>
+              <div class="sim-bars" id="binom-bars"></div>
+              <div class="sim-axis" id="binom-axis"></div>
+              <p class="sim-note" id="binom-msg"></p>
+              <div class="sim-btns">
+                <button type="button" class="btn-sim" id="binom-once">1セット試行</button>
+                <button type="button" class="btn-sim" id="binom-ten">10セット</button>
+                <button type="button" class="btn-sim" id="binom-hundred">100セット</button>
+                <button type="button" class="btn-sim ghost" id="binom-reset">リセット</button>
+              </div>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 05</span>
+            <h4>期待値 E(X) = n × p で「山の位置」が一発でわかる</h4>
+            <p>Unit③で期待値は「確率の重み付き平均」と学びました。二項分布でも真面目に Σ k × P(X=k) を計算すれば同じ答えになりますが、その結果は驚くほど単純です。</p>
+            <div class="math-block">二項分布の期待値: E(X) = n × p</div>
+            <p>なぜかというと、1回の試行の「成功回数」の期待値は p（成功＝1、失敗＝0 と数えると、p×1 ＋ (1−p)×0 = p）だからです。独立な試行をn回やれば、その合計の期待値は n × p になります。</p>
+            <p>先ほどの例に当てはめてみましょう。</p>
+            <ul>
+              <li>コイン10回（p = 1/2）: E(X) = 10 × 1/2 = <strong>5回</strong>（図2の山の位置と一致）</li>
+              <li>メルマガ開封（n = 10, p = 0.2）: E(X) = 10 × 0.2 = <strong>2人</strong>（図3の山の位置と一致）</li>
+            </ul>
+            <p>「山がどこにあるか」は、分布の形を細かく計算しなくても <strong>n × p だけで出る</strong>。これが期待値の力です。グラフで見た「pが小さいと山が左に寄る」のも、実はこの n×p が左（小さい値）に動くからです。</p>
+            <p>なお、分布の「広がり」も公式があります（詳しい説明はUnit⑥以降にまわします）。</p>
+            <div class="math-block">分散 V(X) = n × p × (1 − p)　／　標準偏差 σ(X) = √{n × p × (1 − p)}</div>
+            <p>例: コイン10回なら σ = √(10 × 1/2 × 1/2) = √2.5 ≈ 1.58回。平均5回を中心に、だいたい「5 ± 1.6回」あたりにだいたい収まる、という目安になります。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>例</th><th>n</th><th>p</th><th>期待値 n×p</th><th>標準偏差 √{np(1−p)}</th></tr>
+                  <tr><td>コイン10回の表の回数</td><td>10</td><td>1/2</td><td>5回</td><td>約1.58回</td></tr>
+                  <tr><td>10人へのメルマガ開封数</td><td>10</td><td>0.2</td><td>2人</td><td>約1.26人</td></tr>
+                  <tr><td>100回のクリック試行（CTR 5%）</td><td>100</td><td>0.05</td><td>5回</td><td>約2.18回</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 期待値で山の位置を出す</p>
+              <p class="qq">成約率30%の商談を10件行うとします。成約件数 X の期待値 E(X) はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>30件</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>3件</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>0.3件</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>10件</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">E(X) = n × p = 10 × 0.3 = 3件 です。確率は小数のまま「10 × 0.3」と計算し、答えは「3件」のように単位つきの期待回数になります。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 06</span>
+            <h4>まとめ: このUnitで身につけた道具</h4>
+            <ul>
+              <li><strong>ベルヌーイ試行</strong> = 成功確率 p が毎回同じ・各回独立な「成功／失敗」の1回の試行</li>
+              <li><strong>X = n回のうち成功した回数</strong> がしたがう分布を<strong>二項分布</strong>と呼ぶ</li>
+              <li><strong>P(X = k) = nCk × p^k × (1 − p)^(n − k)</strong>（nCk は並び方の数）</li>
+              <li><strong>期待値 E(X) = n × p</strong>（山の位置）／分散 V(X) = n×p×(1−p)</li>
+              <li>p = 1/2 なら左右対称、p が小さければ左に寄り、大きければ右に寄る</li>
+            </ul>
+            <div class="math-block">P(X = k) = nCk × p^k × (1 − p)^(n − k)　／　E(X) = n × p</div>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>用語</th><th>意味</th><th>このUnitでの例</th></tr>
+                  <tr><td>ベルヌーイ試行</td><td>成功p・失敗(1−p)の1回の試行（各回独立）</td><td>コイン1回（表=成功 p=1/2）</td></tr>
+                  <tr><td>成功回数 X</td><td>n回のうち成功した回数（0〜n）</td><td>コイン10回の表の回数 X</td></tr>
+                  <tr><td>二項係数 nCk</td><td>成功がk回になる並び方の数</td><td>10C5 = 252通り</td></tr>
+                  <tr><td>二項分布</td><td>X の確率分布（X ~ Bin(n, p)）</td><td>コイン10回: 5回を中心に対称な山</td></tr>
+                  <tr><td>期待値 / 分散</td><td>E = n×p、V = n×p×(1−p)</td><td>p=0.2,n=10 → 期待値2人</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>二項分布は、<strong>「〇人に聞いて△人がそう答える」「△個のうち不良が何個」「クリックが何回起きる」</strong>といった、データサイエンスの基本中の基本をモデル化します。A/Bテストの結果の判定（第3章以降）でも、この分布が土台になります。</p>
+            <p>次はUnit⑤「ポアソン分布」です。「成功確率 p がとても小さく、n がとても大きい」（例: 1時間に届く電話の本数、1日に起きる事故の件数）という状況で、二項分布はポアソン分布という別の形に近づいていきます。</p>
+        </div>
+    </div>
+
+    <section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 第2章ユニット④の確認クイズ（5問）</h2>
+      <div class="quiz-status">正解 <b>0</b> / 5問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. 次のうち、「二項分布」が使える設定はどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>成功か失敗かの試行を1回だけ行う</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>成功確率pが一定で独立な試行をn回行い、成功した回数Xを見る</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>サイコロ1回の出目（1〜6）を見る</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>結果が2通りではない試行を見る</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">二項分布は「成功確率pのベルヌーイ試行をn回」やって「成功した回数X」を見るときの分布です。試行の結果は「成功か失敗」の2通りで、毎回pが同じ・独立であることが条件です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. コインを3回投げて「表がちょうど2回」になる確率はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>1/8</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>3/8</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>1/2</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>2/3</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">P(X=2) = 3C2 × (1/2)^2 × (1/2)^1 = 3 × 1/8 = 3/8 です。並びは「表表裏・表裏表・裏表表」の3通りあります。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. 4択問題が10問あります。全部を当てずっぽうで答えたとき、正解数 X の期待値はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>2.5問</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>4問</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>10問</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>0.25問</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">1問あたりの正解確率は p = 1/4。10問なので E(X) = 10 × 1/4 = 2.5問 です。期待値は小数になってもかまいません。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q4. 開封率20%のメルマガを10人に送りました。「4人以上が開封する」確率はおよそいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>約0.879</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>約0.121</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約0.302</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約0.107</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">「3人以下」が約0.879だったので、その余事象 1 − 0.879 ≈ 0.121 が「4人以上」です。二項分布で「〜以上」を求めるときは、余事象（1から引く）が便利なことが多いです。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. 成功確率 p が小さいとき（例: p=0.2, n=10）、二項分布の形はどうなりますか？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>左右対称の山になる</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>山が左（0の側）に寄り、右側に長いすそを引く</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>山が右（nの側）に寄る</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>どの k でも確率が同じになる</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">p が 1/2 より小さいと、山は期待値 np のあたり（小さい側）にでき、大きな成功回数の確率はだんだん小さくなります。p=1/2 のときだけ左右対称です。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+    </section>
+
+    <nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

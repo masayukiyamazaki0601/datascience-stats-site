@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2章(7) 標準化とz表 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+    <script src="js/sim.js" defer></script>
+</head>
+<body data-file="ch2-7-ztable.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt; 第2章 確率と確率分布 &gt; Unit 07
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 02 / Unit 07 — 標準化とz表</span>
+                <h2 class="lesson-title">標準化とz表：正規分布の「確率」を正確に読む</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このUnitでできるようになること</span>
+      <ul>
+        <li>z = (x − μ) ÷ σ で標準化し、標準正規分布 N(0,1) に変換できる</li>
+        <li>z表（累積確率）を使って P(Z ≤ z) を読み取れる</li>
+        <li>実データの「◯点以上／以下」の割合を、z表で計算できる</li>
+      </ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>標準化: どんな正規分布も「共通の物差し」に直す</h4>
+            <p>Unit⑥で、正規分布は平均 μ と標準偏差 σ で決まると学びました。しかし、テストの点数（平均70・σ10）と身長（平均170cm・σ5cm）では、単位も平均もバラバラで、そのまま比べることができません。</p>
+            <p>そこで、すべての値を「平均から標準偏差いくつぶん離れているか」に変換します。これを<strong>標準化</strong>といい、変換後の値を <strong>z スコア</strong> と呼びます。</p>
+            <div class="math-block">z = (x − μ) ÷ σ</div>
+            <ul>
+              <li>x = μ のとき z = 0（平均ちょうど）</li>
+              <li>x = μ + σ のとき z = 1（平均より1σ上）</li>
+              <li>x = μ − 2σ のとき z = −2（平均より2σ下）</li>
+            </ul>
+            <p>標準化した z は、平均0・標準偏差1の正規分布にしたがいます。この分布を<strong>標準正規分布 N(0, 1)</strong> と呼びます。</p>
+            <div class="math-block">X ~ N(μ, σ²) を標準化 → Z = (X − μ) ÷ σ ~ N(0, 1)</div>
+            <p>なぜこんなことをするのでしょうか？理由は、<strong>μ や σ が何であっても、z さえわかれば確率が「共通の1枚の表」で読める</strong>からです。どんな正規分布も標準化すると同じ N(0,1) になるので、あとはこの1種類について面積を計算しておけばよい、というわけです。それが次のStepの<strong>z表</strong>です。</p>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>z表の読み方: 表の値は「z以下になる確率」</h4>
+            <p>標準正規分布 N(0,1) について、左端からある z までの面積（= P(Z ≤ z)）をあらかじめ計算して表にしたものが<strong>z表（標準正規分布表）</strong>です。値の意味は「z 以下になる確率（累積確率）」です。</p>
+            <div class="figure">
+              <svg viewBox="0 0 660 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="標準正規分布。z=1.5より左が塗られ、その面積が0.9332であることを示す">
+                <defs><clipPath id="zClip1"><path d="M 78.0 218.0 L78.0 218.0 L90.0 217.9 L102.0 217.9 L114.0 217.7 L126.0 217.5 L138.0 217.0 L150.0 216.2 L162.0 214.7 L174.0 212.4 L186.0 208.7 L198.0 203.3 L210.0 195.7 L222.0 185.3 L234.0 172.1 L246.0 156.1 L258.0 137.7 L270.0 117.9 L282.0 98.2 L294.0 80.2 L306.0 65.7 L318.0 56.3 L330.0 53.0 L342.0 56.3 L354.0 65.7 L366.0 80.2 L378.0 98.2 L390.0 117.9 L402.0 137.7 L414.0 156.1 L426.0 172.1 L438.0 185.3 L450.0 195.7 L462.0 203.3 L474.0 208.7 L486.0 212.4 L498.0 214.7 L510.0 216.2 L522.0 217.0 L534.0 217.5 L546.0 217.7 L558.0 217.9 L570.0 217.9 L582.0 218.0 L 582.0 218.0 Z"/></clipPath></defs>
+                <line x1="60" y1="218" x2="600" y2="218" stroke="#1C2B39" stroke-width="2"/>
+                <rect x="78" y="30" width="342" height="188" fill="#A9782F" opacity="0.55" clip-path="url(#zClip1)"/>
+                <path d="M 78.0 218.0 L78.0 218.0 L90.0 217.9 L102.0 217.9 L114.0 217.7 L126.0 217.5 L138.0 217.0 L150.0 216.2 L162.0 214.7 L174.0 212.4 L186.0 208.7 L198.0 203.3 L210.0 195.7 L222.0 185.3 L234.0 172.1 L246.0 156.1 L258.0 137.7 L270.0 117.9 L282.0 98.2 L294.0 80.2 L306.0 65.7 L318.0 56.3 L330.0 53.0 L342.0 56.3 L354.0 65.7 L366.0 80.2 L378.0 98.2 L390.0 117.9 L402.0 137.7 L414.0 156.1 L426.0 172.1 L438.0 185.3 L450.0 195.7 L462.0 203.3 L474.0 208.7 L486.0 212.4 L498.0 214.7 L510.0 216.2 L522.0 217.0 L534.0 217.5 L546.0 217.7 L558.0 217.9 L570.0 217.9 L582.0 218.0" fill="none" stroke="#A9782F" stroke-width="2.5"/>
+                <line x1="420" y1="45" x2="420" y2="218" stroke="#B4432F" stroke-width="1.5" stroke-dasharray="5 4"/>
+                <text x="420" y="38" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#B4432F">z = 1.5</text>
+                <text x="330" y="245" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">0</text>
+                <text x="180" y="120" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">左側の面積 = 0.9332</text>
+                <text x="525" y="160" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#B4432F">上側 ≈ 0.067</text>
+              </svg>
+              <p class="figure-caption">図1: P(Z ≤ 1.5) は「z=1.5 より左の面積」= 0.9332。右の白い部分はその残り ≈ 0.0668</p>
+            </div>
+            <p>代表的な z と累積確率を、表にすると次のようになります。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>z</th><td>0.0</td><td>0.5</td><td>1.0</td><td>1.5</td><td>2.0</td><td>2.5</td><td>3.0</td></tr>
+                  <tr><th>P(Z ≤ z)</th><td>0.5000</td><td>0.6915</td><td>0.8413</td><td>0.9332</td><td>0.9772</td><td>0.9938</td><td>0.9987</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>実際のz表は「行＝zの整数部と小数第1位、列＝小数第2位」の形で、z = 0.00 から 3.09 くらいまで0.01刻みで並んでいます（このコースでは主要な値だけを使います）。Pythonでは <code>scipy.stats.norm.cdf(z)</code> で同じ値が得られます。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — z表の読み方</p>
+              <p class="qq">z表で P(Z ≤ 1.0) を引くと、値はいくらになるでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>0.8413</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>0.1587</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>0.6915</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>0.5000</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">z = 1.0 の行を引くと 0.8413。これは「平均より1σ上の位置より左に約84.1%がいる」ことを意味します。右側（z以上）は 1 − 0.8413 = 0.1587 です。</div></details>
+            </div>
+
+            <div class="sim" id="ztab-sim">
+              <span class="box-label">🧪 動かして確かめる — zを動かすと「左側の面積」が変わる</span>
+              <p class="sim-lead">標準正規分布のスライダー z を動かすと、z より左の面積（＝P(Z ≤ z)）と右側の面積がリアルタイムで変わります。</p>
+              <div class="sim-sliders">
+                <label>z <input type="range" id="ztab-z" min="-3" max="3" step="0.05" value="1.5"><b id="ztab-val">1.5</b></label>
+              </div>
+              <svg class="ztab-svg" id="ztab-svg" viewBox="0 0 660 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="標準正規分布。スライダーのzより左が塗られる">
+                <defs><clipPath id="ztabClip"><path id="ztab-areapath" d=""/></clipPath></defs>
+                <line x1="30" y1="200" x2="630" y2="200" stroke="#1C2B39" stroke-width="2"/>
+                <path id="ztab-curve" d="" fill="none" stroke="#A9782F" stroke-width="3"/>
+                <rect id="ztab-shade" x="30" y="20" width="0" height="180" fill="#A9782F" opacity="0.5" clip-path="url(#ztabClip)"/>
+                <line id="ztab-line" x1="0" y1="40" x2="0" y2="200" stroke="#B4432F" stroke-width="1.5" stroke-dasharray="4 4"/>
+                <text id="ztab-lbl" x="0" y="34" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#B4432F"></text>
+              </svg>
+              <p class="sim-note" id="ztab-msg"></p>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 03</span>
+            <h4>面積の計算は「引き算」と「1から引く」だけ</h4>
+            <p>z表の値は「z以下（左側）」の面積でした。これを使えば、ほしい範囲の面積は次の2つのルールで計算できます。</p>
+            <ul>
+              <li><strong>引き算:</strong> P(a ≤ Z ≤ b) = P(Z ≤ b) − P(Z ≤ a)</li>
+              <li><strong>余事象:</strong> P(Z ≥ a) = 1 − P(Z ≤ a)</li>
+            </ul>
+            <p>例として、z が 0.5〜1.5 に入る確率を求めてみましょう。z表から P(Z ≤ 1.5) = 0.9332、P(Z ≤ 0.5) = 0.6915 です。</p>
+            <div class="math-block">P(0.5 ≤ Z ≤ 1.5) = 0.9332 − 0.6915 = <strong>0.2417</strong></div>
+            <p>「平均より0.5σ上〜1.5σ上」の区間に、約24%のデータが入ることになります。次に、対称性を使うとマイナスの z も読めます。正規分布は左右対称なので、P(Z ≤ −1) = 1 − P(Z ≤ 1) = 1 − 0.8413 = 0.1587 です。</p>
+            <p>これを使うと、Unit⑥の68-95-99.7ルールともつながります。</p>
+            <div class="math-block">P(−1 ≤ Z ≤ 1) = 0.8413 − 0.1587 = <strong>0.6826</strong>（≈ 68%！）</div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 上側の確率</p>
+              <p class="qq">P(Z ≥ 2) はいくらでしょう？（P(Z ≤ 2) = 0.9772 を使います）</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>0.9772</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>0.0228</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>0.0456</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>0.5</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">「2以上」は「2以下」の残りなので、1 − 0.9772 = 0.0228 です。「〜以上」を聞かれたら余事象（1から引く）が基本です。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 04</span>
+            <h4>実データへ: 「◯点以上」の割合を出す</h4>
+            <p>それでは、平均70点・標準偏差10点のテストで実際に計算してみましょう。まず「80点以上とる人は何%いるか」を求めます。</p>
+            <div class="math-block">z = (80 − 70) ÷ 10 = <strong>1.0</strong>　→　P(Z ≥ 1) = 1 − 0.8413 = <strong>0.1587</strong></div>
+            <p>つまり、80点以上はおよそ<strong>16%</strong>。上位16%あたりにいる、とわかります。点数の目盛りと z の目盛りは、次の図のように対応しています。</p>
+            <div class="figure">
+              <svg viewBox="0 0 660 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="テストの点数とzスコアの対応。50点が-2、70点が0、90点が2に対応する二重の目盛り">
+                <line x1="60" y1="80" x2="600" y2="80" stroke="#1C2B39" stroke-width="2"/>
+                <line x1="60" y1="170" x2="600" y2="170" stroke="#1C2B39" stroke-width="2"/>
+                <line x1="150" y1="80" x2="150" y2="170" stroke="#D9D2BE" stroke-width="1" stroke-dasharray="3 3"/>
+                <line x1="240" y1="80" x2="240" y2="170" stroke="#D9D2BE" stroke-width="1" stroke-dasharray="3 3"/>
+                <line x1="330" y1="80" x2="330" y2="170" stroke="#D9D2BE" stroke-width="1" stroke-dasharray="3 3"/>
+                <line x1="420" y1="80" x2="420" y2="170" stroke="#B4432F" stroke-width="1.5" stroke-dasharray="4 4"/>
+                <line x1="510" y1="80" x2="510" y2="170" stroke="#D9D2BE" stroke-width="1" stroke-dasharray="3 3"/>
+                <text x="330" y="56" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#1C2B39">点数 x（平均70・σ10）</text>
+                <text x="150" y="74" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#1C2B39">50</text>
+                <text x="240" y="74" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#1C2B39">60</text>
+                <text x="330" y="74" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#1C2B39">70</text>
+                <text x="420" y="74" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#B4432F">80</text>
+                <text x="510" y="74" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#1C2B39">90</text>
+                <text x="420" y="95" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#B4432F">↑ z = 1</text>
+                <text x="330" y="150" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#1C2B39">標準化 z = (x−70)÷10</text>
+                <text x="150" y="190" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#1C2B39">−2</text>
+                <text x="240" y="190" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#1C2B39">−1</text>
+                <text x="330" y="190" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#1C2B39">0</text>
+                <text x="420" y="190" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#B4432F">1</text>
+                <text x="510" y="190" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#1C2B39">2</text>
+                <text x="330" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063">x = 80点 ⇔ z = 1.0（平均より1σ上）</text>
+              </svg>
+              <p class="figure-caption">図2: 点数の目盛りと z の目盛りは「ずらして縮めた」だけで対応する。80点は z = 1</p>
+            </div>
+            <p>マイナスの z も同じ手順です。「65点以下」の割合を求めると、z = (65 − 70) ÷ 10 = −0.5 なので、対称性から</p>
+            <div class="math-block">P(Z ≤ −0.5) = 1 − P(Z ≤ 0.5) = 1 − 0.6915 = <strong>0.3085</strong></div>
+            <p>65点以下はおよそ31%です。この「まず標準化してからz表で面積を読む」という2ステップが、このUnitの中心テクニックです。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 実データの割合</p>
+              <p class="qq">平均70点・標準偏差10点のテストで、「65点以下」の人はおよそ何%でしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>約31%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>約69%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約16%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約50%</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">z = (65−70)÷10 = −0.5。P(Z ≤ −0.5) = 1 − 0.6915 = 0.3085 で約31%です。zがマイナスのときは対称性（1から引く）を使います。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 05</span>
+            <h4>「確率から z を逆引き」する場面（パーセンタイル）</h4>
+            <p>今度は逆に、「上から◯%の人は z いくつ以上か」を求めたくなる場面もあります。たとえば「上位2.5%に入るライン」を探すには、z表を逆向きに引き、P(Z ≤ z) = 0.975 となる z を探します。それが <strong>z ≈ 1.96</strong> です。</p>
+            <div class="math-block">上位2.5%の境界: P(Z ≥ z) = 0.025 ⇔ P(Z ≤ z) = 0.975　→　z ≈ 1.96</div>
+            <p>この z ≈ 1.96 は、統計学でものすごく頻繁に登場します。なぜなら、<strong>「真ん中の95%に入る範囲」</strong>は、両側に2.5%ずつ残すので、境界が z = ±1.96 になるからです。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>知りたいこと</th><th>対応する z</th><th>よく出る場面</th></tr>
+                  <tr><td>真ん中の 90%</td><td>±1.645</td><td>90%信頼区間</td></tr>
+                  <tr><td>真ん中の 95%</td><td>±1.96</td><td>95%信頼区間（最も定番）</td></tr>
+                  <tr><td>真ん中の 99%</td><td>±2.576</td><td>99%信頼区間</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>「±1.96」は第3章の信頼区間・第4章の検定で、繰り返し使うことになります。Pythonでは <code>scipy.stats.norm.ppf(0.975)</code> で逆引きできます。</p>
+            <p>実務上の注意も1つ。z表が使えるのは「分布が（ほぼ）正規分布だと仮定してよい」ときだけです。Unit⑥で見たように、強い右裾のデータやカウントデータにそのまま使うと、面積＝確率の前提が崩れます。まずヒストグラムなどで形を確認する習慣をつけましょう。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 逆引きの定番</p>
+              <p class="qq">「真ん中の95%に入る範囲」（両側に2.5%ずつ残す）の境界となる z はおよそいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>±1.645</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>±1.96</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>±2.576</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>±3.0</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">両側に2.5%ずつ残すので、P(Z ≤ z) = 0.975 となる z ≈ 1.96 が境界です。±1.96 は95%信頼区間で必ず登場する定番の値です。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 06</span>
+            <h4>まとめ: このUnitで身につけた道具</h4>
+            <ul>
+              <li><strong>標準化 z = (x − μ) ÷ σ</strong>：どんな正規分布も N(0,1) に変換できる</li>
+              <li><strong>z表の値 = P(Z ≤ z)</strong>（z以下の左側の面積）</li>
+              <li>範囲の確率は「<strong>引き算</strong>」、上側は「<strong>1から引く</strong>」、マイナスzは「<strong>対称性</strong>」</li>
+              <li>実データは「標準化 → z表」の2ステップで「◯点以上」の割合が出る</li>
+              <li>逆引き（パーセンタイル）では <strong>z ≈ ±1.96</strong>（真ん中95%）が最重要</li>
+            </ul>
+            <div class="math-block">z = (x − μ) ÷ σ　／　P(a ≤ Z ≤ b) = P(Z ≤ b) − P(Z ≤ a)</div>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>用語</th><th>意味</th><th>このUnitでの値</th></tr>
+                  <tr><td>標準化 z スコア</td><td>平均からσいくつ分かを表す値</td><td>85点（μ70・σ10）→ z=1.5</td></tr>
+                  <tr><td>標準正規分布 N(0,1)</td><td>標準化した先の正規分布</td><td>z表はこの分布の面積表</td></tr>
+                  <tr><td>累積確率 P(Z ≤ z)</td><td>z以下の左側の面積</td><td>P(Z ≤ 1.5) = 0.9332</td></tr>
+                  <tr><td>上側確率</td><td>1 − P(Z ≤ z)</td><td>P(Z ≥ 1.5) ≈ 0.067</td></tr>
+                  <tr><td>対称性</td><td>P(Z ≤ −z) = 1 − P(Z ≤ z)</td><td>P(Z ≤ −0.5) = 0.3085</td></tr>
+                  <tr><td>逆引き</td><td>面積から z を求める</td><td>95%中央 → ±1.96</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>ここまでで、正規分布にしたがう1個のデータについて「◯点以上になる確率」を計算できるようになりました。統計的推測の世界では、これが「標本平均」に対して行われます。</p>
+            <p>次はUnit⑧「中心極限定理」です。「どんな分布でも、標本平均は n が大きいほど正規分布に近づく」。そのとき平均 μ と標準偏差 σ/√n に標準化した z = (標本平均 − μ) ÷ (σ/√n) が、まさにここで学んだz表で読めるようになります。</p>
+        </div>
+    </div>
+
+    <section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 第2章ユニット⑦の確認クイズ（5問）</h2>
+      <div class="quiz-status">正解 <b>0</b> / 5問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. 平均60点・標準偏差5点のテストで、ある人の点数が75点でした。この人の z スコアはいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>0.6</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>3</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>15</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>0.33</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">z = (75 − 60) ÷ 5 = 15 ÷ 5 = 3 です。「平均より標準偏差3個ぶん上」の位置です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. P(Z ≤ 1.5) = 0.9332 のとき、P(Z ≥ 1.5) はおよそいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>0.9332</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>約0.0668</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>0.5</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約0.1587</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">「1.5以上」は「1.5以下」の残りなので 1 − 0.9332 = 0.0668 です。上側確率は「1から引く」が基本です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. 標準正規分布で「−2 ≤ Z ≤ 2」に入る確率はおよそいくらでしょう？（P(Z ≤ 2)=0.9772 を使います）</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>約68%</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>約95%</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約99.7%</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>0.975</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">P(−2 ≤ Z ≤ 2) = 0.9772 − (1 − 0.9772) = 0.9772 − 0.0228 = 0.9544（約95%）。68-95-99.7ルールの「μ±2σ に約95%」と一致します。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q4. 「真ん中の95%に入る範囲」の境界として、正しい z の値はどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>±1.645</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>±1.96</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>±2.576</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>±1.0</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">両側に2.5%ずつ残すので P(Z ≤ z) = 0.975 となる z ≈ 1.96。この±1.96は95%信頼区間で必ず使う定番の値です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. 平均70点・標準偏差10点のテストで「90点以上」をとる人はおよそ何%でしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>約2.3%</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>約16%</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約31%</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約50%</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">z = (90 − 70) ÷ 10 = 2.0。P(Z ≥ 2) = 1 − 0.9772 = 0.0228 ≈ 2.3% です。90点は上位およそ2.3%のラインです。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+    </section>
+
+    <nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

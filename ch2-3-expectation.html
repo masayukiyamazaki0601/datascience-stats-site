@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2章(3) 確率変数と期待値 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+    <script src="js/sim.js" defer></script>
+</head>
+<body data-file="ch2-3-expectation.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt; 第2章 確率と確率分布 &gt; Unit 03
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 02 / Unit 03 — 確率変数と期待値</span>
+                <h2 class="lesson-title">確率変数と期待値：不確実なことを「平均」で評価する</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このUnitでできるようになること</span>
+      <ul>
+        <li>確率変数とは何か説明でき、確率分布の表を読める</li>
+        <li>期待値を計算できる（確率の重み付き平均）</li>
+        <li>期待値を使って、くじや施策の損得を比べられる</li>
+      </ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>確率の次に学ぶのは、「確率を使った平均」</h4>
+            <p>ここまでにUnit①で「確率＝0〜1の割合」と条件付き確率、Unit②でベイズの定理を学びました。これで「あることが、どれくらいの割合で起きるか」を数字で表せるようになりました。ところが、実際の判断では<strong>確率だけでは足りない</strong>ことがあります。</p>
+            <p>次の2つのくじを比べてみましょう。</p>
+            <ul>
+              <li><strong>くじA:</strong> 当たる確率は <strong>10%</strong> と低いが、当たると <strong>1,000円</strong> もらえる</li>
+              <li><strong>くじB:</strong> 当たる確率は <strong>50%</strong> と高いが、当たると <strong>150円</strong> だけ</li>
+            </ul>
+            <p>「当たる確率」だけを見れば、Bの方が当たりやすそうに思えます。でも、賞金も合わせて考えると、本当にお得なのはどちらでしょう？ こういうとき役に立つのが、このUnitのテーマ<strong>「期待値」</strong>です。</p>
+            <p>このUnitでは、次の3つを順に身につけます。</p>
+            <ol>
+              <li><strong>確率変数と確率分布</strong>：結果を「数字の変数 X」として扱う</li>
+              <li><strong>期待値</strong>：Xの「確率の重み付き平均」を計算する</li>
+              <li><strong>判断への応用</strong>：期待値で比べる・ただし注意点も知る</li>
+            </ol>
+            <p>最初のくじの答えは、Step04で改めて計算します。</p>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>確率変数 = 「値が確率で決まる変数」</h4>
+            <p>サイコロを1回振る場面に戻りましょう。結果は「1・2・3・4・5・6」のどれかで、どの目も同じ確からしさです。このように<strong>値が確率で決まる変数</strong>のことを<strong>確率変数</strong>と呼び、大文字の <strong>X</strong> で表します（ここでは「サイコロの目 X」）。</p>
+            <p>確率変数 X がどんな値 x を、どの確率でとるのかを表にしたものが<strong>確率分布</strong>です。サイコロの場合はこうなります。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>値 x</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+                  <tr><th>P(X = x)</th><td>1/6</td><td>1/6</td><td>1/6</td><td>1/6</td><td>1/6</td><td>1/6</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Unit①でやった「起こりうる全部の確率を足すと1」というルールが、この表でも成り立っています（1/6 × 6 = 1）。確率分布の表を見るときは、まず「<strong>全部足して1になるか</strong>」をチェックしましょう。これをグラフにすると、次のようになります。</p>
+            <div class="figure">
+              <svg viewBox="0 0 620 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="サイコロの確率分布の棒グラフ。6本の棒がすべて同じ高さ">
+                <line x1="50" y1="90" x2="580" y2="90" stroke="#D9D2BE" stroke-width="1" stroke-dasharray="4 4"/>
+                <text x="42" y="94" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="12" fill="#3E5063">1/6</text>
+                <text x="42" y="184" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="12" fill="#3E5063">0</text>
+                <line x1="60" y1="180" x2="580" y2="180" stroke="#1C2B39" stroke-width="2"/>
+                <rect x="70"  y="90" width="60" height="90" fill="#A9782F"/>
+                <rect x="154" y="90" width="60" height="90" fill="#A9782F"/>
+                <rect x="238" y="90" width="60" height="90" fill="#A9782F"/>
+                <rect x="322" y="90" width="60" height="90" fill="#A9782F"/>
+                <rect x="406" y="90" width="60" height="90" fill="#A9782F"/>
+                <rect x="490" y="90" width="60" height="90" fill="#A9782F"/>
+                <text x="100" y="205" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1C2B39">1</text>
+                <text x="184" y="205" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1C2B39">2</text>
+                <text x="268" y="205" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1C2B39">3</text>
+                <text x="352" y="205" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1C2B39">4</text>
+                <text x="436" y="205" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1C2B39">5</text>
+                <text x="520" y="205" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1C2B39">6</text>
+              </svg>
+              <p class="figure-caption">図1: サイコロ1回の確率分布。6本の棒がすべて同じ高さ＝どの目も同じ確からしさ（1/6）</p>
+            </div>
+            <p>「確率変数」という名前はむずかしく聞こえますが、やっていることはUnit①②でやってきた「場合分けして確率を足す」と同じです。X を使うと「P(X = 5)」のように、<strong>「Xが5になる確率」を短く書ける</strong>のが利点です。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 確率変数の表記</p>
+              <p class="qq">サイコロの目を表す確率変数を X とします。P(X = 5) はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>1/2</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>1/6</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>5</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>5/6</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">P(X = 5) は「Xが5になる確率」の意味。6つの目のうち「5」は1つなので 1/6 です。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 03</span>
+            <h4>期待値 = 確率で「重みをつけた」平均</h4>
+            <p>確率変数 X の<strong>平均的な値</strong>のことを<strong>期待値</strong>と呼び、E(X) と書きます。求め方は「それぞれの値 x に、その確率 P(X=x) を掛けて、全部足す」だけです。</p>
+            <div class="math-block">E(X) = 1×1/6 ＋ 2×1/6 ＋ 3×1/6 ＋ 4×1/6 ＋ 5×1/6 ＋ 6×1/6</div>
+            <div class="math-block">= (1＋2＋3＋4＋5＋6) ÷ 6 = 21 ÷ 6 = <strong>3.5</strong></div>
+            <p>短く書くなら次の式です。「Σ（シグマ）」は「全部足す」という記号だと思ってください。</p>
+            <div class="math-block">E(X) = Σ x × P(X = x)</div>
+            <p>サイコロはどの目も確率が等しい（1/6）ので、期待値はふつうの平均「(1＋2＋…＋6) ÷ 6」と同じ 3.5 になります。<strong>確率が値ごとに違う場合</strong>は、ただの平均ではなく「確率で重みをつけて足す」必要があります（次のStepで扱います）。</p>
+            <div class="figure">
+              <svg viewBox="0 0 620 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="数直線。目1から6まで等間隔に並び、その平均である3.5の位置に線が引かれている">
+                <line x1="70" y1="70" x2="590" y2="70" stroke="#1C2B39" stroke-width="2"/>
+                <line x1="310" y1="28" x2="310" y2="70" stroke="#A9782F" stroke-width="2" stroke-dasharray="5 4"/>
+                <text x="310" y="22" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#A9782F">期待値 3.5</text>
+                <text x="110" y="56" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1C2B39">1</text>
+                <text x="190" y="56" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1C2B39">2</text>
+                <text x="270" y="56" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1C2B39">3</text>
+                <text x="350" y="56" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1C2B39">4</text>
+                <text x="430" y="56" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1C2B39">5</text>
+                <text x="510" y="56" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" fill="#1C2B39">6</text>
+                <line x1="110" y1="64" x2="110" y2="70" stroke="#1C2B39" stroke-width="1.5"/>
+                <line x1="190" y1="64" x2="190" y2="70" stroke="#1C2B39" stroke-width="1.5"/>
+                <line x1="270" y1="64" x2="270" y2="70" stroke="#1C2B39" stroke-width="1.5"/>
+                <line x1="350" y1="64" x2="350" y2="70" stroke="#1C2B39" stroke-width="1.5"/>
+                <line x1="430" y1="64" x2="430" y2="70" stroke="#1C2B39" stroke-width="1.5"/>
+                <line x1="510" y1="64" x2="510" y2="70" stroke="#1C2B39" stroke-width="1.5"/>
+              </svg>
+              <p class="figure-caption">図2: 目の平均は 1〜6 のちょうど真ん中 3.5。サイコロには「3.5の目」はないが、平均的な位置はここ</p>
+            </div>
+            <p>ここで1つ、期待値の意味を誤解しないでください。<strong>E(X) = 3.5 は「1回振ると3.5の目が出る」という意味ではありません。</strong>実際の1回は、必ず1〜6のどれかです。期待値は「<strong>何度も繰り返して平均をとると、だんだんこの値に近づいていく</strong>」という意味です。1回ずつはブレますが、何万回も振って「合計 ÷ 回数」を計算すると、3.5にどんどん近づきます（この性質を「大数の法則」と呼び、あとのUnitで詳しく扱います）。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 期待値の計算</p>
+              <p class="qq">サイコロの目 X の期待値 E(X) はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>3</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>3.5</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>4</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>21</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">E(X) = (1＋2＋3＋4＋5＋6) ÷ 6 = 21 ÷ 6 = 3.5 です。エの21は「目の合計」なので、6で割るのを忘れないでください。</div></details>
+            </div>
+
+            <div class="sim" id="dice-sim">
+              <span class="box-label">🧪 動かして確かめる — 平均は本当に 3.5 に近づく？</span>
+              <p class="sim-lead">サイコロを振って、出た目の平均がどう動くかを見てみましょう。回数を重ねるほど、平均は期待値 3.5 に近づいていきます。下の棒は「それぞれの目が出た回数」です。</p>
+              <div class="sim-stage">
+                <div class="sim-face" id="die-face">—</div>
+                <div class="sim-counts">
+                  <div>振った回数 <b id="die-n">0</b></div>
+                  <div>出目の合計 <b id="die-sum">0</b></div>
+                  <div>平均 <b id="die-avg">—</b> <span class="sim-target">（期待値 3.5）</span></div>
+                </div>
+              </div>
+              <div class="sim-bars" id="die-bars"></div>
+              <p class="sim-note" id="die-msg"></p>
+              <div class="sim-btns">
+                <button type="button" class="btn-sim" id="die-once">1回振る</button>
+                <button type="button" class="btn-sim" id="die-ten">10回振る</button>
+                <button type="button" class="btn-sim" id="die-hundred">100回振る</button>
+                <button type="button" class="btn-sim ghost" id="die-reset">リセット</button>
+              </div>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 04</span>
+            <h4>実践: くじの「お得さ」は期待値で比べる</h4>
+            <p>Step01で出した2つのくじに戻りましょう。「当たったときの賞金 × 当たる確率」を足したものが期待値でした。まず表で計算します。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>くじ</th><th>当たる確率</th><th>当たったときの賞金</th><th>期待値の計算</th><th>期待値</th></tr>
+                  <tr><td><strong>くじA</strong></td><td>10%</td><td>1,000円</td><td>0.1 × 1,000</td><td><strong>100円</strong></td></tr>
+                  <tr><td><strong>くじB</strong></td><td>50%</td><td>150円</td><td>0.5 × 150</td><td><strong>75円</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="math-block">E(A) = 0.1 × 1,000 = <strong>100円</strong>　／　E(B) = 0.5 × 150 = <strong>75円</strong></div>
+            <p>2つの期待値を棒グラフで比べてみましょう。</p>
+            <div class="figure">
+              <svg viewBox="0 0 460 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="期待賞金の比較棒グラフ。くじAが100円、くじBが75円">
+                <line x1="40" y1="210" x2="430" y2="210" stroke="#1C2B39" stroke-width="2"/>
+                <rect x="75"  y="110" width="90" height="100" fill="#A9782F"/>
+                <rect x="295" y="135" width="90" height="75"  fill="#1C2B39"/>
+                <text x="120" y="100" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="15" font-weight="700" fill="#1C2B39">100円</text>
+                <text x="340" y="125" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="15" font-weight="700" fill="#1C2B39">75円</text>
+                <text x="120" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">くじA（当たる確率10%）</text>
+                <text x="340" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">くじB（当たる確率50%）</text>
+              </svg>
+              <p class="figure-caption">図3: 期待賞金の比較（参加費を除く）。当たる確率はBの方が高いのに、期待値はAの方が上</p>
+            </div>
+            <p>「当たる確率」だけを見るとB（50%）の方が当たりやすく見えますが、期待値はAの方が高い。これが「確率だけでは判断できない」と言った理由です。</p>
+            <p>さらに、参加費がどちらも100円だとしたら、もらえる金額から100円を引いた<strong>損益の期待値</strong>はこうなります。</p>
+            <div class="math-block">くじAの損益の期待値 = 100 − 100 = <strong>0円</strong>（長くやっても平均すれば ±0）</div>
+            <div class="math-block">くじBの損益の期待値 = 75 − 100 = <strong>−25円</strong>（長くやるほど、平均で1回あたり25円ずつ減る）</div>
+            <p>つまり「当たる確率が高いからBを選ぶ」のは、長い目で見ると損をする選択です。この「期待値で比べる」考え方は、くじやガチャの還元率チェック、保険料の設計、キャンペーンの費用対効果の事前評価など、日常生活やビジネスのあらゆる場所で使われています。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 期待値で判断する</p>
+              <p class="qq">参加費がどちらも100円のとき、長い目で見てお得なのはどちらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>当たる確率が高いくじB</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>くじA（±0なので損しない）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>どちらも同じ</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>どちらも毎回必ず100円もうかる</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">損益の期待値は、くじAが0円・くじBが−25円。長く繰り返すと平均でAは±0、Bは1回あたり25円ずつ減ります。だからお得なのはAです。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 05</span>
+            <h4>期待値は「平均」の一般化。ビジネス判断にも使える</h4>
+            <p>サイコロのようにすべての確率が等しいとき、期待値はふつうの平均と同じになりました。一方、くじのように値ごとに確率がちがう場合は、「値 × 確率」を足す<strong>重み付き平均</strong>が必須です。これはビジネス判断でも同じです。</p>
+            <p>例として、新しいキャンペーンの損益を見込みで3つのシナリオに分けたとしましょう。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>シナリオ</th><th>確率</th><th>損益</th></tr>
+                  <tr><td>好調</td><td>30%</td><td>＋300万円</td></tr>
+                  <tr><td>ふつう</td><td>50%</td><td>＋100万円</td></tr>
+                  <tr><td>不調</td><td>20%</td><td>−200万円</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>損益の期待値は「シナリオの損益 × 確率」を3つ足して求めます。</p>
+            <div class="math-block">E(損益) = 0.3 × 300 ＋ 0.5 × 100 ＋ 0.2 × (−200) = 90 ＋ 50 − 40 = <strong>＋100万円</strong></div>
+            <div class="figure">
+              <svg viewBox="0 0 560 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="キャンペーンの損益シナリオの棒グラフ。好調プラス300万円、ふつうプラス100万円、不調マイナス200万円">
+                <line x1="40" y1="150" x2="540" y2="150" stroke="#1C2B39" stroke-width="2"/>
+                <rect x="45"  y="60"  width="120" height="90"  fill="#A9782F"/>
+                <rect x="205" y="120" width="120" height="30"  fill="#C9A66A"/>
+                <rect x="365" y="150" width="120" height="60"  fill="#B4432F"/>
+                <text x="105" y="52" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#1C2B39">＋300万円</text>
+                <text x="265" y="112" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#1C2B39">＋100万円</text>
+                <text x="425" y="194" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#FFFFFF">−200万円</text>
+                <text x="105" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">好調（30%）</text>
+                <text x="265" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">ふつう（50%）</text>
+                <text x="425" y="232" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">不調（20%）</text>
+              </svg>
+              <p class="figure-caption">図4: シナリオ別の損益。期待値は 90 ＋ 50 − 40 = ＋100万円（0の線がプラスとマイナスの境目）</p>
+            </div>
+            <p>「このキャンペーンは期待値で＋100万円」というのは、「同じ施策を何度も繰り返したときの平均」の意味です。実際に起きる1回は、好調・ふつう・不調のどれか1つです。</p>
+            <p>ここで大事な注意があります。<strong>期待値は「平均の位置」しか教えてくれません。「どのくらいブレるか（リスク）」は期待値だけでは見えません。</strong>たとえば「90%で＋100万円・10%で−900万円」の案と「必ず0円」の案は、どちらも期待値が0円ですが、リスクはまったくちがいます。ブレの大きさや分布の「かたち」を扱うのが、このあとのUnit（二項分布・ポアソン分布・正規分布など）のテーマです。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 期待値の応用</p>
+              <p class="qq">上のキャンペーンの損益の期待値はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>＋200万円</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>＋100万円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>＋50万円</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>＋30万円</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">0.3 × 300 ＋ 0.5 × 100 ＋ 0.2 × (−200) = 90 ＋ 50 − 40 = ＋100万円です。アの＋200万円は3つの損益を「確率をかけずに」足した値なので、間違いです。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 06</span>
+            <h4>まとめ: このUnitで身につけた道具</h4>
+            <ul>
+              <li><strong>確率変数 X</strong> = 値が確率で決まる変数。値 x と確率の対応表が<strong>確率分布</strong>（全部足して1）</li>
+              <li><strong>期待値 E(X) = Σ x × P(X = x)</strong> = 確率の重み付き平均</li>
+              <li>期待値は「1回の予言」ではなく「<strong>繰り返したときの平均</strong>」。実際には出ない値（サイコロの3.5）もありうる</li>
+              <li>くじや施策の比較は、当たる確率やシナリオ1つだけでなく、<strong>期待値で比べる</strong></li>
+              <li>ただし期待値には<strong>ブレ（リスク）が見えない</strong>。分布の形はあとのUnitで扱う</li>
+            </ul>
+            <div class="math-block">E(X) = Σ x × P(X = x)</div>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>用語</th><th>意味</th><th>このUnitでの例</th></tr>
+                  <tr><td>確率変数 X</td><td>値が確率で決まる変数</td><td>サイコロの目 X</td></tr>
+                  <tr><td>値 x</td><td>X がとる具体的な値</td><td>x = 1, 2, …, 6</td></tr>
+                  <tr><td>確率分布</td><td>値と確率の対応表。確率の合計は1</td><td>P(X = 1) = 1/6, …, 全部足して1</td></tr>
+                  <tr><td>期待値 E(X)</td><td>確率の重み付き平均 Σ x × P(X = x)</td><td>サイコロは3.5／くじAは100円</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>「期待値」は、データ分析の世界で「不確実な将来を見通すための平均」として、あらゆる場面に登場します。たとえば機械学習でも「期待損失を最小にする」「期待報酬を最大化する」のように使います。</p>
+            <p>次はUnit④「二項分布」です。コインを10回投げて「表が出る回数 X」のように、<strong>「成功する回数」の確率分布</strong>を考えます。その期待値が「n × p」と一瞬で出せるようになるのも、このUnitで身につけた重み付き平均の考え方のおかげです。</p>
+        </div>
+    </div>
+
+    <section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 第2章ユニット③の確認クイズ（5問）</h2>
+      <div class="quiz-status">正解 <b>0</b> / 5問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. 確率変数 X の確率分布に並んでいる「P(X = x)」をすべて足すと、必ずいくつになるでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>0</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>1</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>6</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>1/6</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">Unit①のルール「起こりうる全部の確率を足すと1」と同じです。サイコロなら 1/6 × 6 = 1。確率分布の表を見たら、まず合計が1になるか確認しましょう。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. 当たると200円もらえるが、当たる確率が20%のくじがあります（はずれは0円）。1回の期待値はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>20円</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>40円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>200円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>0円</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">E = 200 × 0.2 ＋ 0 × 0.8 = 40円 です。アの20円は「確率の20%」と金額を取り違えたものです。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. サイコロの目の期待値が3.5でした。この「3.5」の正しい説明はどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>サイコロを振ると、だんだん3.5の目が出るようになる</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>何度も振って出た目の平均をとると、3.5に近づいていく</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>3.5の目が出る確率が最も高い</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>1回振れば3.5が必ず出る</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">期待値は「1回の予言」ではなく「繰り返したときの平均」です。1回ずつは1〜6のどれかですが、たくさん振って平均すると3.5に近づきます。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q4. 参加費200円のくじがあり、もらえる金額の期待値が150円でした。このくじの損益の期待値はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>＋50円</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>−50円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>0円</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>−200円</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">損益 = もらえる金額 − 参加費 なので 150 − 200 = −50円。長く続けると、平均で1回あたり50円ずつ減っていくくじです。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. ある機械が1年間に故障する回数を X とします。P(X=0)=80%、P(X=1)=15%、P(X=2)=5% のとき、E(X) はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>0.25回</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>1回</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>0.5回</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>2回</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">E(X) = 0×0.8 ＋ 1×0.15 ＋ 2×0.05 = 0 ＋ 0.15 ＋ 0.10 = 0.25回 です。確率の重み付き平均なので、ありえない小数（0.25回）になってもOKです。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+    </section>
+
+    <nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

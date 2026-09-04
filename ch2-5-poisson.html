@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2章(5) ポアソン分布 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+    <script src="js/sim.js" defer></script>
+</head>
+<body data-file="ch2-5-poisson.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt; 第2章 確率と確率分布 &gt; Unit 05
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 02 / Unit 05 — ポアソン分布</span>
+                <h2 class="lesson-title">ポアソン分布：めったに起きないことの「回数」を扱う</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このUnitでできるようになること</span>
+      <ul>
+        <li>ポアソン分布が使える場面（まれな事象の回数）を説明できる</li>
+        <li>P(X = k) = e^(−λ) × λ^k ÷ k! で確率を計算できる</li>
+        <li>期待値も分散も λ になることと、λ で形が変わることを説明できる</li>
+      </ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>「まれなこと」が、ある期間に何回起きるか</h4>
+            <p>前のUnit④で「成功回数の分布」＝二項分布を学びました。ところが現実には、次のようなデータもあります。</p>
+            <ul>
+              <li>コールセンターに、1時間に平均2件の問い合わせが来る</li>
+              <li>1日に平均1.5件のシステム障害が起きる</li>
+              <li>1ページの本に平均0.5個の誤植がある</li>
+              <li>1年間に平均3件の重大事故が起きる</li>
+            </ul>
+            <p>共通しているのは、<strong>「ある期間（または範囲）に、めったにないことが何回起きるか」</strong>を数えたい、という点です。これを二項分布で無理やり扱おうとすると、問題があります。</p>
+            <p>「1時間に平均2件」を二項分布で考えるには、「何回の試行なのか」を決めなければいけません。時間は連続なので、そもそも n が決まりません。無理に「1秒ごとの試行」とすれば n = 3,600 という巨大な数になり、1秒あたりの発生確率 p = 2/3,600 は極めて小さくなります。つまり<strong>「n がとても大きく、p がとても小さい二項分布」</strong>です。</p>
+            <p>このような極限で二項分布が近づいていく先の分布が、このUnitのテーマ<strong>ポアソン分布</strong>です。ポアソン分布なら「平均 λ 回」だけで、試行回数 n を考えずに確率を出せます。</p>
+            <p>このUnitの進め方です。</p>
+            <ol>
+              <li>公式とパラメータ λ を覚える</li>
+              <li>λ で「形」がどう変わるかを見る</li>
+              <li>具体的な計算（コールセンターの例）を練習する</li>
+              <li>二項分布との使い分けを整理する</li>
+            </ol>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>公式: P(X = k) = e^(−λ) × λ^k ÷ k!</h4>
+            <p>「単位時間あたり平均 λ 回起きる」まれな事象について、その期間にちょうど k 回起きる確率を X と書くと、X の確率は次の式で与えられます。</p>
+            <div class="math-block">P(X = k) = (e^(−λ) × λ^k) ÷ k!　　（k = 0, 1, 2, …）</div>
+            <p>ここで <strong>λ（ラムダ）</strong>は「1期間あたりの平均発生回数」です。例えば「1時間に平均2件」なら λ = 2 です。<strong>e は「ネイピア数」と呼ばれる定数で、およそ 2.718</strong> です。電卓やPython（scipy）では関数が用意されているので、手計算では e^(−λ) の値を表から見るのが普通です。</p>
+            <div class="math-block">e ≈ 2.71828…　／　λ = 平均発生回数</div>
+            <p>二項分布のパラメータは n と p の2つでしたが、ポアソン分布は <strong>λ だけ</strong>で分布の形がすべて決まります。n や p をいちいち考えなくてよいのが、この分布の便利なところです。</p>
+            <p>ポアソン分布がうまく当てはまるのは、だいたい次の3つの条件が成り立つときです。</p>
+            <ul>
+              <li>平均の発生率 λ が期間中だいたい一定</li>
+              <li>ある瞬間に起きることと、次の瞬間に起きることは<strong>独立</strong></li>
+              <li>同時に2回以上起きることは無視できるほどまれ</li>
+            </ul>
+            <p>※ 式の細かい導出（二項分布からどう近づくか）は、このUnitでは省略します。「n を無限大、p を0に近づけ、n×p を λ に固定したときに二項分布がたどり着く先」くらいのイメージで大丈夫です。</p>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 03</span>
+            <h4>λ が小さいと「0回」が最頻、大きいと山が右へ動く</h4>
+            <p>ポアソン分布の形は、λ の値1つで決まります。λ が小さい＝「とてもまれ」なので、0回が最も起こりやすく、回数が増えるほど確率が下がります。λ が大きくなるにつれ、山（最頻値）は右へ移動し、左右対称に近づいていきます。2つの例を比べてみましょう。</p>
+            <div class="figure">
+              <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ポアソン分布の比較。ラムダ0.5では0回が最も高く、ラムダ5では5回あたりに山ができる">
+                <text x="150" y="28" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#1C2B39">λ = 0.5（とてもまれ）</text>
+                <line x1="40" y1="180" x2="300" y2="180" stroke="#1C2B39" stroke-width="2"/>
+                <rect x="62"  y="100" width="16" height="80" fill="#A9782F"/>
+                <rect x="106" y="140" width="16" height="40" fill="#A9782F"/>
+                <rect x="150" y="170" width="16" height="10" fill="#A9782F"/>
+                <rect x="194" y="178" width="16" height="2"  fill="#C9B48A"/>
+                <text x="70"  y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#1C2B39">0</text>
+                <text x="114" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#1C2B39">1</text>
+                <text x="158" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#1C2B39">2</text>
+                <text x="202" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#1C2B39">3</text>
+                <text x="246" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#1C2B39">4</text>
+                <text x="290" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="10" fill="#1C2B39">5</text>
+                <text x="150" y="228" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#A9782F">0回がいちばん多い</text>
+
+                <text x="480" y="28" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#1C2B39">λ = 5（平均5件）</text>
+                <line x1="340" y1="180" x2="620" y2="180" stroke="#1C2B39" stroke-width="2"/>
+                <rect x="348" y="176" width="16" height="4"   fill="#C9B48A"/>
+                <rect x="379" y="165" width="16" height="15"  fill="#A9782F"/>
+                <rect x="410" y="142" width="16" height="38"  fill="#A9782F"/>
+                <rect x="441" y="116" width="16" height="64"  fill="#A9782F"/>
+                <rect x="472" y="100" width="16" height="80"  fill="#A9782F"/>
+                <rect x="503" y="100" width="16" height="80"  fill="#A9782F"/>
+                <rect x="534" y="113" width="16" height="67"  fill="#A9782F"/>
+                <rect x="565" y="132" width="16" height="48"  fill="#A9782F"/>
+                <rect x="596" y="150" width="16" height="30"  fill="#A9782F"/>
+                <text x="356" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#1C2B39">0</text>
+                <text x="387" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#1C2B39">1</text>
+                <text x="418" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#1C2B39">2</text>
+                <text x="449" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#1C2B39">3</text>
+                <text x="480" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#1C2B39">4</text>
+                <text x="511" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#1C2B39">5</text>
+                <text x="542" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#1C2B39">6</text>
+                <text x="573" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#1C2B39">7</text>
+                <text x="604" y="200" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" fill="#1C2B39">8</text>
+                <text x="480" y="228" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#A9782F">4〜5回のあたりに山</text>
+              </svg>
+              <p class="figure-caption">図1: ポアソン分布の形は λ で決まる。λ=0.5 なら0回が最頻、λ=5 なら山が右（平均のあたり）へ移動（高さは各パネル内で正規化）</p>
+            </div>
+            <p>λ が大きくなると山が左右対称の釣り鐘型に近づいていくのは、二項分布が正規分布に近づくのと同じ流れです（次々回のUnit⑥・⑧で扱います）。</p>
+            <p>そして、ポアソン分布の期待値は λ そのものです。さらに驚くべきことに、<strong>分散も λ</strong> になります。つまり「平均もバラつきも λ」で、1つの値 λ が分布の位置と広がりを同時に決めます。</p>
+            <div class="math-block">E(X) = λ　／　V(X) = λ　／　σ(X) = √λ</div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — λ が小さいポアソン分布の形</p>
+              <p class="qq">λ = 0.5 のように平均がとても小さいポアソン分布の形はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>k=0 が最も高く、回数が増えるほど確率が下がる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>k=λ あたりが最も高くなる左右対称の山</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>どの k でも確率が同じ</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>大きな k ほど確率が高くなる</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">λ が小さい＝「とてもまれ」なので、0回がいちばん起こりやすく、1回、2回…と増えるほど確率は下がっていきます。山が右へ動くのは λ が大きくなったときです。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 04</span>
+            <h4>計算例: 1時間に平均2件の問い合わせ（λ = 2）</h4>
+            <p>コールセンターで、1時間に平均 <strong>λ = 2件</strong> の問い合わせがあるとします。このとき「1時間にちょうど k 件」の確率を、公式から求めます。</p>
+            <div class="math-block">P(X = 0) = e^(−2) ≈ <strong>0.135</strong>（1時間、1件も来ない確率）</div>
+            <p>k = 0, 1, 2, … と順に計算して表にすると、次のようになります。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>問い合わせ件数 k</th><td>0</td><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td></tr>
+                  <tr><th>P(X = k)</th><td><strong>0.135</strong></td><td>0.271</td><td>0.271</td><td>0.180</td><td>0.090</td><td>0.036</td><td>0.012</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="figure">
+              <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ラムダ2のポアソン分布。1件と2件が最も高く、右へなだらかに下がる">
+                <line x1="60" y1="200" x2="460" y2="200" stroke="#1C2B39" stroke-width="2"/>
+                <rect x="78"  y="145" width="24" height="55"  fill="#A9782F"/>
+                <rect x="124" y="90"  width="24" height="110" fill="#A9782F"/>
+                <rect x="170" y="90"  width="24" height="110" fill="#A9782F"/>
+                <rect x="216" y="127" width="24" height="73"  fill="#A9782F"/>
+                <rect x="262" y="163" width="24" height="37"  fill="#A9782F"/>
+                <rect x="308" y="185" width="24" height="15"  fill="#A9782F"/>
+                <rect x="354" y="195" width="24" height="5"   fill="#A9782F"/>
+                <rect x="400" y="199" width="24" height="1"   fill="#C9B48A"/>
+                <line x1="182" y1="45" x2="182" y2="200" stroke="#B4432F" stroke-width="1.5" stroke-dasharray="5 4"/>
+                <text x="182" y="37" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#B4432F">期待値 λ=2</text>
+                <text x="90"  y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">0</text>
+                <text x="136" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">1</text>
+                <text x="182" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">2</text>
+                <text x="228" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">3</text>
+                <text x="274" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">4</text>
+                <text x="320" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">5</text>
+                <text x="366" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">6</text>
+                <text x="412" y="222" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">7</text>
+              </svg>
+              <p class="figure-caption">図2: λ=2 のポアソン分布。1件・2件が最も多く、右へなだらかに下がる（7件以上はほぼ0）</p>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — ポアソン分布の計算①</p>
+              <p class="qq">λ = 2 のとき、「1時間に1件も問い合わせが来ない」確率 P(X = 0) はおよそいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>約0.135</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>約0.271</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約0.368</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>0</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">P(X=0) = e^(−2) ≈ 0.135 です。ウの0.368は λ=1 のときの P(X=0) = e^(−1) なので、λ の値に注意しましょう。</div></details>
+            </div>
+            <p>続いて「3件以上の問い合わせが来る確率」も出してみましょう。1件・2件の確率はそれぞれ</p>
+            <div class="math-block">P(X = 1) = 2 × e^(−2) ≈ <strong>0.271</strong>　／　P(X = 2) = (2^2 ÷ 2!) × e^(−2) ≈ <strong>0.271</strong></div>
+            <p>「0件〜2件」をまとめると 0.135 ＋ 0.271 ＋ 0.271 ≈ 0.677 なので、その残りが「3件以上」です。</p>
+            <div class="math-block">P(X ≤ 2) ≈ 0.677　／　P(X ≥ 3) = 1 − 0.677 ≈ <strong>0.323</strong></div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — ポアソン分布の計算②</p>
+              <p class="qq">λ = 2 のとき、「1時間に3件以上の問い合わせが来る」確率 P(X ≥ 3) はおよそいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>約0.677</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>約0.323</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約0.271</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約0.135</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">P(X ≥ 3) = 1 − P(X ≤ 2) = 1 − 0.677 ≈ 0.323 です。「〜以上」は余事象（1から引く）で出すのが早いです。アは P(X ≤ 2) なので、問いの向きが逆です。</div></details>
+            </div>
+            <p>この計算がなぜ実務で役立つかというと、<strong>「平均2件」と言われても、実際には3件以上来る時間帯が3割以上ある</strong>ことがわかるからです。コールセンターの人員配置や、サーバーの処理能力設計では、「平均」だけでなく「まれに大きくなる側（右のすそ）」を見る必要があります。ポアソン分布はこの「まれに大きくなる」部分をちゃんと評価できる道具です。</p>
+
+            <div class="sim" id="pois-sim">
+              <span class="box-label">🧪 動かして確かめる — 1時間あたりの発生件数をシミュレーション</span>
+              <p class="sim-lead">「平均 λ 件のまれな事象」を1時間ぶん（1セット）シミュレーションし、発生件数をヒストグラムに記録します。セットを重ねると、形がポアソン分布（上の図）に近づいていきます。</p>
+              <div class="sim-stage">
+                <div class="sim-counts">
+                  <div>セット数 <b id="pois-exp">0</b></div>
+                  <div>平均発生件数 <b id="pois-avg">—</b> <span class="sim-target" id="pois-target">（期待値 λ）</span></div>
+                </div>
+                <div class="sim-btns" id="pois-lgroup">
+                  <span class="plabel">λ ＝</span>
+                  <button type="button" class="btn-sim" data-lambda="0.5">0.5件</button>
+                  <button type="button" class="btn-sim active" data-lambda="2">2件</button>
+                  <button type="button" class="btn-sim" data-lambda="5">5件</button>
+                </div>
+              </div>
+              <div class="sim-bars" id="pois-bars"></div>
+              <div class="sim-axis" id="pois-axis"></div>
+              <p class="sim-note" id="pois-msg"></p>
+              <div class="sim-btns">
+                <button type="button" class="btn-sim" id="pois-once">1セット試行</button>
+                <button type="button" class="btn-sim" id="pois-ten">10セット</button>
+                <button type="button" class="btn-sim" id="pois-hundred">100セット</button>
+                <button type="button" class="btn-sim ghost" id="pois-reset">リセット</button>
+              </div>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 05</span>
+            <h4>二項分布とどう使い分ける？実務での使われ方</h4>
+            <p>「コインを10回」のような「回数が決まっている試行」は二項分布、「1時間・1日・1ページ」のような<strong>区切りがない連続した範囲での発生回数</strong>はポアソン分布、が基本の使い分けです。表にまとめると次のようになります。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th></th><th>二項分布 Bin(n, p)</th><th>ポアソン分布 Po(λ)</th></tr>
+                  <tr><td>考えるもの</td><td>n回の試行のうち成功した回数</td><td>期間・範囲に発生する回数</td></tr>
+                  <tr><td>パラメータ</td><td>n（回数）と p（成功確率）</td><td>λ（平均発生回数）</td></tr>
+                  <tr><td>例</td><td>コイン10回の表の回数、10人に送って開封した人数</td><td>1時間の問い合わせ件数、1日の事故件数</td></tr>
+                  <tr><td>期待値 / 分散</td><td>E = n×p ／ V = n×p×(1−p)</td><td>E = λ ／ V = λ</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>そして、二項分布とポアソン分布は別物ではなく、<strong>「n を大きく、p を小さくした二項分布 ≈ ポアソン分布（λ = n×p）」</strong>という関係があります。例えば「来場者10,000人のうち0.1%が購入する」のような極端にまれな事象は、n = 10,000 の二項分布として計算するより、λ = 10 のポアソン分布として扱う方が楽で、答えもほぼ同じになります。</p>
+            <p>実務では、<strong>発生件数（カウントデータ）を説明・予測する「ポアソン回帰」</strong>というモデルもあります。売上件数・事故件数・サイトへのアクセス数など、「0以上の整数で、まれに大きくなる」データの分析に使われます（このコースの後の回帰の章で触れます）。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 期待値も分散も λ</p>
+              <p class="qq">λ = 2 のポアソン分布について、正しいのはどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>期待値は2、分散は4</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>期待値も分散も2</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>期待値は0.5、分散は2</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>期待値は0、分散は2</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">ポアソン分布は E(X) = λ、V(X) = λ です。λ=2 なら期待値も分散も2。標準偏差は σ = √2 ≈ 1.41です。パラメータが1つだけで両方が決まるのが特徴です。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 06</span>
+            <h4>まとめ: このUnitで身につけた道具</h4>
+            <ul>
+              <li><strong>ポアソン分布</strong> = 「期間・範囲に、まれなことが何回起きるか」の分布（例: 1時間の問い合わせ件数）</li>
+              <li><strong>P(X = k) = e^(−λ) × λ^k ÷ k!</strong>（λ が分布を決める唯一のパラメータ）</li>
+              <li><strong>期待値も分散も λ</strong>（σ = √λ）</li>
+              <li>λ が小さいと 0回 が最頻、λ が大きくなると山が右へ動き、左右対称に近づく</li>
+              <li>二項分布（n大・p小）の極限がポアソン分布。区切りのない「発生件数」データではポアソンを使う</li>
+            </ul>
+            <div class="math-block">P(X = k) = e^(−λ) × λ^k ÷ k!　／　E(X) = λ　／　V(X) = λ</div>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>用語</th><th>意味</th><th>このUnitでの例</th></tr>
+                  <tr><td>発生回数 X</td><td>期間・範囲に起きる回数（0,1,2,…）</td><td>1時間の問い合わせ件数 X</td></tr>
+                  <tr><td>λ（ラムダ）</td><td>1期間あたりの平均発生回数</td><td>λ = 2件／時間</td></tr>
+                  <tr><td>e（ネイピア数）</td><td>公式に出てくる定数 ≈ 2.718</td><td>e^(−2) ≈ 0.135</td></tr>
+                  <tr><td>ポアソン分布 Po(λ)</td><td>まれな事象の回数がしたがう分布</td><td>コールセンターの例</td></tr>
+                  <tr><td>期待値 / 分散</td><td>どちらも λ</td><td>λ=2 → 平均2件・分散2</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>ここまでで「数える（カウント）データの分布」は一通りそろいました。二項分布・ポアソン分布は、いずれも<strong>離散型</strong>（0,1,2,…と飛び飛びの値）の分布です。</p>
+            <p>次はUnit⑥「正規分布」です。身長・テストの点数・測定誤差のような<strong>連続型</strong>（どこまでも細かい値をとる）データの代表的な分布で、統計学の主役とも言える分布を扱います。</p>
+        </div>
+    </div>
+
+    <section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 第2章ユニット⑤の確認クイズ（5問）</h2>
+      <div class="quiz-status">正解 <b>0</b> / 5問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. 次のうち、ポアソン分布でモデル化するのがふさわしいものはどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>1時間にコールセンターへかかってくる問い合わせの件数</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>コインを10回投げたときの表の回数</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>サイコロ1回の出目</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>大人100人の身長の分布</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">ポアソン分布は「期間・範囲にまれなことが何回起きるか」（カウントデータ）に使います。イは回数が決まった試行なので二項分布、エは連続型なので正規分布の方がふさわしいです。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. λ = 3 のポアソン分布の期待値 E(X) はいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>9</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>3</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>√3</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>0</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">ポアソン分布の期待値は λ です。λ=3 なら E(X)=3。ちなみに分散も3、標準偏差は σ = √3 ≈ 1.73 になります。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. λ = 1 のとき、「その期間に1回も起きない」確率 P(X = 0) はおよそいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>0</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>0.5</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>約0.368</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約0.135</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">P(X=0) = e^(−1) ≈ 0.368 です。λ=2 のときは e^(−2) ≈ 0.135 になるので、λ の値を確認しましょう。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q4. λ = 5 のポアソン分布の標準偏差 σ(X) はおよそいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>約2.24</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>5</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>25</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約1.41</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">分散が λ=5 なので、標準偏差は σ = √λ = √5 ≈ 2.24 です。エの√2 ≈ 1.41は λ=2 のときの値です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. 二項分布 Bin(n, p) とポアソン分布の関係として正しいものはどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>n を小さく、p を大きくすると二項分布はポアソン分布に近づく</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>n を大きく、p を小さく（n×p = λ に固定）すると二項分布はポアソン分布に近づく</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>二項分布とポアソン分布に特に関係はない</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>いつでもまったく同じ分布になる</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">「回数 n が巨大・成功確率 p が極小」というまれな事象の極限で、二項分布は平均 λ = n×p のポアソン分布に近づきます。これが「1時間」のような区切りのない問題でポアソンが使える理由です。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+    </section>
+
+    <nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

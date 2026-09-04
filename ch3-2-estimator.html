@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3章(2) 点推定と不偏推定量 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+    <script src="js/sim.js" defer></script>
+</head>
+<body data-file="ch3-2-estimator.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt; 第3章 母集団を推し量る（推定） &gt; Unit 02
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 03 / Unit 02 — 点推定と不偏推定量</span>
+                <h2 class="lesson-title">点推定と不偏推定量：標本平均で母平均を「当てる」</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このUnitでできるようになること</span>
+      <ul>
+        <li>「点推定」の意味と、推定量・推定値の使い分けを説明できる</li>
+        <li>不偏性・一致性・有効性の意味を説明できる</li>
+        <li>標本分散がなぜ「n−1」で割るのか説明できる（不偏分散）</li>
+      </ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>「母平均はいくら？」に、1つの値で答える＝点推定</h4>
+            <p>Unit①で、母集団の平均 μ は通常わからず、標本平均 x̄ で推し量ると学びました。このとき「μ はおそらくこの値」と<strong>1つの値（点）で当てる</strong>ことを<strong>点推定</strong>と呼びます。たとえば次のような場面です。</p>
+            <ul>
+              <li>ECサイトの利用者全体の平均購入額 μ を、標本平均 x̄ = 5,320円 と推定する</li>
+              <li>全国の有権者の支持率 p を、標本の支持率 p̂ = 42% と推定する</li>
+            </ul>
+            <p>ここで用語を正確に区別しておきましょう。</p>
+            <ul>
+              <li><strong>母数（パラメータ）:</strong> 母集団の特徴を表す値（μ, σ², p など）。真の値だが不明</li>
+              <li><strong>推定量（estimator）:</strong> 母数を推定するための「計算のルール・式」（例: 標本平均 x̄ という式）</li>
+              <li><strong>推定値（estimate）:</strong> 実際の1つの標本に推定量を当てはめて得た値（例: 5,320円）</li>
+            </ul>
+            <p>推定量は確率変数（標本が変われば値が変わる）で、推定値はその1回の実現値です。以後は、この3つを区別しながら読み進めてください。</p>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>母数ごとの「代表的な推定量」</h4>
+            <p>母数には「平均・比率・分散」などがあり、それぞれに代表的な推定量が決まっています。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>母数（真の値・不明）</th><th>推定量（標本から計算）</th><th>備考</th></tr>
+                  <tr><td>母平均 μ</td><td>標本平均 x̄</td><td>第1章でおなじみの平均</td></tr>
+                  <tr><td>母比率 p</td><td>標本比率 p̂（ハットp）</td><td>「支持する人の割合」など</td></tr>
+                  <tr><td>母分散 σ²</td><td>不偏分散 s²（分母は n−1）</td><td>このUnitの主役。後述</td></tr>
+                  <tr><td>母標準偏差 σ</td><td>標本標準偏差 s = √s²</td><td>s² のルートをとる</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>「推定量」はどれも<strong>標本から計算できる式</strong>ですが、だからといって全部が良い推定量とは限りません。母数を正しく当てるには、次のStepで見るような「良い性質」が必要です。なお、第1章で学んだ「標本の分散を n−1 で割る」理由は、まさにこの「良い推定量」の話です（Step04で解決します）。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 点推定</p>
+              <p class="qq">母平均 μ を点推定したいとき、推定量として使うのはどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>標本平均 x̄</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>標本の中央値（必ずではないが…）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>母集団の全データ</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>標準偏差 σ</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">母平均 μ の点推定には標本平均 x̄ を使うのが基本です（不偏性・一致性を持つ）。イの中央値も平均の代わりに使う場面はありますが、このUnitで扱うのは平均の推定です。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 03</span>
+            <h4>良い推定量の3つの性質（不偏性・一致性・有効性）</h4>
+            <p>推定量は標本ごとにブレる確率変数です。では、どんな推定量が「良い」のでしょうか？代表的な3つの性質があります。</p>
+            <ul>
+              <li><strong>不偏性（unbiasedness）:</strong> 推定量の期待値が母数に一致する。E(x̄) = μ</li>
+              <li><strong>一致性（consistency）:</strong> 標本サイズ n を大きくすると、推定量が母数に近づいていく</li>
+              <li><strong>有効性（efficiency）:</strong> 同じ条件の推定量の中では「ばらつき（分散）」が小さい方がよい</li>
+            </ul>
+            <p>ダーツに例えると、「狙う的＝母数 μ」に対して、推定量（矢）が次のようだと言えます。</p>
+            <ul>
+              <li>不偏性 = 矢の「当たりどころの中心」が的に合っている（偏りなし）</li>
+              <li>有効性 = 矢の散らばり（ブレ）が小さい</li>
+            </ul>
+            <div class="figure">
+              <svg viewBox="0 0 340 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ダーツの的。中心の母平均のまわりに標本平均の点が散らばる">
+                <circle cx="170" cy="150" r="110" fill="#F6F1E3"/>
+                <circle cx="170" cy="150" r="70" fill="#EDE7D6"/>
+                <circle cx="170" cy="150" r="32" fill="#F2E9D5" stroke="#A9782F" stroke-width="1.5"/>
+                <circle cx="170" cy="150" r="10" fill="#B4432F"/>
+                <text x="170" y="145" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="9" font-weight="700" fill="#FFFFFF">μ</text>
+                <g fill="#A9782F">
+                  <circle cx="158" cy="120" r="4"/><circle cx="182" cy="112" r="4"/><circle cx="196" cy="128" r="4"/>
+                  <circle cx="150" cy="142" r="4"/><circle cx="205" cy="150" r="4"/><circle cx="192" cy="172" r="4"/>
+                  <circle cx="176" cy="196" r="4"/><circle cx="144" cy="168" r="4"/><circle cx="210" cy="118" r="4"/>
+                  <circle cx="130" cy="122" r="4"/><circle cx="228" cy="140" r="4"/><circle cx="222" cy="172" r="4"/>
+                  <circle cx="164" cy="88" r="4"/><circle cx="238" cy="116" r="4"/><circle cx="226" cy="196" r="4"/>
+                  <circle cx="124" cy="178" r="4"/>
+                </g>
+                <text x="120" y="290" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#A9782F">● = 標本平均 x̄</text>
+                <text x="235" y="290" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#B4432F">中心（期待値）＝ μ</text>
+              </svg>
+              <p class="figure-caption">図1: 各標本の x̄ は μ（中心）のまわりに散らばる。中心が μ に一致＝不偏性。散らばりの小ささ＝有効性</p>
+            </div>
+            <p>標本平均 x̄ は、これら3つをすべて満たす代表的な推定量です（不偏性 E(x̄)=μ は第2章Unit⑧で確認済み。一致性は中心極限定理の帰結。有効性も成立します）。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 不偏性</p>
+              <p class="qq">推定量の性質「E(推定量) = 母数 が成り立つこと」を何と呼ぶでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>不偏性</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>一致性</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>有効性</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>完全性</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">期待値が母数に一致するのが「不偏性」です。n を大きくすると母数に近づくのが一致性、散らばりが小さいのが有効性です。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 04</span>
+            <h4>なぜ分散は「n−1」で割るのか（不偏分散の謎）</h4>
+            <p>第1章で、標本の分散を計算するときは n ではなく <strong>n−1</strong> で割ると学びました。ここでその理由を解決します。結論から言うと、<strong>「n で割る標本分散」は母分散 σ² の不偏推定量にならない</strong>からです。</p>
+            <p>理由は次の通り。母平均 μ がわかっていれば、各データのズレは μ から測れます。しかし現実には μ がわからないので、標本平均 x̄ から測ります。x̄ はデータの中心に必ず「くっついて」いるため、<strong>x̄ からのズレ2乗の合計は、μ からのズレ2乗の合計より平均的に小さくなります</strong>。その分を補正するのが n−1 です。</p>
+            <div class="math-block">s²（不偏分散） = Σ(xᵢ − x̄)² ÷ (n − 1)　→　E(s²) = σ²（不偏！）</div>
+            <p>n = 10、母分散 σ² = 2 の例で「標本分散の平均」を比べると、次のようになります。</p>
+            <div class="figure">
+              <svg viewBox="0 0 460 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="nで割る標本分散の平均は母分散より小さく、n-1で割ると母分散に一致する比較棒グラフ">
+                <line x1="50" y1="200" x2="420" y2="200" stroke="#1C2B39" stroke-width="2"/>
+                <line x1="60" y1="120" x2="410" y2="120" stroke="#B4432F" stroke-width="1.5" stroke-dasharray="5 4"/>
+                <text x="415" y="116" text-anchor="end" font-family="'JetBrains Mono',monospace" font-size="11" fill="#B4432F">母分散 σ² = 2</text>
+                <rect x="80"  y="128" width="110" height="72" fill="#B4432F" opacity="0.6"/>
+                <rect x="270" y="120" width="110" height="80" fill="#A9782F"/>
+                <text x="135" y="120" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="700" fill="#1C2B39">1.8</text>
+                <text x="325" y="112" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="14" font-weight="700" fill="#1C2B39">2.0</text>
+                <text x="135" y="226" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">÷n の標本分散</text>
+                <text x="135" y="242" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#B4432F">（平均的に過小評価）</text>
+                <text x="325" y="226" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">÷(n−1) の不偏分散</text>
+                <text x="325" y="242" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#A9782F">（母分散に一致）</text>
+              </svg>
+              <p class="figure-caption">図2: n=10・母分散σ²=2 のとき。÷n の標本分散は平均的に (n−1)/n×σ² = 1.8 にしかならない。÷(n−1) なら平均的に σ²=2 に一致</p>
+            </div>
+            <p>「自由度」という言葉で説明されることもあります。標本平均 x̄ を1つ計算してしまうと、n 個のデータのうち自由に動けるのは n−1 個だけ（最後の1個は x̄ と合計から自動的に決まる）だから、n−1 で割る、という理屈です。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — n−1の理由</p>
+              <p class="qq">標本の分散を計算するとき、n ではなく n−1 で割る主な理由はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>計算を楽にするため</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>分散を大きく見せるため</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>nで割ると平均的に母分散を過小評価するから</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>母平均を使うため</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">x̄ はデータの中心に寄るため、x̄ からの2乗和は μ からの2乗和より平均的に小さくなります。n−1 で割ることで、その分を補正して母分散 σ² の不偏推定量にします。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 05</span>
+            <h4>実務ではどう計算する？Python（pandas / NumPy）</h4>
+            <p>データサイエンスの現場では、pandas や NumPy を使うのが普通です。実は、<strong>pandas の <code>var()</code> はデフォルトで分母 n−1（不偏分散）</strong>です。NumPy はデフォルトが n で割るので、<code>ddof=1</code> を指定して不偏分散にします。</p>
+            <pre><code><span class="comment"># 例: 5人のデータ [4, 7, 10, 13, 16]（平均10、2乗和90）</span>
+<span class="kw">import</span> pandas <span class="kw">as</span> pd
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+x = pd.Series([<span class="num">4</span>, <span class="num">7</span>, <span class="num">10</span>, <span class="num">13</span>, <span class="num">16</span>])
+
+x.var()          <span class="comment"># 90 ÷ (5−1) = 22.5（不偏分散）</span>
+np.var(x, ddof=<span class="num">1</span>)  <span class="comment"># 同じく 22.5</span>
+np.var(x)         <span class="comment"># 90 ÷ 5 = 18.0（nで割る＝平均的に小さめ）</span></code></pre>
+            <p>データ分析で「分散」「標準偏差」と書いたときは、暗黙に不偏版（n−1）を使うことがほとんどです。推定や検定（次Unit以降）でも、不偏分散 s² をそのまま使います。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — pandasの分散</p>
+              <p class="qq">pandas の <code>Series.var()</code>（引数なし）は、分母をどうするでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>n−1 で割る（不偏分散）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>n で割る</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>√n で割る</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>データ数に関係なく1で割る</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">pandas の var() はデフォルトで不偏分散（分母 n−1）です。NumPy の np.var() は n で割るので、不偏分散が欲しいときは ddof=1 を指定します。</div></details>
+            </div>
+            <p>最後に、「不偏」の意味をシミュレーションで体感しましょう。母集団は値0,1,2,3を確率40%,30%,20%,10%で出す分布（<strong>母平均 μ=1、母分散 σ²=2</strong>）。ここから標本を何度もとって、毎回「標本平均」「分散÷n」「不偏分散÷(n−1)」を計算し、それぞれの「平均」を見ます。</p>
+
+            <div class="sim" id="est-sim">
+              <span class="box-label">🧪 動かして確かめる — 不偏推定量は「平均すると母数に一致」</span>
+              <p class="sim-lead">標本ごとの x̄・÷nの分散・÷(n−1)の分散を記録し、それらの平均がどこへ収束するかを見ます。÷n の分散は平均的に母分散を過小評価し、÷(n−1) は母分散に一致するはずです。</p>
+              <div class="sim-stage">
+                <div class="sim-counts">
+                  <div>試行回数 <b id="est-exp">0</b></div>
+                  <div>標本平均の平均 <b id="est-avg-x">—</b> <span class="sim-target">（目標 μ=1）</span></div>
+                  <div>÷n の分散の平均 <b id="est-avg-vn">—</b> <span class="sim-target">（目標 (n−1)/n×σ²）</span></div>
+                  <div>÷(n−1) の分散の平均 <b id="est-avg-s2">—</b> <span class="sim-target">（目標 σ²=2）</span></div>
+                </div>
+                <div class="sim-btns" id="est-ngroup">
+                  <span class="plabel">標本サイズ n ＝</span>
+                  <button type="button" class="btn-sim" data-n="3">3</button>
+                  <button type="button" class="btn-sim active" data-n="10">10</button>
+                  <button type="button" class="btn-sim" data-n="30">30</button>
+                </div>
+              </div>
+              <p class="sim-note" id="est-msg"></p>
+              <div class="sim-btns">
+                <button type="button" class="btn-sim" id="est-run200">200回試行</button>
+                <button type="button" class="btn-sim" id="est-run1000">1000回試行</button>
+                <button type="button" class="btn-sim ghost" id="est-reset">リセット</button>
+              </div>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 06</span>
+            <h4>まとめ: このUnitで身につけた道具</h4>
+            <ul>
+              <li><strong>点推定</strong> = 母数を1つの値で当てる。推定量（式）と推定値（実測）を区別する</li>
+              <li>代表的な対応：μ→x̄、p→p̂、σ²→不偏分散 s²、σ→s</li>
+              <li>良い推定量の3条件：<strong>不偏性・一致性・有効性</strong>。x̄ はすべて満たす</li>
+              <li>分散は <strong>n−1 で割る</strong>（÷n は平均的に過小評価 → 不偏にならない）</li>
+              <li>実務では pandas の var()（分母 n−1）／NumPy は ddof=1</li>
+            </ul>
+            <div class="math-block">E(x̄) = μ　／　s² = Σ(xᵢ − x̄)² ÷ (n − 1)、E(s²) = σ²</div>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>用語</th><th>意味</th><th>例</th></tr>
+                  <tr><td>点推定</td><td>母数を1つの値で当てること</td><td>μ ≈ 5,320円</td></tr>
+                  <tr><td>母数（パラメータ）</td><td>母集団の特徴量（未知の真値）</td><td>μ, σ², p</td></tr>
+                  <tr><td>推定量 / 推定値</td><td>推定の式 / その実現値</td><td>x̄（式）/ x̄=5,320円</td></tr>
+                  <tr><td>不偏性</td><td>E(推定量) = 母数</td><td>E(x̄) = μ</td></tr>
+                  <tr><td>一致性 / 有効性</td><td>n大で母数へ / 分散が小さい</td><td>x̄ は両方満たす</td></tr>
+                  <tr><td>不偏分散 s²</td><td>分母 n−1 の標本分散</td><td>E(s²) = σ²</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>点推定は「1つの値」を出しますが、その値が母数からどれくらいズレているか（誤差の範囲）は教えてくれません。そこを扱うのが、次のUnit③「標本平均の分布と標準誤差」とUnit④以降の<strong>区間推定（信頼区間）</strong>です。</p>
+            <p>次はUnit③「標本平均の分布と標準誤差」で、x̄ の分布（中心極限定理）を「推定の道具」として使いこなす復習と整理をします。</p>
+        </div>
+    </div>
+
+    <section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 第3章ユニット②の確認クイズ（5問）</h2>
+      <div class="quiz-status">正解 <b>0</b> / 5問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. 「点推定」とは、どのような推定の仕方でしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>母数を1つの値で当てる推定</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>母数の範囲（区間）で答える推定</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>母集団の全データを直接見る調査</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>推定量の分散を求める計算</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">点推定は「μ はおおよそ 5,320円」のように母数を1つの値（点）で当てます。範囲で答えるのは区間推定（次Unit以降）です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. 標本平均 x̄ が持つ「E(x̄) = μ」という性質を何と呼ぶでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>不偏性</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>有効性</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>完全性</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>代表性</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">期待値が母数 μ に一致する性質を不偏性と呼びます。x̄ は不偏性に加えて一致性・有効性も満たす、代表的な推定量です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. 標本の分散を計算するとき、n ではなく n−1 で割る理由として正しいものはどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>標本平均は母平均より大きいから</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>x̄からの2乗和はμからの2乗和より平均的に小さくなるため、補正が必要</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>標本は必ず母集団より小さいから</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>nで割ると分散が0になってしまうから</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">x̄はデータの中心に寄るので、x̄からの2乗和は母平均μから測ったときより平均的に小さくなります。n−1で割って補正した不偏分散s²が、母分散σ²の不偏推定量になります。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q4. 母分散 σ² = 20 の母集団から n = 11 の標本を何度もとって「÷n の標本分散」を計算しました。その平均はおよそいくらになるでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>20</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>約18.18</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約16</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約22</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">÷n の標本分散の平均は (n−1)/n × σ² = 10/11 × 20 ≈ 18.18 です。nで割る分散は平均的に母分散を過小評価します。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. pandas の DataFrame/Series の var()（引数なし）について正しいものはどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>分母 n−1 の不偏分散を計算する</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>分母 n の分散を計算する</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>標準誤差 σ/√n を計算する</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>母分散 σ² を直接返す</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">pandas の var() はデフォルトで不偏分散（分母 n−1）です。NumPy の np.var() は n で割るので、ddof=1 を指定して揃えます。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+    </section>
+
+    <nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

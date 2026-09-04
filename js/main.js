@@ -18,17 +18,27 @@
 
   var CH2 = [
     { file: "ch2-1-basic.html", num: "①", title: "確率の基本・条件付き確率", done: true },
-    { num: "②", title: "ベイズの定理", plan: true },
-    { num: "③", title: "確率変数と期待値", plan: true },
-    { num: "④", title: "二項分布", plan: true },
-    { num: "⑤", title: "ポアソン分布", plan: true },
-    { num: "⑥", title: "正規分布", plan: true },
-    { num: "⑦", title: "標準化とz表", plan: true },
-    { num: "⑧", title: "中心極限定理", plan: true },
-    { num: "⑨", title: "指数分布（発展）", plan: true }
+    { file: "ch2-2-bayes.html", num: "②", title: "ベイズの定理", done: true },
+    { file: "ch2-3-expectation.html", num: "③", title: "確率変数と期待値", done: true },
+    { file: "ch2-4-binomial.html", num: "④", title: "二項分布", done: true },
+    { file: "ch2-5-poisson.html", num: "⑤", title: "ポアソン分布", done: true },
+    { file: "ch2-6-normal.html", num: "⑥", title: "正規分布", done: true },
+    { file: "ch2-7-ztable.html", num: "⑦", title: "標準化とz表", done: true },
+    { file: "ch2-8-clt.html", num: "⑧", title: "中心極限定理", done: true },
+    { file: "ch2-9-exponential.html", num: "⑨", title: "指数分布（発展）", done: true }
   ];
 
-  var CHAP = { CH1: CH1, CH2: CH2 };
+  var CH3 = [
+    { file: "ch3-1-sampling.html", num: "①", title: "母集団と標本（サンプリング）", done: true },
+    { file: "ch3-2-estimator.html", num: "②", title: "点推定と不偏推定量", done: true },
+    { num: "③", title: "標本平均の分布と標準誤差", plan: true },
+    { num: "④", title: "区間推定と信頼区間の考え方", plan: true },
+    { num: "⑤", title: "母平均の区間推定（σ既知）", plan: true },
+    { num: "⑥", title: "母平均の区間推定（t分布）", plan: true },
+    { num: "⑦", title: "サンプルサイズの決め方", plan: true }
+  ];
+
+  var CHAP = { CH1: CH1, CH2: CH2, CH3: CH3 };
   var body = document.body;
   var currentFile = body.getAttribute("data-file");
   var current = null;
@@ -81,8 +91,26 @@
         out += '<a class="btn btn-primary" href="index.html">第1章 修了 🎉 コース概要へ &rarr;</a>';
       }
     } else if (which === "CH2") {
-      // 前は第1章テスト。次は作成済みユニットがあれば（今はなし）
-      out += '<a class="btn-secondary" href="ch1-quiz.html">&larr; 前へ：第1章 確認テスト</a>';
+      // 前へ：Unit①なら第1章テスト、それ以外は前のユニット
+      if (idx === 0) {
+        out += '<a class="btn-secondary" href="ch1-quiz.html">&larr; 前へ：第1章 確認テスト</a>';
+      } else if (idx > 0 && list[idx - 1].file) {
+        out += '<a class="btn-secondary" href="' + list[idx - 1].file + '">&larr; 前へ：' + list[idx - 1].title + "</a>";
+      }
+      // 次へ：次のユニット、または第3章へ
+      if (idx + 1 < list.length && list[idx + 1].file) {
+        out += '<a class="btn btn-primary" href="' + list[idx + 1].file + '">次へ：' + list[idx + 1].title + " &rarr;</a>";
+      } else if (CH3[0] && CH3[0].file) {
+        out += '<a class="btn btn-primary" href="' + CH3[0].file + '">第2章 修了 🎉 第3章へ &rarr;</a>';
+      }
+    } else if (which === "CH3") {
+      // 前へ：Unit①なら第2章の最後、それ以外は前のユニット
+      if (idx === 0) {
+        out += '<a class="btn-secondary" href="ch2-9-exponential.html">&larr; 前へ：第2章 ⑨ 指数分布（発展）</a>';
+      } else if (idx > 0 && list[idx - 1].file) {
+        out += '<a class="btn-secondary" href="' + list[idx - 1].file + '">&larr; 前へ：' + list[idx - 1].title + "</a>";
+      }
+      // 次へ：作成済みの次のユニットがあれば
       if (idx + 1 < list.length && list[idx + 1].file) {
         out += '<a class="btn btn-primary" href="' + list[idx + 1].file + '">次へ：' + list[idx + 1].title + " &rarr;</a>";
       }

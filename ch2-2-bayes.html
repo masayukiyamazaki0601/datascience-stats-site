@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2章(2) ベイズの定理 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+</head>
+<body data-file="ch2-2-bayes.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt; 第2章 確率と確率分布 &gt; Unit 02
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 02 / Unit 02 — ベイズの定理と事前・事後確率</span>
+                <h2 class="lesson-title">ベイズの定理：結果から原因をさかのぼる</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このUnitでできるようになること</span>
+      <ul>
+        <li>確率の「向き」を逆にする計算（ベイズの定理）の考え方を説明できる</li>
+        <li>「検査で陽性 ＝ ほぼ確実に病気」がなぜ間違いなのか、数字で説明できる</li>
+        <li>事前確率（もともとの割合）が結論をどれだけ左右するかがわかる</li>
+      </ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>「原因→結果」と「結果→原因」は別の確率</h4>
+            <p>前のUnit①で、条件付き確率は「条件のグループを分母にする」と学びました。そのときのECサイトのデータをもう一度使いましょう。</p>
+            <ul>
+              <li>サイトを訪れた人: <strong>20,000人</strong></li>
+              <li>広告を見た人: <strong>3,000人</strong>（そのうち購入したのは <strong>600人</strong>）</li>
+              <li>購入した人: 全体で <strong>1,800人</strong></li>
+            </ul>
+            <p>前回計算したのは「広告を見た人の中で購入する確率」でした。式で書けば <strong>P(購入 | 広告を見た)</strong> です。</p>
+            <div class="math-block">P(購入 | 広告を見た) = 600 ÷ 3,000 = <strong>0.2（20%）</strong></div>
+            <p>ところで、同じデータから「向きを逆」にした質問もできます。「購入した人の中で、広告を見ていたのはどのくらい？」です。これは <strong>P(広告を見た | 購入した)</strong>。分母が「購入した1,800人」に変わります。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>知りたい確率</th><th>分母（条件のグループ）</th><th>計算</th><th>答え</th></tr>
+                  <tr><td>P(購入 | 広告を見た)</td><td>広告を見た 3,000人</td><td>600 ÷ 3,000</td><td><strong>20%</strong></td></tr>
+                  <tr><td>P(広告を見た | 購入した)</td><td>購入した 1,800人</td><td>600 ÷ 1,800</td><td><strong>約33%（1/3）</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>どちらも「600人」を使うのに、答えは20%と33%で違います。つまり、確率は<strong>「|」の前後を入れ替えたら別物</strong>になります。ベイズの定理は、この「逆向きの確率」を、計算で求めるための道具です。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 確率の向き</p>
+              <p class="qq">同じデータで「購入した人の中から1人選んだとき、その人が広告を見ていた確率」P(広告を見た | 購入した) はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>600 ÷ 3,000 = 20%</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>600 ÷ 1,800 = 約33%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>3,000 ÷ 20,000 = 15%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>1,800 ÷ 20,000 = 9%</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">「購入した人」が条件なので分母は1,800人。その中で広告を見ていたのは600人だから 600 ÷ 1,800 = 1/3 です。アは P(購入 | 広告を見た) なので、向きがちがいます。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>「検査で陽性」→ 本当に病気の確率は？</h4>
+            <p>ベイズの定理が活躍する代表例が、<strong>病気の検査</strong>です。次のような検査キットを考えましょう。</p>
+            <ul>
+              <li>この病気にかかっている人の割合（罹患率）: <strong>1%</strong>（100人に1人）</li>
+              <li>感度 P(陽性 | 病気): <strong>90%</strong>（病気の人を90%の確率で「陽性」と正しく判定）</li>
+              <li>偽陽性 P(陽性 | 健康): <strong>5%</strong>（健康な人でも5%は誤って「陽性」になる）</li>
+            </ul>
+            <p>ここで質問です。<strong>「検査で陽性」と出た人が、本当にこの病気である確率</strong> P(病気 | 陽性) はいくらでしょう？ 多くの人は「感度が90%なら…90%くらい？」と答えます。でも、それは正しくありません。その理由は次のStepで数字を追うとわかります。</p>
+            <div class="dangerbox">
+              <span class="box-label">⚠ よくある誤解</span>
+              <p>「検査の精度90%」＝「陽性と出た人の90%が本当に病気」ではありません。90%はあくまで <strong>P(陽性 | 病気)</strong>、「病気の人をどれだけ拾えるか」という数字です。知りたいのは逆向きの <strong>P(病気 | 陽性)</strong> です。</p>
+            </div>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 感度の意味</p>
+              <p class="qq">検査の「感度 90%」の正しい意味はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>「陽性」と判定された人のうち90%が本当に病気</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>病気の人のうち90%が「陽性」と判定される</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>検査を受けた人全体の90%が「陽性」と判定される</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>健康な人のうち10%が「陽性」と判定される</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">90%は P(陽性 | 病気) の意味です。P(病気 | 陽性) ではありません。この2つを混同すると、直感と数字がズレます。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 03</span>
+            <h4>1万人で数えると、答えが見えてくる</h4>
+            <p>割合だけだと混乱するので、<strong>10,000人</strong>の町を想像して全員に検査をしたとしましょう。病気の人は1%なので<strong>100人</strong>、健康な人は<strong>9,900人</strong>です。この2つのグループを、さらに「陽性か陰性か」で分けます。</p>
+            <div class="figure">
+              <svg viewBox="0 0 740 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="樹形図。1万人を病気100人と健康9,900人に分け、さらに検査で陽性・陰性に分けた内訳">
+                <rect x="285" y="18" width="170" height="42" rx="6" fill="#FBF7EE" stroke="#1C2B39" stroke-width="1.5"/>
+                <text x="370" y="44" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#1C2B39">全体 10,000人</text>
+
+                <path d="M370 60 V84 H190 V105" fill="none" stroke="#1C2B39" stroke-width="1.5"/>
+                <path d="M370 60 V84 H550 V105" fill="none" stroke="#1C2B39" stroke-width="1.5"/>
+
+                <rect x="100" y="105" width="180" height="52" rx="6" fill="#FFFFFF" stroke="#A9782F" stroke-width="1.5"/>
+                <text x="190" y="127" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">病気 D（1%）</text>
+                <text x="190" y="147" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#3E5063">100人</text>
+
+                <rect x="460" y="105" width="180" height="52" rx="6" fill="#FFFFFF" stroke="#D9D2BE" stroke-width="1.5"/>
+                <text x="550" y="127" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">健康（病気ではない）</text>
+                <text x="550" y="147" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" fill="#3E5063">9,900人</text>
+
+                <path d="M190 157 V184 H115 V212" fill="none" stroke="#1C2B39" stroke-width="1.5"/>
+                <path d="M190 157 V184 H265 V212" fill="none" stroke="#1C2B39" stroke-width="1.5"/>
+                <path d="M550 157 V184 H475 V212" fill="none" stroke="#1C2B39" stroke-width="1.5"/>
+                <path d="M550 157 V184 H625 V212" fill="none" stroke="#1C2B39" stroke-width="1.5"/>
+
+                <text x="115" y="207" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#A9782F">90%</text>
+                <text x="265" y="207" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">10%</text>
+                <text x="475" y="207" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#B4432F">5%</text>
+                <text x="625" y="207" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">95%</text>
+
+                <rect x="40"  y="212" width="150" height="54" rx="6" fill="#F2E9D5" stroke="#A9782F" stroke-width="1.5"/>
+                <text x="115" y="236" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">陽性 90人</text>
+                <text x="115" y="255" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063">真陽性（病気×90%）</text>
+
+                <rect x="190" y="212" width="150" height="54" rx="6" fill="#FFFFFF" stroke="#D9D2BE"/>
+                <text x="265" y="236" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">陰性 10人</text>
+                <text x="265" y="255" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063">見逃し（病気×10%）</text>
+
+                <rect x="400" y="212" width="150" height="54" rx="6" fill="#FBEBE6" stroke="#B4432F" stroke-width="1.5"/>
+                <text x="475" y="236" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">陽性 495人</text>
+                <text x="475" y="255" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#7A2A1E">偽陽性（健康×5%）</text>
+
+                <rect x="550" y="212" width="150" height="54" rx="6" fill="#FFFFFF" stroke="#D9D2BE"/>
+                <text x="625" y="236" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">陰性 9,405人</text>
+                <text x="625" y="255" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" fill="#3E5063">正常（健康×95%）</text>
+              </svg>
+              <p class="figure-caption">図1: 1万人を「病気／健康」→「陽性／陰性」で分ける樹形図。陽性の合計は 90 ＋ 495 ＝ 585人</p>
+            </div>
+            <p>ツリーの右端の4つが「検査結果の全パターン」です。「陽性」と出る人は <strong>90 ＋ 495 ＝ 585人</strong>。その中で本当に病気なのは90人だけ。だから確率はこうなります。</p>
+            <div class="math-block">P(病気 | 陽性) = 90 ÷ 585 ≈ <strong>0.15（約15%）</strong></div>
+            <p>感度90%の検査なのに、「陽性でも病気の確率は約15%」。理由は<strong>病気が珍しい</strong>からです。健康な9,900人が母数なので、そこから生まれる偽陽性（495人）が、真陽性（90人）を数で上回ってしまいます。</p>
+            <p>これを式にしたものが<strong>ベイズの定理</strong>です。</p>
+            <div class="math-block">P(病気 | 陽性) = P(病気) × P(陽性 | 病気) ÷ P(陽性)</div>
+            <div class="math-block">= (0.01 × 0.9) ÷ (0.01 × 0.9 ＋ 0.99 × 0.05) = 0.009 ÷ 0.0585 ≈ <strong>0.154</strong></div>
+                <p>分母の P(陽性) は「陽性になる<strong>全部の道の確率の合計</strong>」です。つまり「病気で陽性（真陽性）の道」と「健康で陽性（偽陽性）の道」を足したもの。これがさっきの 90 ＋ 495 ＝ 585人 に対応します。登場した3つの確率を名前で整理すると、こうなります。</p>
+            <ul>
+              <li><strong>事前確率</strong> P(病気) = 1%： 検査をする前からわかっている「珍しさ」</li>
+              <li><strong>感度（起こりやすさ）</strong> P(陽性 | 病気) = 90%： 病気の人に検査をすると陽性になる割合</li>
+              <li><strong>事後確率</strong> P(病気 | 陽性) ≈ 15%： 「陽性」という情報を得て更新された確率 ← これが知りたいもの</li>
+            </ul>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 偽陽性の人数</p>
+              <p class="qq">この10,000人の検査で、健康なのに誤って「陽性」と判定される人（偽陽性）は何人でしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>10,000 × 0.05 = 500人</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>9,900 × 0.05 = 495人</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>100 × 0.90 = 90人</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>9,900 × 0.95 = 9,405人</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">偽陽性の対象は「健康な9,900人」だけです。その5%なので 9,900 × 0.05 = 495人。全体10,000人の5%（500人）と間違えやすいので注意しましょう。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 04</span>
+            <h4>実践: スパムフィルタは「ベイズ」で動いている</h4>
+            <p>データサイエンスの身近な応用に<strong>スパム（迷惑メール）の自動判定</strong>があります。メールに「無料」という単語が含まれていたとき、それがスパムである確率 P(スパム | 「無料」を含む) を求めましょう。前提として、届くメールの<strong>20%がスパム</strong>（事前確率）とします。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>メールの種類</th><th>通数</th><th>「無料」を含む割合</th><th>含む通数</th></tr>
+                  <tr><td>スパム（迷惑メール）</td><td>200通</td><td>70%</td><td><strong>140通</strong></td></tr>
+                  <tr><td>通常メール</td><td>800通</td><td>10%</td><td><strong>80通</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="figure">
+              <svg viewBox="0 0 620 140" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="「無料」を含むメール220通の内訳。スパム140通と通常メール80通">
+                <text x="310" y="24" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#1C2B39">「無料」を含むメール ＝ 220通</text>
+                <text x="219" y="46" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="700" fill="#A9782F">スパム 140通（約64%）</text>
+                <text x="469" y="46" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="700" fill="#3E5063">通常 80通（約36%）</text>
+                <rect x="60"  y="56" width="318" height="54" fill="#A9782F"/>
+                <line x1="378" y1="56" x2="378" y2="110" stroke="#FFFFFF" stroke-width="3"/>
+                <rect x="380" y="56" width="182" height="54" fill="#D9C49A"/>
+              </svg>
+              <p class="figure-caption">図2: 「無料」を含む220通を並べると、スパム140通（brass色）と通常80通（ベージュ色）</p>
+            </div>
+            <p>「無料」を含むメールは全部で 140 ＋ 80 ＝ <strong>220通</strong>。そのうちスパムは140通なので、求める確率はこうなります。</p>
+            <div class="math-block">P(スパム | 「無料」を含む) = 140 ÷ 220 ≈ <strong>0.64（約64%）</strong></div>
+            <p>1つの単語だけで「5通に3通はスパム」と見分けられます。実際のフィルタは「無料」「当選」「今すぐ」など<strong>多数の単語の情報を順番に掛け合わせて確率を更新</strong>していきます。これが機械学習の古典的手法<strong>ナイーブベイズ分類</strong>です。メール振り分けのほか、レビューの評判分析（ポジティブ／ネガティブ判定）などでも使われます。</p>
+            <p>そして、ここでも<strong>事前確率が結論を左右</strong>します。もし送られてくるメールの半分がスパム（50%）の世界なら、スパム500通×70%＝350通、通常500通×10%＝50通が「無料」を含むので……</p>
+            <div class="math-block">スパム率50%の世界: P(スパム | 「無料」を含む) = 350 ÷ 400 ≈ <strong>0.88（約88%）</strong></div>
+            <p>同じ「無料」という単語でも、前提が違えば答えが約64%から約88%に変わります。「この単語の精度がすごい」と単語だけを見て判断するのが危険なのは、検査の例とまったく同じ構造です。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — ベイズの応用</p>
+              <p class="qq">スパム率20%（スパム200通・通常800通）の世界で、新着メールが「無料」を含んでいました。これがスパムである確率はいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>70%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>20%</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>約64%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約36%</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">「無料」を含むのは スパム140通 ＋ 通常80通 ＝ 220通。そのうちスパムは140通なので 140 ÷ 220 ≈ 64% です。アの70%は「スパムの中に『無料』が含まれる割合」で、向きが逆です。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 05</span>
+            <h4>まとめ: ベイズの定理の3つのポイント</h4>
+            <ul>
+              <li><strong>確率には向きがある。</strong>P(A | B) と P(B | A) は分母がちがうので、ふつう別の値になる</li>
+              <li><strong>「結果から原因」を求めるときは、分母を「結果全体」にする。</strong>陽性の例なら「真陽性 ＋ 偽陽性」＝ 陽性になった全員</li>
+              <li><strong>事前確率（もともとの珍しさ）が結論を強く左右する。</strong>検査の感度や単語の割合だけを見て判断してはいけない</li>
+            </ul>
+            <div class="math-block">P(A | B) = P(A) × P(B | A) ÷ P(B)</div>
+            <p>「分母を、その結果にいたる全部の道の合計にする」という感覚は、あとの章の推定・検定（95%信頼区間やp値の誤解）でも同じ形で登場します。確率や統計の数字を見るときは、<strong>「この分母は何？」「向きはどちら？」</strong>と問う習慣をつけておきましょう。</p>
+            <p>次は Unit ③「確率変数と期待値」で、「確率の重み付き平均（期待値）」を使って、くじや保険のように不確実な出来事を1つの数字で評価する方法に進みます。</p>
+        </div>
+    </div>
+
+    <section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 第2章ユニット②の確認クイズ（5問）</h2>
+      <div class="quiz-status">正解 <b>0</b> / 5問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. P(A | B) と P(B | A) の関係について、正しい説明はどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>いつも同じ値になる</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>分母になるグループがちがうので、ふつうは別の値になる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>どちらかが1なら、もう片方も必ず1になる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>AとBが無関係なら、どちらも必ず1になる</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">P(A | B) は「Bのグループの中でのAの割合」、P(B | A) は「Aのグループの中でのBの割合」。分母がちがうので別物です。ECの例では P(購入 | 広告を見た) = 20%、P(広告を見た | 購入した) ≈ 33% でした。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. 病気の人がいる割合1%、感度90%、偽陽性5%の検査。「陽性」と出た人を全員集めて並べたとき、本当に病気の人はおよそ何%でしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>約90%</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>約50%</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>約15%</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約5%</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">10,000人で考えると、真陽性は90人、偽陽性は495人。陽性の合計585人のうち病気は90人なので 90 ÷ 585 ≈ 15% です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. この検査を10,000人にしたとき、「陽性」と出る人の合計を求める正しい式はどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>100 × 0.9 ＋ 9,900 × 0.05</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>10,000 × 0.9</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>100 × 0.9 ＋ 9,900 × 0.95</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>9,900 × 0.05 だけ</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">陽性になるのは「病気で陽性（真陽性）」と「健康で陽性（偽陽性）」の2つの道。100 × 0.9 ＋ 9,900 × 0.05 = 90 ＋ 495 = 585人です。これがベイズの定理の分母です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q4. 偽陽性を5%から1%に改善（感度90%はそのまま）すると、「陽性」と出た人が本当に病気である確率はどうなるでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>高くなる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>低くなる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>変わらない</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>必ず0になる</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">偽陽性が 9,900 × 0.01 = 99人に減ります。陽性の合計は 90 ＋ 99 ＝ 189人になり、90 ÷ 189 ≈ 48% まで上がります。偽陽性（健康なのに陽性）を減らすのが、実は検査の精度を大きく上げるカギです。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. スパム率が20%の世界から50%の世界に変わると、P(スパム | 「無料」を含む) はどうなるでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>約64%のまま変わらない</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>約88%に高くなる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約44%に低くなる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>常に50%になる</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">スパム500通×70%＝350通、通常500通×10%＝50通が「無料」を含みます。合計400通のうち350通がスパムなので 350 ÷ 400 ≈ 88% です。事前確率が結論を左右する好例です。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+    </section>
+
+    <nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

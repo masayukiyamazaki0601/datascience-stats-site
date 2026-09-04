@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第2章(6) 正規分布 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+    <script src="js/sim.js" defer></script>
+</head>
+<body data-file="ch2-6-normal.html">
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt; 第2章 確率と確率分布 &gt; Unit 06
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 02 / Unit 06 — 正規分布</span>
+                <h2 class="lesson-title">正規分布：データの「釣り鐘型」と68-95-99.7ルール</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このUnitでできるようになること</span>
+      <ul>
+        <li>正規分布が平均 μ と標準偏差 σ の2つだけで決まることを説明できる</li>
+        <li>連続型では「確率＝曲線の下の面積」と説明できる</li>
+        <li>68-95-99.7ルールを使って、およその割合を求められる</li>
+      </ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>統計学の「主役」と呼ばれる分布</h4>
+            <p>次のようなデータを想像してみてください。大人100人の身長、クラスのテストの点数、同じ製品を繰り返し測ったときの測定値。ヒストグラムを描くと、だいたい<strong>真ん中が高く、左右対称になだらかに下がる「釣り鐘型」</strong>になることがよくあります。</p>
+            <ul>
+              <li>中心（平均 μ）のあたりにデータが集まりやすい</li>
+              <li>平均から離れるほど、個数は少なくなる</li>
+              <li>左右がほぼ対称</li>
+            </ul>
+            <p>この「釣り鐘型」を1本のなめらかな数式で表したものが<strong>正規分布</strong>です。データ分析の世界で正規分布が特別視される理由は、主に2つあります。</p>
+            <ol>
+              <li>自然界や社会のデータが「だいたい正規分布」になることがとても多い</li>
+              <li>どんな分布でも「平均をとったもの」は正規分布に近づく（→ Unit⑧の<strong>中心極限定理</strong>。統計的推測の土台）</li>
+            </ol>
+            <p>このUnitでは、正規分布の「読み方」を身につけます。具体的には次の3つです。</p>
+            <ol>
+              <li>連続型データでは「確率＝曲線の下の面積」になること</li>
+              <li>正規分布は平均 μ と標準偏差 σ だけで形が決まること</li>
+              <li>「68-95-99.7ルール」でおよその割合を読めること</li>
+            </ol>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>連続型の確率は「面積」で考える</h4>
+            <p>ここまで扱ってきたサイコロの目やコインの回数は、値が0,1,2,…と飛び飛びの<strong>離散型</strong>でした。確率は棒グラフの「高さ」で表せました。一方、身長や点数は<strong>連続型</strong>で、160.1cmと160.2cmの間にも無限に細かい値があります。この場合は、なめらかな曲線（<strong>確率密度曲線</strong>）で分布を表し、<strong>「曲線の下の面積」＝確率</strong>と考えます。</p>
+            <div class="figure">
+              <svg viewBox="0 0 660 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="正規分布の曲線。中央の一部に斜線が引かれ、その面積が確率であることを示す">
+                <defs><clipPath id="curveClip"><path d="M 78.0 218.0 L78.0 218.0 L90.0 217.9 L102.0 217.9 L114.0 217.7 L126.0 217.5 L138.0 217.0 L150.0 216.2 L162.0 214.7 L174.0 212.4 L186.0 208.7 L198.0 203.3 L210.0 195.7 L222.0 185.3 L234.0 172.1 L246.0 156.1 L258.0 137.7 L270.0 117.9 L282.0 98.2 L294.0 80.2 L306.0 65.7 L318.0 56.3 L330.0 53.0 L342.0 56.3 L354.0 65.7 L366.0 80.2 L378.0 98.2 L390.0 117.9 L402.0 137.7 L414.0 156.1 L426.0 172.1 L438.0 185.3 L450.0 195.7 L462.0 203.3 L474.0 208.7 L486.0 212.4 L498.0 214.7 L510.0 216.2 L522.0 217.0 L534.0 217.5 L546.0 217.7 L558.0 217.9 L570.0 217.9 L582.0 218.0 L 582.0 218.0 Z"/></clipPath></defs>
+                <line x1="60" y1="218" x2="600" y2="218" stroke="#1C2B39" stroke-width="2"/>
+                <path d="M 78.0 218.0 L78.0 218.0 L90.0 217.9 L102.0 217.9 L114.0 217.7 L126.0 217.5 L138.0 217.0 L150.0 216.2 L162.0 214.7 L174.0 212.4 L186.0 208.7 L198.0 203.3 L210.0 195.7 L222.0 185.3 L234.0 172.1 L246.0 156.1 L258.0 137.7 L270.0 117.9 L282.0 98.2 L294.0 80.2 L306.0 65.7 L318.0 56.3 L330.0 53.0 L342.0 56.3 L354.0 65.7 L366.0 80.2 L378.0 98.2 L390.0 117.9 L402.0 137.7 L414.0 156.1 L426.0 172.1 L438.0 185.3 L450.0 195.7 L462.0 203.3 L474.0 208.7 L486.0 212.4 L498.0 214.7 L510.0 216.2 L522.0 217.0 L534.0 217.5 L546.0 217.7 L558.0 217.9 L570.0 217.9 L582.0 218.0" fill="none" stroke="#A9782F" stroke-width="2.5"/>
+                <rect x="270" y="30" width="90" height="188" fill="#A9782F" opacity="0.5" clip-path="url(#curveClip)"/>
+                <text x="315" y="170" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#1C2B39">斜線＝確率</text>
+                <text x="455" y="96" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">曲線の下の</text>
+                <text x="455" y="112" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#3E5063">全面積 ＝ 1</text>
+                <text x="330" y="246" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#A9782F">P(a ≦ X ≦ b) ＝ 斜線の面積</text>
+              </svg>
+              <p class="figure-caption">図1: 連続型の確率は「面積」。例えば「X が a〜b に入る確率」は、その区間の曲線の下の面積。曲線全体の下の面積は常に1</p>
+            </div>
+            <p>1つ注意があります。<strong>連続型では「ちょうどこの値」の確率は 0</strong> です。身長が「ちょうど170.0cm」の人は、170.00…cm と無限に細かく考えると、1人もいません。「170.0cmちょうど」ではなく「169.5〜170.5cmの範囲」のように、<strong>必ず幅のある範囲で考える</strong>のが連続型のルールです。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 連続型の確率</p>
+              <p class="qq">身長 X が正規分布にしたがうとき、「X がちょうど 170.0cm」になる確率はどうなるでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>正の値になる（たとえば約0.3）</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>0になる（面積が0だから）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>1になる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>その値の曲線の高さと同じになる</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">連続型では1点の「面積」は0なので、P(X = 170.0) = 0です。エの「曲線の高さ」は確率密度であって確率そのものではありません。「169.5〜170.5cm」のような幅で考えます。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 03</span>
+            <h4>正規分布は「平均 μ」と「標準偏差 σ」だけで決まる</h4>
+            <p>正規分布の曲線は、平均 μ（山の位置）と標準偏差 σ（広がり）の<strong>2つだけで形が完全に決まります</strong>。数学では「X は平均 μ・分散 σ² の正規分布にしたがう」ことを X ~ N(μ, σ²) と書きます。</p>
+            <p>曲線の式は次の形ですが、このUnitでは<strong>暗記する必要はありません</strong>。「μ と σ で位置と広がりが決まる」ことだけ覚えてください。</p>
+            <div class="math-block">f(x) = 1 ÷ {σ × √(2π)} × e^(−(x−μ)² ÷ (2σ²))　（参考：形は μ と σ だけ）</div>
+            <p>σ を変えると、曲線の形がこう変わります。</p>
+            <div class="figure">
+              <svg viewBox="0 0 660 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="標準偏差の異なる2つの正規分布。σが小さい方は高く鋭く、σが大きい方は低く平ら">
+                <line x1="60" y1="218" x2="600" y2="218" stroke="#1C2B39" stroke-width="2"/>
+                <line x1="330" y1="40" x2="330" y2="218" stroke="#1C2B39" stroke-width="1.5" stroke-dasharray="5 4"/>
+                <path d="M78.0 218.0 L90.0 217.9 L102.0 217.9 L114.0 217.7 L126.0 217.5 L138.0 217.0 L150.0 216.2 L162.0 214.7 L174.0 212.4 L186.0 208.7 L198.0 203.3 L210.0 195.7 L222.0 185.3 L234.0 172.1 L246.0 156.1 L258.0 137.7 L270.0 117.9 L282.0 98.2 L294.0 80.2 L306.0 65.7 L318.0 56.3 L330.0 53.0 L342.0 56.3 L354.0 65.7 L366.0 80.2 L378.0 98.2 L390.0 117.9 L402.0 137.7 L414.0 156.1 L426.0 172.1 L438.0 185.3 L450.0 195.7 L462.0 203.3 L474.0 208.7 L486.0 212.4 L498.0 214.7 L510.0 216.2 L522.0 217.0 L534.0 217.5 L546.0 217.7 L558.0 217.9 L570.0 217.9 L582.0 218.0" fill="none" stroke="#A9782F" stroke-width="3"/>
+                <path d="M78.0 208.9 L90.0 206.8 L102.0 204.4 L114.0 201.7 L126.0 198.6 L138.0 195.1 L150.0 191.2 L162.0 187.0 L174.0 182.6 L186.0 177.8 L198.0 172.9 L210.0 168.0 L222.0 163.0 L234.0 158.1 L246.0 153.4 L258.0 149.1 L270.0 145.2 L282.0 141.8 L294.0 139.1 L306.0 137.1 L318.0 135.9 L330.0 135.5 L342.0 135.9 L354.0 137.1 L366.0 139.1 L378.0 141.8 L390.0 145.2 L402.0 149.1 L414.0 153.4 L426.0 158.1 L438.0 163.0 L450.0 168.0 L462.0 172.9 L474.0 177.8 L486.0 182.6 L498.0 187.0 L510.0 191.2 L522.0 195.1 L534.0 198.6 L546.0 201.7 L558.0 204.4 L570.0 206.8 L582.0 208.9" fill="none" stroke="#1C2B39" stroke-width="2.5"/>
+                <text x="250" y="46" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#A9782F">σ 小：高く鋭い</text>
+                <text x="520" y="140" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12.5" font-weight="700" fill="#1C2B39">σ 大：低く広い</text>
+                <text x="330" y="238" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#1C2B39">μ（山の位置は同じ）</text>
+              </svg>
+              <p class="figure-caption">図2: μ が同じでも、σ が小さいと高く鋭い山、大きいと低く平らに広がる（横軸の1目盛＝1σ）</p>
+            </div>
+            <p>σ が小さいほど「平均の近くにデータが集まる＝ばらつきが小さい」、σ が大きいほど「広く散らばる＝ばらつきが大きい」ということです。σ は「山のふもとが広がる目安」で、曲線が μ±σ の位置で「坂の向きが変わる」場所（変曲点）になります。</p>
+            <p>なお、正規分布は μ を中心に完全に対称なので、P(X &lt; μ) = P(X &gt; μ) = 0.5（ちょうど半分ずつ）です。また、単位がちがうデータ（テストの点数と身長など）を比べたいときは、次のUnit⑦でやる<strong>標準化 z = (x − μ) ÷ σ</strong> を使います。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — σ と形</p>
+              <p class="qq">同じ平均 μ の正規分布で、標準偏差 σ が大きいと曲線はどうなりますか？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>高く鋭い山になる</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>低く、左右に平らに広がる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>山の位置が右にずれる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>曲線の形は変わらない</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">σ は「広がり」を決めます。σ が大きいほど曲線は低く、左右に平らに広がります。山の位置（μ）は変わりません。全体の面積が常に1なので、低く広がると代わりに高さが下がります。</div></details>
+            </div>
+
+            <div class="sim" id="norm-sim">
+              <span class="box-label">🧪 動かして確かめる — μ と σ で曲線の形を変えてみる</span>
+              <p class="sim-lead">スライダーで平均 μ と標準偏差 σ を動かすと、正規分布の曲線と「μ±σ」の位置がどう変わるかを見られます。</p>
+              <div class="sim-sliders">
+                <label>平均 μ <input type="range" id="norm-mu" min="60" max="80" step="1" value="70"><b id="norm-mu-val">70</b></label>
+                <label>標準偏差 σ <input type="range" id="norm-sig" min="3" max="20" step="1" value="10"><b id="norm-sig-val">10</b></label>
+              </div>
+              <svg class="norm-svg" id="norm-svg" viewBox="0 0 640 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="平均と標準偏差のスライダーで形が変わる正規分布の曲線">
+                <line x1="30" y1="190" x2="610" y2="190" stroke="#1C2B39" stroke-width="2"/>
+                <path id="norm-path" d="" fill="none" stroke="#A9782F" stroke-width="3"/>
+                <line id="norm-l1" x1="0" y1="40" x2="0" y2="190" stroke="#B4432F" stroke-width="1.5" stroke-dasharray="4 4"/>
+                <line id="norm-lm" x1="0" y1="40" x2="0" y2="190" stroke="#1C2B39" stroke-width="1.5" stroke-dasharray="5 4"/>
+                <line id="norm-l2" x1="0" y1="40" x2="0" y2="190" stroke="#B4432F" stroke-width="1.5" stroke-dasharray="4 4"/>
+                <text id="norm-t1" x="0" y="34" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700" fill="#B4432F">μ−σ</text>
+                <text id="norm-tm" x="0" y="34" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700" fill="#1C2B39">μ</text>
+                <text id="norm-t2" x="0" y="34" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11" font-weight="700" fill="#B4432F">μ+σ</text>
+              </svg>
+              <p class="sim-note" id="norm-msg"></p>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 04</span>
+            <h4>68-95-99.7ルールで「およその割合」を読む</h4>
+            <p>正規分布では、平均から「標準偏差いくつぶん離れているか」で、中に入るデータのおよその割合が決まります。この有名な目安が<strong>68-95-99.7ルール</strong>です。μ や σ の値が何であっても、正規分布なら必ずこの割合になります。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>範囲</th><th>そこに入るおよその割合</th></tr>
+                  <tr><td>μ ± 1σ</td><td><strong>約68%</strong></td></tr>
+                  <tr><td>μ ± 2σ</td><td><strong>約95%</strong></td></tr>
+                  <tr><td>μ ± 3σ</td><td><strong>約99.7%</strong></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="figure">
+              <svg viewBox="0 0 660 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="68-95-99.7ルール。平均から1σ、2σ、3σの範囲に約68%、95%、99.7%のデータが入る">
+                <defs><clipPath id="areaClip68"><path d="M 78.0 218.0 L78.0 218.0 L90.0 217.9 L102.0 217.9 L114.0 217.7 L126.0 217.5 L138.0 217.0 L150.0 216.2 L162.0 214.7 L174.0 212.4 L186.0 208.7 L198.0 203.3 L210.0 195.7 L222.0 185.3 L234.0 172.1 L246.0 156.1 L258.0 137.7 L270.0 117.9 L282.0 98.2 L294.0 80.2 L306.0 65.7 L318.0 56.3 L330.0 53.0 L342.0 56.3 L354.0 65.7 L366.0 80.2 L378.0 98.2 L390.0 117.9 L402.0 137.7 L414.0 156.1 L426.0 172.1 L438.0 185.3 L450.0 195.7 L462.0 203.3 L474.0 208.7 L486.0 212.4 L498.0 214.7 L510.0 216.2 L522.0 217.0 L534.0 217.5 L546.0 217.7 L558.0 217.9 L570.0 217.9 L582.0 218.0 L 582.0 218.0 Z"/></clipPath></defs>
+                <rect x="150" y="30" width="60"  height="188" fill="#B4432F" opacity="0.18" clip-path="url(#areaClip68)"/>
+                <rect x="210" y="30" width="60"  height="188" fill="#B4432F" opacity="0.38" clip-path="url(#areaClip68)"/>
+                <rect x="270" y="30" width="120" height="188" fill="#A9782F" opacity="0.60" clip-path="url(#areaClip68)"/>
+                <rect x="390" y="30" width="60"  height="188" fill="#B4432F" opacity="0.38" clip-path="url(#areaClip68)"/>
+                <rect x="450" y="30" width="60"  height="188" fill="#B4432F" opacity="0.18" clip-path="url(#areaClip68)"/>
+                <path d="M 78.0 218.0 L78.0 218.0 L90.0 217.9 L102.0 217.9 L114.0 217.7 L126.0 217.5 L138.0 217.0 L150.0 216.2 L162.0 214.7 L174.0 212.4 L186.0 208.7 L198.0 203.3 L210.0 195.7 L222.0 185.3 L234.0 172.1 L246.0 156.1 L258.0 137.7 L270.0 117.9 L282.0 98.2 L294.0 80.2 L306.0 65.7 L318.0 56.3 L330.0 53.0 L342.0 56.3 L354.0 65.7 L366.0 80.2 L378.0 98.2 L390.0 117.9 L402.0 137.7 L414.0 156.1 L426.0 172.1 L438.0 185.3 L450.0 195.7 L462.0 203.3 L474.0 208.7 L486.0 212.4 L498.0 214.7 L510.0 216.2 L522.0 217.0 L534.0 217.5 L546.0 217.7 L558.0 217.9 L570.0 217.9 L582.0 218.0" fill="none" stroke="#A9782F" stroke-width="2.5"/>
+                <line x1="150" y1="218" x2="510" y2="218" stroke="#1C2B39" stroke-width="2"/>
+                <line x1="150" y1="218" x2="150" y2="228" stroke="#1C2B39" stroke-width="1.5"/>
+                <line x1="210" y1="218" x2="210" y2="228" stroke="#1C2B39" stroke-width="1.5"/>
+                <line x1="270" y1="218" x2="270" y2="228" stroke="#1C2B39" stroke-width="1.5"/>
+                <line x1="330" y1="218" x2="330" y2="228" stroke="#1C2B39" stroke-width="1.5"/>
+                <line x1="390" y1="218" x2="390" y2="228" stroke="#1C2B39" stroke-width="1.5"/>
+                <line x1="450" y1="218" x2="450" y2="228" stroke="#1C2B39" stroke-width="1.5"/>
+                <line x1="510" y1="218" x2="510" y2="228" stroke="#1C2B39" stroke-width="1.5"/>
+                <text x="150" y="245" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">−3σ</text>
+                <text x="210" y="245" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">−2σ</text>
+                <text x="270" y="245" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">−1σ</text>
+                <text x="330" y="245" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" font-weight="700" fill="#1C2B39">μ</text>
+                <text x="390" y="245" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">＋1σ</text>
+                <text x="450" y="245" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">＋2σ</text>
+                <text x="510" y="245" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="11.5" fill="#1C2B39">＋3σ</text>
+                <rect x="440" y="30" width="14" height="14" fill="#A9782F"/>
+                <text x="460" y="42" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#1C2B39">μ±1σ に 約68%</text>
+                <rect x="440" y="52" width="14" height="14" fill="#B4432F" opacity="0.38"/>
+                <text x="460" y="64" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#1C2B39">μ±2σ に 約95%</text>
+                <rect x="440" y="74" width="14" height="14" fill="#B4432F" opacity="0.18"/>
+                <text x="460" y="86" font-family="'JetBrains Mono',monospace" font-size="12" font-weight="700" fill="#1C2B39">μ±3σ に 約99.7%</text>
+              </svg>
+              <p class="figure-caption">図3: 68-95-99.7ルール。色が濃いほど多くのデータが入る。±3σ の外にはわずか約0.3%しか残らない</p>
+            </div>
+            <p>実際に使ってみましょう。あるテストの点数が、平均 μ = 70点・標準偏差 σ = 10点の正規分布にしたがうとします。</p>
+            <ul>
+              <li>「60〜80点」（= 70±10 = μ±1σ）に、約<strong>68%</strong>の人が入る</li>
+              <li>「50〜90点」（= 70±20 = μ±2σ）に、約<strong>95%</strong>の人が入る</li>
+              <li>「40〜100点」（= 70±30 = μ±3σ）に、約<strong>99.7%</strong>の人が入る</li>
+            </ul>
+            <div class="math-block">μ ± 1σ = 70 ± 10 = 60〜80点　→　約68%の人がこの範囲</div>
+            <p>「平均70点のテストで60点台だったら、だいたい普通（中央寄り）」と判断できる、というわけです。このように、平均と標準偏差さえわかれば、データの「だいたいの居場所」がすぐに見積もれます。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 68-95-99.7の活用</p>
+              <p class="qq">平均70点・標準偏差10点のテストで、「60点〜80点」に入る人はおよそ何%でしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>約68%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>約95%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約99.7%</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約50%</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">60〜80点は 70 ± 10 = μ±1σ の範囲です。μ±1σ には約68%のデータが入ります。±2σ（50〜90点）で約95%、±3σ（40〜100点）で約99.7%です。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 05</span>
+            <h4>実データは「だいたい正規」。標準化が次の道具</h4>
+            <p>現実のデータがきれいな正規分布になることはまれで、<strong>「だいたい釣り鐘型」</strong>であることがほとんどです。分析では、ヒストグラムで形を確認してから「正規分布を仮定してよいか」を判断します。また、次のようなデータは正規分布にしません。</p>
+            <ul>
+              <li>収入・家賃のように、少数の大きな値が右に長く尾を引くデータ（右裾が長い）</li>
+              <li>待ち時間のように「0以上で、小さい値に偏る」データ</li>
+              <li>0,1,2,…のカウントデータ（Unit④⑤の二項・ポアソンを使う）</li>
+            </ul>
+            <p>正規分布を扱ううえで欠かせないのが<strong>標準化（zスコア）</strong>です。第1章で「平均から標準偏差いくつぶん離れているか」として学んだ式を、そのまま使います。</p>
+            <div class="math-block">z = (x − μ) ÷ σ</div>
+            <p>例：平均70点・標準偏差10点のテストで、85点をとった人の z スコアは z = (85 − 70) ÷ 10 = <strong>1.5</strong>。「平均より1.5σ だけ上」という意味です。こうすると、単位のちがう点数や身長も「平均から何σか」という共通の物差しで比べられます。</p>
+            <p>そしてもう1つ大事な話があります。もとのデータが正規分布でなくても、<strong>そこから標本をとって「平均」を計算したものは、標本サイズが大きいほど正規分布に近づく</strong>のです（Unit⑧の中心極限定理）。だからこそ正規分布は「主役」なのです。</p>
+
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 標準化の準備</p>
+              <p class="qq">平均70点・標準偏差10点のテストで、85点の z スコアはいくらでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>1.5</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>15</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>0.15</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>0.5</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">z = (85 − 70) ÷ 10 = 15 ÷ 10 = 1.5 です。「平均から標準偏差1.5個ぶん上」という意味です。次のUnit⑦で、この z から確率を読む方法（z表）を学びます。</div></details>
+            </div>
+        </div>
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 06</span>
+            <h4>まとめ: このUnitで身につけた道具</h4>
+            <ul>
+              <li><strong>正規分布 N(μ, σ²)</strong> = 平均 μ を中心に対称な釣り鐘型。μ と σ だけで形が決まる</li>
+              <li>連続型では<strong>「確率 ＝ 曲線の下の面積」</strong>。曲線全体の下の面積は常に1</li>
+              <li>1点ちょうどの確率は0。範囲で考える</li>
+              <li><strong>68-95-99.7ルール</strong>：μ±1σ に約68%／±2σ に約95%／±3σ に約99.7%</li>
+              <li>実データは「だいたい正規」。正規でない分布に無理に当てはめない</li>
+              <li>標準化 z = (x−μ)÷σ で、単位のちがうデータを比べられる（→ 次Unit⑦）</li>
+            </ul>
+            <div class="math-block">z = (x − μ) ÷ σ　／　μ±1σ：約68%　／　μ±2σ：約95%　／　μ±3σ：約99.7%</div>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>用語</th><th>意味</th><th>このUnitでの例</th></tr>
+                  <tr><td>連続型・密度曲線</td><td>なめらかな曲線で表す分布（面積＝確率）</td><td>身長・点数・測定値</td></tr>
+                  <tr><td>正規分布 N(μ, σ²)</td><td>μ を中心に対称な釣り鐘型の分布</td><td>テストの点数 X ~ N(70, 10²)</td></tr>
+                  <tr><td>平均 μ</td><td>山の位置（＝中心）</td><td>μ = 70点</td></tr>
+                  <tr><td>標準偏差 σ</td><td>広がり。μ±σ が変曲点の目安</td><td>σ = 10点</td></tr>
+                  <tr><td>68-95-99.7ルール</td><td>μ±σ・±2σ・±3σ に入る割合の目安</td><td>60〜80点に約68%</td></tr>
+                  <tr><td>z スコア</td><td>(x−μ)÷σ。平均から何σかを表す</td><td>85点 → z = 1.5</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>正規分布は、これからの「推測統計」（第3章の推定・第4章の検定など）のほぼすべての土台になります。「μとσで形が決まり、面積が確率」という感覚を、ここでしっかり持っておきましょう。</p>
+            <p>次はUnit⑦「標準化とz表」です。z = (x−μ)÷σ で変換した値から、正規分布表（z表）を使って「この範囲に入る確率」を正確に計算する方法を学びます。</p>
+        </div>
+    </div>
+
+    <section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 第2章ユニット⑥の確認クイズ（5問）</h2>
+      <div class="quiz-status">正解 <b>0</b> / 5問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. 連続型の確率変数 X について、正しい説明はどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>確率は「曲線の下の面積」で表される</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>「X がちょうど170」のような1点の確率が正の値になる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>確率は棒グラフの「高さ」で表される</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>確率の合計は100にならなければならない</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">連続型では「確率密度曲線の下の面積」が確率です。1点の確率は0なので、必ず幅のある範囲で考えます。曲線全体の下の面積は常に1です。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. 正規分布の形を完全に決める2つのパラメータはどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>最頻値と中央値</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>平均 μ と標準偏差 σ</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>最小値と最大値</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>標本サイズと自由度</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">正規分布は平均 μ（山の位置）と標準偏差 σ（広がり）だけで形が決まります。記号では N(μ, σ²) と書きます。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. 平均70点・標準偏差10点のテストで、「50点〜90点」に入る人はおよそ何%でしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>約68%</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>約95%</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>約99.7%</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>約50%</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">50〜90点は 70 ± 20 = μ±2σ の範囲です。68-95-99.7ルールより、μ±2σ には約95%のデータが入ります。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q4. 同じ平均で標準偏差 σ が小さい正規分布の特徴はどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>高く鋭い山で、平均の近くにデータが集まる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>低く平らで、データが広く散らばる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>山が右にずれる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>左右非対称になる</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">σ が小さい＝ばらつきが小さいなので、曲線は高く鋭くなり、平均の近くに多くのデータが集まります。正規分布は常に左右対称で、山の位置は μ のままです。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. 平均100・標準偏差15のIQテストで、ある人のIQが130でした。この人の z スコアはいくらでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>z = 0.5</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>z = 2</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>z = 30</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>z = 1.5</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">z = (130 − 100) ÷ 15 = 30 ÷ 15 = 2 です。平均から標準偏差2個ぶん上、つまり上位約2.5%あたりの位置にいることになります（この正確な読み方は次Unit⑦のz表で学びます）。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+    </section>
+
+    <nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
