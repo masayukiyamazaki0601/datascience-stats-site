@@ -1813,3 +1813,60 @@ button.btn-sim.active { background: var(--color-brass); border-color: var(--colo
 .norm-svg { width: 100%; height: auto; display: block; margin-top: 4px; }
 .ztab-svg { width: 100%; height: auto; display: block; margin-top: 4px; }
 .exp-svg { width: 100%; height: auto; display: block; margin-top: 4px; }
+
+/* ============================================================
+   第1章ユニット①: ロードマップ・レベル判定トレーナー
+   ============================================================ */
+.route-block { margin: 24px 0 6px; }
+.route-block > .box-label { display: block; margin-bottom: 10px; }
+.route-steps {
+    display: flex; flex-wrap: wrap; gap: 6px; margin: 0;
+    list-style: none; padding: 0;
+}
+.route-steps .rs {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #FFFFFF; border: 1px solid var(--color-paper-line);
+    border-radius: 99px; padding: 7px 14px; font-size: 13.5px;
+}
+.route-steps .rs b {
+    font-family: var(--font-mono); font-weight: 700; font-size: 11px;
+    color: var(--color-brass); letter-spacing: 1px;
+}
+.route-steps .rs.goal {
+    background: var(--color-ink); color: var(--color-paper); border-color: var(--color-ink);
+}
+.route-steps .rs.goal b { color: #E8C58A; }
+
+/* ---- レベル判定トレーナー ---- */
+.level-stage { margin-top: 6px; }
+.level-card {
+    background: #FFFFFF; border: 1px solid var(--color-paper-line);
+    border-radius: var(--radius-card); padding: 24px 26px; margin: 12px 0 10px;
+    text-align: center; min-height: 86px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 0 rgba(28, 43, 57, .05);
+}
+.level-card .level-q {
+    font-family: var(--font-heading); font-size: 23px; font-weight: 700;
+    color: var(--color-ink); margin: 0; line-height: 1.5;
+}
+.level-opts {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0;
+}
+.level-opts button.level-opt {
+    font-family: var(--font-heading); font-size: 16px; font-weight: 700;
+    padding: 13px 6px; background: #FFFDF5; border: 1.5px solid var(--color-brass);
+    color: var(--color-brass); border-radius: 8px; cursor: pointer; transition: all .15s ease;
+}
+.level-opts button.level-opt:hover:not(:disabled) { background: var(--color-brass); color: #fff; }
+.level-opts button.level-opt:disabled { cursor: default; opacity: .6; }
+.level-opts button.level-opt.is-correct { background: #EAF2E2; border-color: #5E8F4E; color: #3C6B2F; opacity: 1; }
+.level-opts button.level-opt.is-wrong { background: #FBF0EA; border-color: var(--color-red); color: var(--color-red); opacity: 1; }
+.level-fb { font-size: 15px; line-height: 1.9; min-height: 1em; margin: 8px 0 2px; }
+.level-fb.ok { color: #3C6B2F; }
+.level-fb.ng { color: var(--color-red); }
+@media (max-width: 620px) {
+    .level-opts { grid-template-columns: repeat(2, 1fr); }
+    .level-card .level-q { font-size: 19px; }
+}
+

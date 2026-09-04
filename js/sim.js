@@ -1033,4 +1033,106 @@
     bind("est-reset", function () { estReset(); });
     estPaint();
   }
+
+  /* ============================================================
+     レベル判定トレーナー（ch1-1「データの種類と尺度」用）
+     データカードをめくり、名義/順序/間隔/比例を当てる
+     ============================================================ */
+  var levelSim = $("level-sim");
+  if (levelSim) {
+    var LEVEL_BANK = [
+      { q: "身長 170cm", tag: "比例", ans: 4, why: "0cm＝身長なしの「本当の無」。0が無を意味するから比例データ。170cmは85cmの2倍と言えます。" },
+      { q: "都道府県（東京都・大阪府…）", tag: "名義", ans: 1, why: "順番すらなく、ただ分類するだけの名義データ。伝えるなら「いちばん多いもの」と割合。" },
+      { q: "レビューの★（★1〜★5）", tag: "順序", ans: 2, why: "「★5のほうが良い」と順番はある。でも★と★の間隔は人によって違うので順序データ。" },
+      { q: "気温 25℃", tag: "間隔", ans: 3, why: "0℃は「熱が無い」意味ではない（−5℃もある）。0がただの基準なので間隔データ。" },
+      { q: "注文金額 3,200円", tag: "比例", ans: 4, why: "0円＝何も買っていない。0が無を意味する比例データ。平均も「2倍」も自由に使えます。" },
+      { q: "会員ランク（一般・ゴールド・プラチナ）", tag: "順序", ans: 2, why: "順番はあるが、ランクとランクの間隔が等しい保証はない。順序データ。" },
+      { q: "血液型（A型・B型・O型…）", tag: "名義", ans: 1, why: "分類するだけ。A型とB型に上下はないので名義データ。" },
+      { q: "西暦 2026年", tag: "間隔", ans: 3, why: "西暦0年は「時間がゼロ」ではなく基準（紀元）。間隔データ。差は言えるが「2倍」は言えない。" },
+      { q: "滞在時間 45分", tag: "比例", ans: 4, why: "0分＝まったく滞在していない。0が無なので比例データ。90分は45分の2倍と言えます。" },
+      { q: "会員ID（1001番・1002番…）", tag: "名義", ans: 1, why: "数字の見た目だが「ただの通し番号」。平均しても意味がない名義データ。" },
+      { q: "郵便番号（100-0001…）", tag: "名義", ans: 1, why: "足したり平均したりする意味のないラベル。名義データ。" },
+      { q: "5段階評価（とても良い〜とても悪い）", tag: "順序", ans: 2, why: "順番はあるが、「とても良い」と「良い」の差は人によって違う。順序データ。" },
+      { q: "時刻 14:30", tag: "間隔", ans: 3, why: "0時は「時間が無い」意味ではない（基準）。間隔データ。※開始からの経過「分数」に直せば比例。" },
+      { q: "来店回数 3回", tag: "比例", ans: 4, why: "0回＝一度も来ていない。0が無なので比例データ。" },
+      { q: "性別コード（1＝男性・2＝女性）", tag: "名義", ans: 1, why: "コード化しても中身は「分類のラベル」。平均や引き算は無意味な名義データ。" }
+    ];
+
+    var lvQ = $("level-question");
+    var lvFb = $("level-feedback");
+    var lvNote = $("level-note");
+    var lvDone = $("level-done");
+    var lvOk = $("level-ok");
+    var lvOpts = levelSim.querySelectorAll("button.level-opt");
+    var lvN = 0;
+    var lvC = 0;
+    var lvCur = null;
+
+    function levelPaint() {
+      if (lvDone) { lvDone.textContent = lvN; }
+      if (lvOk) { lvOk.textContent = lvC; }
+      if (lvN > 0 && lvN % 10 === 0 && lvNote) {
+        lvNote.textContent = "10問ごとの区切り: ここまで正解 " + lvC + " / " + lvN + " 問。リセットでもう一周すると全問カバーできます。";
+      }
+    }
+
+    function levelNext() {
+      lvCur = LEVEL_BANK[Math.floor(Math.random() * LEVEL_BANK.length)];
+      lvQ.textContent = lvCur.q;
+      lvQ.removeAttribute("data-answered");
+      if (lvFb) { lvFb.textContent = ""; lvFb.className = "level-fb"; }
+      if (lvNote) { lvNote.textContent = ""; }
+      for (var i = 0; i < lvOpts.length; i++) {
+        lvOpts[i].disabled = false;
+        lvOpts[i].classList.remove("is-correct", "is-wrong");
+      }
+    }
+
+    function levelAnswer(idx) {
+      if (!lvCur || lvQ.getAttribute("data-answered") === "1") { return; }
+      lvQ.setAttribute("data-answered", "1");
+      lvN += 1;
+      var ok = lvCur.ans === idx;
+      if (ok) { lvC += 1; }
+      for (var i = 0; i < lvOpts.length; i++) {
+        var lv = parseInt(lvOpts[i].getAttribute("data-lv"), 10);
+        lvOpts[i].disabled = true;
+        if (lv === lvCur.ans) { lvOpts[i].classList.add("is-correct"); }
+      }
+      if (!ok) {
+        lvOpts[idx - 1].classList.add("is-wrong");
+      }
+      if (lvFb) {
+        lvFb.className = "level-fb " + (ok ? "ok" : "ng");
+        lvFb.textContent = (ok ? "✅ 正解!" : "❌ 不正解… 正解は「" + lvCur.tag + "」。") + " " + lvCur.why;
+      }
+      levelPaint();
+    }
+
+    function levelReset() {
+      lvN = 0;
+      lvC = 0;
+      lvCur = null;
+      lvQ.textContent = "？";
+      lvQ.removeAttribute("data-answered");
+      if (lvFb) { lvFb.textContent = ""; lvFb.className = "level-fb"; }
+      if (lvNote) { lvNote.textContent = "「次の問題」を押すとカードがめくれます。"; }
+      for (var i = 0; i < lvOpts.length; i++) {
+        lvOpts[i].disabled = true;
+        lvOpts[i].classList.remove("is-correct", "is-wrong");
+      }
+      levelPaint();
+    }
+
+    for (var li = 0; li < lvOpts.length; li++) {
+      (function (btn) {
+        btn.addEventListener("click", function () {
+          levelAnswer(parseInt(btn.getAttribute("data-lv"), 10));
+        });
+      })(lvOpts[li]);
+    }
+    bind("level-next", function () { levelNext(); });
+    bind("level-reset", function () { levelReset(); });
+    levelReset();
+  }
 })();

@@ -17,6 +17,7 @@
     <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
     <script src="js/main.js" defer></script>
     <script src="js/quiz.js" defer></script>
+    <script src="js/sim.js" defer></script>
 </head>
 
 <body data-file="ch1-1-data.html">
@@ -43,6 +44,18 @@
         <li>「平均していいデータ」と「平均してはいけないデータ」を見分けられる</li>
         <li>データに「レベル」があることを、具体例つきで説明できる</li>
       </ul>
+    </div>
+
+    <div class="route-block">
+      <span class="box-label">今日のルート（このUnitの流れ）</span>
+      <div class="route-steps">
+        <span class="rs"><b>01</b>データを2つ覚える</span>
+        <span class="rs"><b>02</b>統計の2つの役割</span>
+        <span class="rs"><b>03</b>平均してよいデータ？</span>
+        <span class="rs"><b>04</b>レベル1・2（分類）</span>
+        <span class="rs"><b>05</b>レベル3・4（数）</span>
+        <span class="rs goal"><b>GOAL</b>4レベルを見分ける</span>
+      </div>
     </div>
 
     <div class="lesson-flow">
@@ -172,7 +185,13 @@
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">手元にある1,000件すべてをまとめただけなので「記述統計」です。「一部の500人から全体20万人を当てる」ように、まだ見ていない対象を推定するのが推測統計でした。</div></details>
             </div>
+
+            <div class="note">
+              <span class="box-label">サンプルストアのデータでいうと…（1）</span>
+              <p>「先月の売上30個を、そのまま本部に見せても好調かどうか伝わらない。だから『1日あたり平均18.5万円』とまとめる」——このひと手間が<strong>記述統計</strong>です。Unit②では、この店の注文データ（例A）を使って平均を実際に計算します。</p>
+            </div>
         </div>
+
         <div class="lesson-step">
             <span class="lesson-step-meta">Step 03</span>
             <h4>最初のルール: 平均していいのは「数」のデータだけ</h4>
@@ -232,8 +251,9 @@
                 <pre><code>import pandas as pd
 df = pd.DataFrame({"会員ID": [101, 102, 103],
                    "滞在時間(分)": [3, 7, 2]})
-print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</code></pre>
-                <p>コードの型（int/object）ではなく「この列は何を表すか」で判断しましょう。</p>
+print(df.dtypes)              # どちらも int64（型だけでは区別できない!）
+print(df["会員ID"].mean())    # 102.0 と計算できるが、意味はない</code></pre>
+                <p>型はどちらも「数値（int64）」なのに、<strong>会員IDの平均は無意味で、滞在時間の平均には意味がある</strong>。つまり判断基準は「数値型かどうか」ではなく「この列は何を表すか」です。データを開いたら <code>df.dtypes</code> で型をのぞきつつ、列の「意味」を1行ずつ確認する習慣をつけましょう。</p>
               </div>
             </details>
 
@@ -248,6 +268,11 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
               </ul>
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">会員IDは「ただの通し番号」＝名義（分類）。pandasの mean() で計算はできてしまいますが、出た値に意味はありません。判断の基準は「コード上の型」ではなく「その列が何を表すか」です。</div></details>
+            </div>
+
+            <div class="note">
+              <span class="box-label">サンプルストアのデータでいうと…（2）</span>
+              <p>もし注文データに「会員ID」や「利用デバイス（スマホ／PC）」の列があったら？ IDの平均も「スマホとPCの平均」も出せません。正しくは「デバイス別の注文数・割合」を集計します。分類の列は<strong>割合と最頻値</strong>で語る——これが店のデータを正しく読む第一歩です。</p>
             </div>
         </div>
 
@@ -346,6 +371,11 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
               <li>「20℃は、10℃より2倍あたたかい」→ 言えませんね。これが 0=「ただの基準」のタイプ（<strong>間隔データ</strong>）。</li>
             </ul>
 
+            <div class="note">
+              <span class="box-label">もっと知りたい人へ: 温度にも「本当の0」はある</span>
+              <p>「じゃあ温度では『2倍』を絶対に言えないの?」——言える目盛りがあります。<strong>絶対温度（ケルビン: K）</strong>です。0K（約 −273.15℃）は分子の運動が止まる「本当の無」。ケルビンで測れば「300Kは150Kの2倍の熱さ」と正しく言えます。いっぽう℃は「水が凍る温度」を0にした基準つきの目盛りなので、2倍が言えない——この「0が本当の無かどうか」が、比例と間隔の分かれ目でした。</p>
+            </div>
+
             <div class="mini-q quiz-q">
               <p class="mc-label">✏️ ここでひと休み — ちょっと確認（Step 05・0の意味）</p>
               <p class="qq">次のうち、0が「何もない」を意味する（比例データ）のはどれでしょう？</p>
@@ -397,6 +427,11 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
               </ul>
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">西暦の0年は「時間がゼロ」ではなく、基準（紀元）を決めただけ。だから0＝無ではない「間隔」レベルです。「2026年は1013年の2倍」とは言えませんが、「差（何年後か）」には意味があります。</div></details>
+            </div>
+
+            <div class="note">
+              <span class="box-label">サンプルストアのデータでいうと…（3）</span>
+              <p>サンプルストアの「注文金額」は 0円＝何も買っていない、だから<strong>比例データで平均OK</strong>。「滞在時間」も比例。いっぽう「キャンペーン期間を西暦の数字で平均する」のは間隔の罠です（2026年と2024年の「平均の年」に意味はありません）。これで、店のどの列が平均できるか迷わず言えるはずです。</p>
             </div>
         </div>
 
@@ -542,11 +577,69 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
               <li><strong>値と値のあいだは同じ幅？</strong> → 同じ幅とは言えない＝<strong>順序</strong>（レベル2）</li>
               <li><strong>0は「何もない」？</strong> → はい＝<strong>比例</strong>（レベル4）／いいえ＝<strong>間隔</strong>（レベル3）</li>
             </ol>
+
+            <div class="figure">
+              <svg viewBox="0 0 680 392" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="データのレベルを判定するフローチャート">
+                <defs>
+                  <marker id="flowArr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                    <path d="M0,0 L10,5 L0,10 z" fill="#8A8371"/>
+                  </marker>
+                </defs>
+                <rect x="270" y="6" width="140" height="34" rx="17" fill="#1C2B39"/>
+                <text x="340" y="28" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="13" font-weight="700" fill="#F6F3EA">どのデータ?</text>
+                <line x1="340" y1="40" x2="340" y2="58" stroke="#8A8371" stroke-width="1.5" marker-end="url(#flowArr)"/>
+                <rect x="200" y="62" width="280" height="46" rx="10" fill="#FFFFFF" stroke="#1C2B39" stroke-width="1.5"/>
+                <text x="340" y="89" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="13.5" font-weight="700" fill="#1C2B39">Q1. 順番に意味がある?</text>
+                <line x1="200" y1="85" x2="164" y2="85" stroke="#8A8371" stroke-width="1.5" marker-end="url(#flowArr)"/>
+                <text x="180" y="79" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="10" fill="#8A8371">いいえ</text>
+                <rect x="12" y="60" width="152" height="50" rx="8" fill="#FBF7EE" stroke="#A9782F"/>
+                <text x="88" y="80" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="13" font-weight="700" fill="#1C2B39">レベル1 名義</text>
+                <text x="88" y="97" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="10.5" fill="#3E5063">分類するだけ</text>
+                <line x1="340" y1="108" x2="340" y2="146" stroke="#8A8371" stroke-width="1.5" marker-end="url(#flowArr)"/>
+                <text x="354" y="130" font-family="'Noto Sans JP',sans-serif" font-size="10" fill="#8A8371">はい</text>
+                <rect x="200" y="150" width="280" height="46" rx="10" fill="#FFFFFF" stroke="#1C2B39" stroke-width="1.5"/>
+                <text x="340" y="177" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="13.5" font-weight="700" fill="#1C2B39">Q2. 値と値の間は同じ幅?</text>
+                <line x1="200" y1="173" x2="164" y2="173" stroke="#8A8371" stroke-width="1.5" marker-end="url(#flowArr)"/>
+                <text x="180" y="167" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="10" fill="#8A8371">いいえ</text>
+                <rect x="12" y="150" width="152" height="50" rx="8" fill="#F6EFDD" stroke="#A9782F"/>
+                <text x="88" y="170" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="13" font-weight="700" fill="#1C2B39">レベル2 順序</text>
+                <text x="88" y="187" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="10.5" fill="#3E5063">順番をつけられる</text>
+                <line x1="340" y1="196" x2="340" y2="234" stroke="#8A8371" stroke-width="1.5" marker-end="url(#flowArr)"/>
+                <text x="354" y="218" font-family="'Noto Sans JP',sans-serif" font-size="10" fill="#8A8371">はい</text>
+                <rect x="200" y="238" width="280" height="46" rx="10" fill="#FFFFFF" stroke="#1C2B39" stroke-width="1.5"/>
+                <text x="340" y="265" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="13.5" font-weight="700" fill="#1C2B39">Q3. 0は「何もない」?</text>
+                <line x1="200" y1="263" x2="164" y2="263" stroke="#8A8371" stroke-width="1.5" marker-end="url(#flowArr)"/>
+                <text x="180" y="257" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="10" fill="#8A8371">いいえ</text>
+                <rect x="12" y="238" width="152" height="50" rx="8" fill="#F0E6C9" stroke="#A9782F"/>
+                <text x="88" y="258" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="13" font-weight="700" fill="#1C2B39">レベル3 間隔</text>
+                <text x="88" y="275" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="10.5" fill="#3E5063">差を計算できる</text>
+                <line x1="340" y1="284" x2="340" y2="314" stroke="#8A8371" stroke-width="1.5" marker-end="url(#flowArr)"/>
+                <text x="354" y="302" font-family="'Noto Sans JP',sans-serif" font-size="10" fill="#8A8371">はい</text>
+                <rect x="250" y="318" width="180" height="50" rx="8" fill="#1C2B39" stroke="#1C2B39"/>
+                <text x="340" y="339" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="14" font-weight="700" fill="#F6F3EA">レベル4 比例</text>
+                <text x="340" y="356" text-anchor="middle" font-family="'Noto Sans JP',sans-serif" font-size="10.5" fill="#E8C58A">「2倍」も言える</text>
+              </svg>
+              <p class="figure-caption">図4: 迷ったらこの3質問をたどる。左へ抜けたら「平均できない」レベル1・2。下まで進めたら「平均できる」レベル3・4（最後は0の意味で比例か間隔かを分ける）</p>
+            </div>
             <p>このUnitの結論は1つだけ。<strong>「平均してよいのは、数（レベル3・4）のデータだけ」</strong>です。レベル1・2は、「いちばん多いもの」や「◯◯以上の割合」で伝えるようにしましょう。</p>
             <div class="tip">
               <span class="box-label">実務のコツ（1行）</span>
               <p>分析を始める前に「この列は何を表しているか」を1行ずつ書き出しましょう。数字に見えても「会員ID」「郵便番号」はレベル1（名義）です。</p>
             </div>
+
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>数字に見えても、じつはレベル1（名義）</th><th>なぜ?</th><th>正しい集計</th></tr>
+                  <tr><td>会員ID（1001…）</td><td>ただの通し番号</td><td>会員数は「件数」で。平均IDは出さない</td></tr>
+                  <tr><td>郵便番号（100-0001…）</td><td>地域のラベル</td><td>都道府県や市区町村にまとめて割合</td></tr>
+                  <tr><td>電話番号（090-…）</td><td>連絡先のラベル</td><td>数値として足し算しない</td></tr>
+                  <tr><td>商品コード（P001…）</td><td>品目ラベル</td><td>商品別の売上・件数で</td></tr>
+                  <tr><td>性別コード（1＝男性・2＝女性）</td><td>コード化したラベル</td><td>男性／女性の割合で</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="figure-caption">表2: 「int型＝平均してよい」ではない。列の意味が「ラベル」なら名義（レベル1）として扱う</p>
 
             <div class="mini-q quiz-q">
               <p class="mc-label">✏️ 最後のひと休み — まとめの確認</p>
@@ -572,6 +665,34 @@ print(df["会員ID"].mean())   # 102.0 と計算できるが、意味はない</
               </ul>
               <p class="quiz-feedback" aria-live="polite"></p>
               <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">郵便番号は数字の見た目ですが、足したり平均したりする意味のない「ただのラベル」。つまり名義（分類）データです。さっきの「実務のコツ」どおり、数字に見えても会員ID・郵便番号はレベル1（名義）ですね。</div></details>
+            </div>
+
+            <p>4つのレベルと「判定の3質問」を学びました。仕上げに、<strong>レベル判定トレーナー</strong>で動かして練習しましょう。次々めくれるデータを、3つの質問で判定してみてください。</p>
+
+            <div class="sim" id="level-sim">
+              <span class="box-label">🧩 レベル判定トレーナー — このデータはどのレベル?</span>
+              <p class="sim-lead">「次の問題」を押すとカードが1枚めくれます。データを読んで、名義・順序・間隔・比例から選んでください。正解は緑、不正解は赤になり、そのつど理由も表示されます（10問ごとに正解数も出ます）。</p>
+              <div class="level-stage">
+                <div class="sim-counts">
+                  <div>出題 <b id="level-done">0</b></div>
+                  <div>正解 <b id="level-ok">0</b></div>
+                </div>
+                <div class="level-card">
+                  <p class="level-q" id="level-question">？</p>
+                </div>
+                <div class="level-opts">
+                  <button type="button" class="level-opt" data-lv="1">① 名義</button>
+                  <button type="button" class="level-opt" data-lv="2">② 順序</button>
+                  <button type="button" class="level-opt" data-lv="3">③ 間隔</button>
+                  <button type="button" class="level-opt" data-lv="4">④ 比例</button>
+                </div>
+                <p class="level-fb" id="level-feedback"></p>
+                <p class="sim-note" id="level-note"></p>
+                <div class="sim-btns">
+                  <button type="button" class="btn-sim" id="level-next">次の問題</button>
+                  <button type="button" class="btn-sim ghost" id="level-reset">リセット</button>
+                </div>
+              </div>
             </div>
         </div>
     </div>
