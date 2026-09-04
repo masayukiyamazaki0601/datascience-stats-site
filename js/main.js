@@ -31,7 +31,7 @@
   var CH3 = [
     { file: "ch3-1-sampling.html", num: "①", title: "母集団と標本（サンプリング）", done: true },
     { file: "ch3-2-estimator.html", num: "②", title: "点推定と不偏推定量", done: true },
-    { num: "③", title: "標本平均の分布と標準誤差", plan: true },
+    { file: "ch3-3-se.html", num: "③", title: "標本平均の分布と標準誤差", done: true },
     { num: "④", title: "区間推定と信頼区間の考え方", plan: true },
     { num: "⑤", title: "母平均の区間推定（σ既知）", plan: true },
     { num: "⑥", title: "母平均の区間推定（t分布）", plan: true },

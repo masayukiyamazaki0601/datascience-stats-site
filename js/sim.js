@@ -1135,4 +1135,159 @@
     bind("level-reset", function () { levelReset(); });
     levelReset();
   }
+
+  /* ============================================================
+     標準誤差シミュレーション（ch3-3「標本平均の分布と標準誤差」用）
+     母集団 μ=50 の正規分布から n個を抽出して平均 x̄ をとる試行を繰り返し、
+     x̄ の分布の広がり（実際のばらつき）と理論 SE = σ÷√n を比べる
+     ============================================================ */
+  var seSim = $("se-sim");
+  if (seSim) {
+    var SE_BINS = 24;
+    var seMu = 50;
+    var seSig = 10;
+    var seN = 16;
+    var seExp = 0;
+    var seSum = 0;
+    var seSumSq = 0;
+    var seCounts = [];
+    var seL = 0;
+    var seW = 1;
+    for (var sb0 = 0; sb0 < SE_BINS; sb0++) { seCounts.push(0); }
+
+    var seSigEl = $("se-sig");
+    var seSigVal = $("se-sig-val");
+    var seExpEl = $("se-exp");
+    var seAvgEl = $("se-avg");
+    var seObsEl = $("se-obs");
+    var seMsg = $("se-msg");
+    var seBarWrap = $("se-bars");
+    var seAxisWrap = $("se-axis");
+    var seBarEls = [];
+    var seCntEls = [];
+
+    function seNormal() {
+      var u = 0, v = 0;
+      while (u === 0) { u = Math.random(); }
+      while (v === 0) { v = Math.random(); }
+      return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+    }
+
+    function seSetRange() {
+      var se = seSig / Math.sqrt(seN);
+      seL = seMu - 4 * se;
+      seW = 8 * se / SE_BINS;
+    }
+
+    if (seBarWrap) {
+      for (var bj2 = 0; bj2 < SE_BINS; bj2++) {
+        var scol = document.createElement("div");
+        scol.className = "sim-col";
+        var scnt = document.createElement("span");
+        scnt.className = "cnt";
+        scnt.textContent = "0";
+        var sbar = document.createElement("i");
+        sbar.className = "colbar";
+        scol.appendChild(scnt);
+        scol.appendChild(sbar);
+        seBarWrap.appendChild(scol);
+        seBarEls.push(sbar);
+        seCntEls.push(scnt);
+      }
+    }
+    if (seAxisWrap) {
+      for (var ak2 = 0; ak2 < SE_BINS; ak2++) {
+        var al2 = document.createElement("span");
+        if (ak2 === 0) { al2.textContent = "μ−4SE"; }
+        else if (ak2 === Math.floor(SE_BINS / 2)) { al2.textContent = "μ = 50"; }
+        else if (ak2 === SE_BINS - 1) { al2.textContent = "μ+4SE"; }
+        seAxisWrap.appendChild(al2);
+      }
+    }
+
+    function sePaint() {
+      if (seExpEl) { seExpEl.textContent = seExp; }
+      var obsSd = 0;
+      if (seExp) {
+        var avg = seSum / seExp;
+        obsSd = Math.sqrt(Math.max(0, seSumSq / seExp - avg * avg));
+        if (seAvgEl) { seAvgEl.textContent = String(Math.round(avg * 100) / 100); }
+        if (seObsEl) { seObsEl.textContent = String(Math.round(obsSd * 100) / 100); }
+      } else {
+        if (seAvgEl) { seAvgEl.textContent = "—"; }
+        if (seObsEl) { seObsEl.textContent = "—"; }
+      }
+      var max = 1;
+      for (var m2 = 0; m2 < SE_BINS; m2++) { if (seCounts[m2] > max) { max = seCounts[m2]; } }
+      for (var k2 = 0; k2 < SE_BINS; k2++) {
+        var h2 = seCounts[k2] ? Math.round(seCounts[k2] / max * 90) : 0;
+        seBarEls[k2].style.height = h2 + "px";
+        seCntEls[k2].textContent = seCounts[k2];
+      }
+      if (seMsg) {
+        var seT = seSig / Math.sqrt(seN);
+        if (seExp === 0) {
+          seMsg.textContent = "σ = " + seSig + "、n = " + seN +
+            " → 理論 SE = " + Math.round(seT * 1000) / 1000 +
+            "。スライダーでσを、ボタンでnを変えながら「100回試行」を押してみましょう。";
+        } else {
+          seMsg.textContent = "試行 " + seExp + " 回・σ = " + seSig + "・n = " + seN +
+            "。実際のx̄のばらつき ≈ " + Math.round(obsSd * 1000) / 1000 +
+            " と理論 SE = " + Math.round(seT * 1000) / 1000 +
+            " を比べてみましょう（σを大きく→広がる、nを大きく→狭まる）。";
+        }
+      }
+    }
+
+    function seRun(k) {
+      for (var t2 = 0; t2 < k; t2++) {
+        var s2 = 0;
+        for (var i2 = 0; i2 < seN; i2++) { s2 += seNormal() * seSig + seMu; }
+        var mx = s2 / seN;
+        var idx = Math.min(SE_BINS - 1, Math.max(0, Math.floor((mx - seL) / seW)));
+        seCounts[idx] += 1;
+        seExp += 1;
+        seSum += mx;
+        seSumSq += mx * mx;
+      }
+      sePaint();
+    }
+
+    function seReset() {
+      for (var i3 = 0; i3 < SE_BINS; i3++) { seCounts[i3] = 0; }
+      seExp = 0;
+      seSum = 0;
+      seSumSq = 0;
+      sePaint();
+    }
+
+    if (seSigEl) {
+      seSigEl.addEventListener("input", function () {
+        seSig = parseInt(seSigEl.value, 10);
+        if (seSigVal) { seSigVal.textContent = seSig; }
+        seSetRange();
+        seReset();
+      });
+    }
+    var seNgroup = $("se-ngroup");
+    if (seNgroup) {
+      var seNbtns = seNgroup.querySelectorAll("button.btn-sim");
+      for (var nk = 0; nk < seNbtns.length; nk++) {
+        (function (btn) {
+          btn.addEventListener("click", function () {
+            seN = parseInt(btn.getAttribute("data-n"), 10);
+            for (var qq2 = 0; qq2 < seNbtns.length; qq2++) { seNbtns[qq2].classList.remove("active"); }
+            btn.classList.add("active");
+            seSetRange();
+            seReset();
+          });
+        })(seNbtns[nk]);
+      }
+    }
+    bind("se-run100", function () { seRun(100); });
+    bind("se-run500", function () { seRun(500); });
+    bind("se-reset", function () { seReset(); });
+    seSetRange();
+    seReset();
+  }
 })();

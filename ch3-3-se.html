@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第3章(3) 標本平均の分布と標準誤差 | 統計学入門 for Data Science</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500&family=Noto+Sans+JP:wght@400;500&family=Shippori+Mincho:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script>
+        window.MathJax = {
+            tex: { inlineMath: [['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+            svg: { fontCache: 'global' }
+        };
+    </script>
+    <script async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script src="js/main.js" defer></script>
+    <script src="js/quiz.js" defer></script>
+    <script src="js/sim.js" defer></script>
+</head>
+<body data-file="ch3-3-se.html">
+
+    <header class="header">
+        <div class="header-inner container">
+            <h1 class="logo"><a href="index.html" style="color: inherit;">統計学入門 <span style="font-family: var(--font-mono); font-size: 13px; color: var(--color-brass);">for Data Science</span></a></h1>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="lesson-breadcrumbs">
+            <a href="index.html">コース概要</a> &gt; 第3章 母集団を推し量る（推定） &gt; Unit 03
+        </div>
+        <article class="lesson-container">
+            <header class="lesson-header">
+                <span class="lesson-chapter-label">Chapter 03 / Unit 03 — 推定の道具をそろえる</span>
+                <h2 class="lesson-title">標本平均の分布と標準誤差：推定値はどれくらい「あてにならない」？</h2>
+            </header>
+            <div id="lesson-tabs" class="unit-tabs"></div>
+
+            <div class="goal">
+      <span class="box-label">このUnitでできるようになること</span>
+      <ul>
+        <li>標本平均 x̄ が「標本をとるたびに変わる確率変数」だと説明できる</li>
+        <li>標準誤差 SE = σ ÷ √n の意味と、σ（データのばらつき）との違いを説明できる</li>
+        <li>サンプルサイズ n を大きくすると標準誤差が小さくなる理由を説明できる</li>
+        <li>σ が未知のときは s ÷ √n で標準誤差を推定できる</li>
+      </ul>
+    </div>
+
+    <div class="lesson-flow">
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 01</span>
+            <h4>標本平均は、とるたびに変わる「確率変数」</h4>
+            <p>あなたはECサイトの運営者です。知りたいのは、<strong>お客様全員（母集団）の1回あたりの平均購入額 μ</strong>。でも、全注文を集計するのは大変。そこで<strong>無作為に50件の注文（標本）</strong>を抽出して、その平均 x̄ を計算しました。</p>
+            <div class="math-block">1回目の標本 → x̄ = 5,320円（この1つの値で μ を推定！）</div>
+            <p>ここで質問です。もし明日、<strong>べつの50件</strong>を無作為に抽出し直したら、x̄ は同じ 5,320円になるでしょうか？</p>
+            <p>答えは「ならない」です。標本に選ばれる注文が変われば、平均も少し変わります。x̄ は「母集団から標本をとるたびに値が変わる」——つまり <strong>x̄ は確率変数</strong>です。いっぽう μ は変わりません。μ は「真の値（母数）」、x̄ はその「当て推量（推定値）」でしたね（Unit②）。</p>
+            <p>「標本のとり方の偶然」で x̄ がブレる——このブレをうまく扱えるかどうかが、これからの推定・検定のすべての土台になります。</p>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — x̄ の正体</p>
+              <p class="qq">母集団から無作為に標本をとり直すたびに、標本平均 x̄ はどうなるでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>常に母平均 μ と完全に一致する</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>毎回、少しずつ違う値になる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>必ず前回と同じ値になる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>標本の全データそのものになる</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">x̄ は、どの50件を選ぶかという「偶然」で変わる確率変数です。だから x̄ を1回計算しただけでは、μ からどれくらいズレているか分かりません。その「ズレの大きさ」を測る道具が、このUnitの主役です。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 02</span>
+            <h4>標本平均を何度も集めると「標本分布」が見える</h4>
+            <p>「標本をとって x̄ を計算する」作業を、仮に1000回くり返したらどうなるでしょう。x̄ が1000個集まります。</p>
+            <p>この x̄ たちをヒストグラムにすると、ある分布が現れます。これを<strong>標本分布（sampling distribution）</strong>と呼びます。注意したいのは、「標本そのものの分布」ではなく「<strong>標本平均 x̄ の分布</strong>」だということです。</p>
+            <div class="figure">
+              <svg viewBox="0 0 680 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="個々のデータXの広い分布と、標本平均x̄の狭い分布の比較">
+                <line x1="48" y1="76" x2="76" y2="76" stroke="#8A8371" stroke-width="3"/>
+                <text x="84" y="80" font-family="'Noto Sans JP',sans-serif" font-size="12.5" fill="#3E5063">個々のデータ X（σ = 10）</text>
+                <line x1="48" y1="100" x2="76" y2="100" stroke="#A9782F" stroke-width="3"/>
+                <text x="84" y="104" font-family="'Noto Sans JP',sans-serif" font-size="12.5" fill="#A9782F">標本平均 x̄（n = 16 のとき）</text>
+                <line x1="40" y1="205" x2="640" y2="205" stroke="#1C2B39" stroke-width="1.5"/>
+                <line x1="340" y1="44" x2="340" y2="205" stroke="#A9782F" stroke-width="1" stroke-dasharray="4 4"/>
+                <text x="340" y="34" text-anchor="middle" font-family="'JetBrains Mono',monospace" font-size="13" font-weight="700" fill="#1C2B39">μ = 50</text>
+                <path d="M40.0 205.0 L52.0 205.0 L64.0 205.0 L76.0 205.0 L88.0 205.0 L100.0 205.0 L112.0 205.0 L124.0 204.9 L136.0 204.9 L148.0 204.8 L160.0 204.6 L172.0 204.3 L184.0 203.7 L196.0 202.9 L208.0 201.7 L220.0 199.9 L232.0 197.6 L244.0 194.6 L256.0 190.9 L268.0 186.7 L280.0 182.3 L292.0 177.8 L304.0 173.7 L316.0 170.4 L328.0 168.2 L340.0 167.5 L352.0 168.2 L364.0 170.4 L376.0 173.7 L388.0 177.8 L400.0 182.3 L412.0 186.7 L424.0 190.9 L436.0 194.6 L448.0 197.6 L460.0 199.9 L472.0 201.7 L484.0 202.9 L496.0 203.7 L508.0 204.3 L520.0 204.6 L532.0 204.8 L544.0 204.9 L556.0 204.9 L568.0 205.0 L580.0 205.0 L592.0 205.0 L604.0 205.0 L616.0 205.0 L628.0 205.0 L640.0 205.0 Z" fill="#EEE7D8" fill-opacity="0.75" stroke="#8A8371" stroke-width="1.5"/>
+                <path d="M40.0 205.0 L52.0 205.0 L64.0 205.0 L76.0 205.0 L88.0 205.0 L100.0 205.0 L112.0 205.0 L124.0 205.0 L136.0 205.0 L148.0 205.0 L160.0 205.0 L172.0 205.0 L184.0 205.0 L196.0 205.0 L208.0 205.0 L220.0 205.0 L232.0 205.0 L244.0 205.0 L256.0 205.0 L268.0 205.0 L280.0 204.9 L292.0 204.1 L304.0 196.6 L316.0 163.3 L328.0 96.1 L340.0 55.0 L352.0 96.1 L364.0 163.3 L376.0 196.6 L388.0 204.1 L400.0 204.9 L412.0 205.0 L424.0 205.0 L436.0 205.0 L448.0 205.0 L460.0 205.0 L472.0 205.0 L484.0 205.0 L496.0 205.0 L508.0 205.0 L520.0 205.0 L532.0 205.0 L544.0 205.0 L556.0 205.0 L568.0 205.0 L580.0 205.0 L592.0 205.0 L604.0 205.0 L616.0 205.0 L628.0 205.0 L640.0 205.0 Z" fill="#F6E3BE" fill-opacity="0.85" stroke="#A9782F" stroke-width="2"/>
+                <text x="648" y="211" text-anchor="end" font-family="'Noto Sans JP',sans-serif" font-size="11" fill="#3E5063">個々のデータ X の分布は低く広い</text>
+                <text x="648" y="226" text-anchor="end" font-family="'Noto Sans JP',sans-serif" font-size="11" fill="#A9782F">x̄ の分布は高く狭い（平均は丸まる）</text>
+              </svg>
+              <p class="figure-caption">図1: 中心は同じ μ なのに、個々のデータ X は広く（σ=10）、その平均 x̄ は狭い。n=16 なら 広がりは σ÷√n = 10÷4 = <strong>2.5</strong> まで縮む</p>
+            </div>
+            <p>図の2つのベルを比べてください。<strong>個々のデータ X は広く散らばります</strong>（1件1件の購入額はバラバラ）。ところが <strong>平均 x̄ は、中心 μ のまわりにずっと狭く集まる</strong>。平均をとると、大きめの値と小さめの値が打ち消し合うためです。</p>
+            <p>つまり標本分布には、次の2つの性質があります。</p>
+            <ul>
+              <li><strong>中心 = μ</strong>（Unit②の不偏性 E(x̄) = μ そのもの）</li>
+              <li><strong>広がり = 個々のデータよりずっと小さい</strong></li>
+            </ul>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — 標本分布の中心</p>
+              <p class="qq">標本平均 x̄ の分布（標本分布）は、どの値のまわりに集まるでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>0</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>母平均 μ</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>標本の最小値</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>母標準偏差 σ</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">x̄ は「平均すると μ になる」不偏推定量でした（E(x̄) = μ）。だから標本分布の中心は母平均 μ です。いっぽう、その分布の「広がり」は μ ではなく、次のStepで定義する標準誤差が担います。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 03</span>
+            <h4>標準誤差 SE = σ ÷ √n ——「x̄ の分布の広がり」に名前をつける</h4>
+            <p>個々のデータ X のばらつきは σ（標準偏差）でした。では、<strong>「標本平均 x̄ の分布」の広がり</strong>は、どう表せるでしょう。第2章⑧で学んだ<strong>中心極限定理</strong>が答えをくれます。</p>
+            <div class="math-block">n が大きいとき、x̄ の分布は近似的に正規分布になる。平均 = μ、標準偏差 = <strong>σ ÷ √n</strong></div>
+            <p>この「σ ÷ √n」には特別な名前がついています。それが<strong>標準誤差（standard error：SE）</strong>です。</p>
+            <div class="math-block">SE = σ ÷ √n　…　「標本平均 x̄ の標準偏差」のこと</div>
+            <p>ここがこのUnitでいちばん大切なポイント。<strong>σ と SE は、どちらも「標準偏差」なのに、指しているものが違います。</strong></p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th></th><th>σ（母標準偏差）</th><th>SE = σ ÷ √n（標準誤差）</th></tr>
+                  <tr><td>何のばらつき？</td><td>個々のデータ X</td><td>標本平均 x̄</td></tr>
+                  <tr><td>イメージ</td><td>注文1件1件のバラつき</td><td>「平均の見積もり」のブレ</td></tr>
+                  <tr><td>標本サイズ n の影響</td><td>受けない</td><td>n が大きいほど小さくなる</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>たとえば σ = 10 の母集団なら……。n = 1（標本が1個）なら SE = 10 ÷ √1 = 10。これは「1個だけ見る＝個々のデータと同じ」なので当然です。n = 100 なら SE = 10 ÷ 10 = 1。100人の平均は、1人のデータよりずっと安定します。</p>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — SE の計算</p>
+              <p class="qq">母標準偏差 σ = 20、標本サイズ n = 100 のとき、標準誤差 SE はいくつでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>20</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>2</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>0.2</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>200</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">SE = σ ÷ √n = 20 ÷ √100 = 20 ÷ 10 = 2。100個の平均は、個々のデータ（σ=20）よりずっとブレが小さい、ということです。nが大きいほど√nも大きくなり、SEは小さくなります。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 04</span>
+            <h4>標本サイズ n の効果 —— n を4倍にすると SE は半分</h4>
+            <p>SE = σ ÷ √n をじっと見ると、標本サイズの「力」が見えてきます。</p>
+            <ul>
+              <li>n = 4　→　SE = σ ÷ 2</li>
+              <li>n = 16　→　SE = σ ÷ 4（<strong>n を4倍にしたら SE は半分</strong>）</li>
+              <li>n = 100　→　SE = σ ÷ 10</li>
+            </ul>
+            <p>つまり <strong>標本サイズ n を4倍にすると、標準誤差は √4 = 2 で割った値＝半分</strong>になります。ただし √n でしか縮まないので、「調査人数を2倍にしたら精度も2倍」とはなりません（n を2倍 → SE は 1 ÷ √2 ≈ 0.71倍）。</p>
+            <p>なぜ √n なのか。理由はこうです。<strong>平均は「合計 ÷ n」</strong>。個々のデータが独立なら、n個の合計の分散は n × σ² になるので、それを n で割った x̄ の分散は σ² ÷ n。標準偏差に直すと σ ÷ √n になる、というわけです。</p>
+            <p>では、ここまでを「動く実験」で確かめましょう。</p>
+
+            <div class="sim" id="se-sim">
+              <span class="box-label">🧪 標準誤差シミュレーション — x̄ のばらつきを体感する</span>
+              <p class="sim-lead">母集団は「平均 μ=50」の正規分布。<strong>σ（母集団のバラつき）はスライダーで変更</strong>できます。ここから n 個を無作為に抽出して平均 x̄ を計算する試行を繰り返し、x̄ の分布（ヒストグラム）を作ります。</p>
+              <div class="sim-stage">
+                <div class="sim-counts">
+                  <div>試行回数 <b id="se-exp">0</b></div>
+                  <div>x̄ の平均 <b id="se-avg">—</b> <span class="sim-target">（目標 μ=50）</span></div>
+                  <div>実際のx̄のばらつき <b id="se-obs">—</b> <span class="sim-target">（理論 SE = σ÷√n）</span></div>
+                </div>
+                <div class="sim-sliders">
+                  <label>母集団のばらつき σ ＝ <b id="se-sig-val">10</b>
+                    <input type="range" id="se-sig" min="5" max="20" value="10" step="1">
+                  </label>
+                </div>
+                <div class="sim-btns" id="se-ngroup">
+                  <span class="plabel">標本サイズ n ＝</span>
+                  <button type="button" class="btn-sim" data-n="4">4</button>
+                  <button type="button" class="btn-sim active" data-n="16">16</button>
+                  <button type="button" class="btn-sim" data-n="100">100</button>
+                </div>
+              </div>
+              <div class="sim-bars" id="se-bars"></div>
+              <div class="sim-axis" id="se-axis"></div>
+              <p class="sim-note" id="se-msg"></p>
+              <div class="sim-btns">
+                <button type="button" class="btn-sim" id="se-run100">100回試行</button>
+                <button type="button" class="btn-sim" id="se-run500">500回試行</button>
+                <button type="button" class="btn-sim ghost" id="se-reset">リセット</button>
+              </div>
+            </div>
+
+            <p>試してみると分かります。<strong>σ を大きくする</strong>とヒストグラムは横に広がり（SE が大きくなる）、<strong>n を大きくする</strong>と縦に尖って狭くなります（SE が小さくなる）。そして「実際のx̄のばらつき」の数字が、理論 SE = σ÷√n に近づいていくのを確認できます。</p>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — n の効果</p>
+              <p class="qq">標本サイズ n を4倍にすると、標準誤差 SE はどうなるでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>4倍になる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>2倍になる</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>半分になる</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>変わらない</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">SE = σ ÷ √n なので、n を4倍すると √4 = 2 で割った値＝半分になります。調査人数を増やすほど推定は安定しますが、「4倍の人」でやっとブレが半分、というのが統計の現実です。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 05</span>
+            <h4>現実は σ が不明 → 推定標準誤差 s ÷ √n</h4>
+            <p>ここまで、SE = σ ÷ √n と、<strong>σ（母標準偏差）を知っている前提</strong>で話してきました。でも現実には、母集団が分からないのですから、σ も分かりません。</p>
+            <p>そこで Unit② で準備した道具を使います。<strong>標本から計算した不偏分散 s² の平方根 s（標本標準偏差）を σ の代わりに使い</strong>、標準誤差を推定します。</p>
+            <div class="math-block">推定標準誤差 = s ÷ √n　（s = √s²、s²は分母 n−1 の不偏分散）</div>
+            <p>実務では、これを単に「標準誤差」と呼ぶことがほとんどです。計算例を見てみましょう。</p>
+            <div class="note">
+              <span class="box-label">例: 注文50件の標本で推定する</span>
+              <p>x̄ = 5,320円、不偏分散から s = 1,250円 だったとします。すると、</p>
+              <div class="math-block">推定SE = 1,250 ÷ √50 ≈ 1,250 ÷ 7.07 ≈ <strong>177円</strong></div>
+              <p>これは「推定値 x̄ = 5,320円 は、母平均 μ からだいたい <strong>±177円くらいのズレ</strong>を見込んだ値」という意味です。</p>
+            </div>
+            <p>s は n が大きくなるほど σ に近づきます（Unit②の「一致性」）。ただし n が小さいときは、s 自身もブレるので、その扱いは Unit⑥（t分布）で学びます。</p>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — σ が分からないとき</p>
+              <p class="qq">母標準偏差 σ が分からない現実では、標準誤差 SE をどう見積もるでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>標本平均 x̄ をそのまま使う</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>標本標準偏差 s を σ の代わりに使い、s ÷ √n で計算する</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>SE は 0 だとみなす</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>標本サイズ n をそのまま SE にする</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">σ は標本からは直接わからないので、不偏分散 s² の平方根 s（標本標準偏差）で代用します。SE ≈ s ÷ √n が「推定標準誤差」です。実務で「標準誤差」と言ったら、ふつうはこの推定値のことを指します。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 06</span>
+            <h4>Python で「1つの標本」から x̄ と SE を出す</h4>
+            <p>実務で手元にあるのは「1つの標本」だけです。その標本から x̄（点推定値）と s、そして推定標準誤差 s ÷ √n を計算します。pandas / NumPy でやってみましょう。</p>
+            <pre><code><span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="comment"># 例: あるお店の注文金額（円）30件 ＝ 手元にある1つの標本</span>
+x = np.array([<span class="num">640</span>, <span class="num">760</span>, <span class="num">850</span>, <span class="num">980</span>, <span class="num">1200</span>, <span class="num">1200</span>, <span class="num">1500</span>, <span class="num">2100</span>, <span class="num">3400</span>, <span class="num">8900</span>,
+              <span class="num">720</span>, <span class="num">830</span>, <span class="num">940</span>, <span class="num">1080</span>, <span class="num">1120</span>, <span class="num">1350</span>, <span class="num">1420</span>, <span class="num">1680</span>, <span class="num">1950</span>, <span class="num">2200</span>,
+              <span class="num">1180</span>, <span class="num">1290</span>, <span class="num">1360</span>, <span class="num">1490</span>, <span class="num">1580</span>, <span class="num">1740</span>, <span class="num">1820</span>, <span class="num">1990</span>, <span class="num">2140</span>, <span class="num">2310</span>])
+n = len(x)
+x_bar = x.mean()        <span class="comment"># 標本平均 x̄ → 1724.0</span>
+s = x.std(ddof=<span class="num">1</span>)      <span class="comment"># 標本標準偏差(分母n−1) → 1479.4</span>
+se = s / np.sqrt(n)     <span class="comment"># 推定標準誤差 s÷√n → 270.1</span></code></pre>
+            <p>pandas なら <code>Series.sem()</code> という関数で s ÷ √n を1発で出せます（内部では分母 n−1 の s を使って計算します）。</p>
+            <pre><code><span class="kw">import</span> pandas <span class="kw">as</span> pd
+pd.Series(x).sem()   <span class="comment"># → 270.1（x̄のブレの目安）</span></code></pre>
+            <p>この「SE ≈ 270円」は、<strong>x̄ = 1,724円という推定値が、母平均 μ からおおよそ ±270円くらいズレる可能性がある</strong>というサインです。SE が小さい推定ほど「当てになる」——データサイエンスの現場（A/Bテストや精度評価）でも、この感覚がずっと使われます。</p>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — pandas の関数</p>
+              <p class="qq">pandas で「標本平均 x̄ のブレ（標準誤差 s÷√n）」を直接計算できるメソッドはどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>mean()</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>sem()</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>var()</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>std()</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">sem() は standard error of the mean の略で、分母 n−1 の標本標準偏差 s を使って s ÷ √n を返します。x̄ の「ブレの目安」が1行で出せるので、結果を報告するときに便利です。</div></details>
+            </div>
+        </div>
+
+        <div class="lesson-step">
+            <span class="lesson-step-meta">Step 07</span>
+            <h4>まとめ: 「点推定」に誤差のモノサシをそろえた</h4>
+            <p>このUnitで出てきた道具を、1つの表にまとめました。</p>
+            <div class="table-wrap">
+              <table>
+                <tbody>
+                  <tr><th>用語</th><th>意味</th><th>式</th></tr>
+                  <tr><td><strong>標本平均 x̄</strong></td><td>μ の点推定値（不偏推定量）</td><td>標本の合計 ÷ n</td></tr>
+                  <tr><td><strong>母標準偏差 σ</strong></td><td>個々のデータ X のばらつき</td><td>母集団の標準偏差</td></tr>
+                  <tr><td><strong>標準誤差 SE</strong></td><td>x̄ の分布（標本分布）の標準偏差</td><td>σ ÷ √n</td></tr>
+                  <tr><td><strong>推定標準誤差</strong></td><td>σ が不明なときの SE の見積もり</td><td>s ÷ √n（s は分母 n−1）</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>ここまでの流れを言葉にすると、こうなります。</p>
+            <div class="math-block">「x̄ は、母平均 μ からだいたい <strong>±SE</strong> くらいズレる」——これを数値で言えるようになった</div>
+            <p>1つの標本から計算した x̄ だけでは、それが μ に近いかどうか分かりません。しかし SE を添えれば、「この推定値はこれくらいブレる可能性がある」という<strong>当てにならなさのモノサシ</strong>になります。</p>
+            <div class="tip">
+              <span class="box-label">実務のコツ（1行）</span>
+              <p>「平均 1,724円（SE = 270円）」のように、推定値には SE を添えて報告しましょう。「±SE」が小さいほど、その推定は信頼できます。</p>
+            </div>
+            <p>そして、いよいよ次が推定の本番です。SE が手に入ったので、<strong>「μ は 1,724 ± 270 × 1.96 くらいの範囲にある」</strong>と、値ではなく<strong>範囲</strong>で母平均を推定できます。それが Unit④の<strong>区間推定（95%信頼区間）</strong>です。</p>
+            <div class="mini-q quiz-q">
+              <p class="mc-label">✏️ 途中確認 — まとめ</p>
+              <p class="qq">標準誤差 SE について正しい説明はどれでしょう？</p>
+              <ul class="opts">
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>個々のデータ X のばらつきのこと</button></li>
+                <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>標本平均 x̄ のばらつきで、σ÷√n（σ不明時は s÷√n）</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>母平均 μ の値そのもの</button></li>
+                <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>標本サイズ n のこと</button></li>
+              </ul>
+              <p class="quiz-feedback" aria-live="polite"></p>
+              <details class="kansetsu"><summary>答えの理由</summary><div class="ex-body">SE は「x̄ の分布（標本分布）の標準偏差」。σ ÷ √n で、σ が分からなければ標本標準偏差 s を使って s ÷ √n と推定します。SE が小さいほど、推定値 x̄ は μ の近くに集まります。</div></details>
+            </div>
+        </div>
+
+
+    </div>
+
+<section class="quiz-block">
+    <div class="quiz-head">
+      <h2>📝 第3章ユニット③の確認クイズ（6問）</h2>
+      <div class="quiz-status">正解 <b>0</b> / 6問</div>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q1. 標準誤差（SE）は、何の「ばらつき」を表す値でしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>個々のデータ X のばらつき</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>標本平均 x̄ の分布（標本分布）のばらつき</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>母平均 μ の値そのもの</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>標本サイズ n の大きさ</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">σ が「個々のデータ X のばらつき」なのに対し、SE は「標本をとるたびに変わる x̄ のばらつき」です。x̄ の分布の標準偏差のことを標準誤差と呼びます。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q2. 母標準偏差 σ = 15、標本サイズ n = 9 のとき、標準誤差 SE はいくつでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>15</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>5</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>1.7</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>45</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">SE = σ ÷ √n = 15 ÷ √9 = 15 ÷ 3 = 5。9個の平均は、個々のデータ（σ=15）の3分の1のブレになります。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q3. 標本サイズ n を4倍にすると、標準誤差 SE はどうなるでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>4倍になる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>2倍になる</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>半分になる</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>変わらない</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">SE = σ ÷ √n なので、n を4倍にすると √4 = 2 で割った値、つまり半分になります。「人数を2倍にしても精度は2倍にならない（√2倍しか改善しない）」点が実務では重要です。</div></details>
+    </div>
+
+    <div class="quiz-q">
+      <p class="qq">Q4. 母標準偏差 σ が分からないとき、標準誤差をどう見積もるでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>x̄ ÷ √n で計算する</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">イ</span>標本標準偏差 s を使って s ÷ √n で計算する</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>σ ÷ n で計算する</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>標準誤差は計算できないので諦める</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">母集団が分からない以上 σ も不明なので、分母 n−1 の不偏分散から求めた標本標準偏差 s で代用します。s ÷ √n を「推定標準誤差」と呼び、実務では単に標準誤差（SE）と呼びます。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q5. SE = σ ÷ √n に n = 1（標本が1個だけ）を入れると、SE はどうなるでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ア</span>σ（個々のデータ1個のばらつきと同じ）</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>σ ÷ 2</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ウ</span>0</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>1</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">n = 1 なら SE = σ ÷ √1 = σ。「標本が1個」＝個々のデータを1つ見ているのと同じなので、ブレは σ のまま。平均をとる意味が出てくるのは n が2以上になってからです。</div></details>
+    </div>
+    <div class="quiz-q">
+      <p class="qq">Q6. 「平均購入額 x̄ = 1,724円（SE = 270円）」という報告の、SE = 270円の意味として正しいのはどれでしょう？</p>
+      <ul class="opts">
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">ア</span>個々の注文は、平均から270円ズレている</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">イ</span>母平均 μ は 270円 である</button></li>
+        <li><button type="button" class="opt" data-correct="1"><span class="opt-letter">ウ</span>x̄ = 1,724円という推定は、母平均 μ からおよそ ±270円のズレを見込む</button></li>
+        <li><button type="button" class="opt" data-correct="0"><span class="opt-letter">エ</span>標本サイズは 270人 である</button></li>
+      </ul>
+      <p class="quiz-feedback" aria-live="polite"></p>
+      <details class="kansetsu"><summary>解説を見る</summary><div class="ex-body">SE は「x̄ の分布の標準偏差」。標本をとり直したら x̄ は μ のまわりを ±SE くらい動く、という意味です。個々のデータのばらつき（σ）と混同しないように。次Unitではこの SE を使って μ の「範囲」を推定します。</div></details>
+    </div>
+
+    <div class="quiz-actions">
+      <button type="button" class="retry">🔄 もう一度解く</button>
+    </div>
+  </section>
+
+    <nav class="lesson-footer-nav" id="pager"></nav>
+        </article>
+    </main>
+
+    <footer class="footer">
+        <div class="container footer-inner">
+            <div class="footer-left">
+                <div class="footer-logo">統計学入門 for Data Science</div>
+                <p>データサイエンスのための統計学・初学者向けオンライン教材</p>
+            </div>
+            <div class="footer-right">
+                <p class="copyright">&copy; 2026 統計学入門 for Data Science.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
